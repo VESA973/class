@@ -21,9 +21,8 @@
         </button>
 
         <nav class="main-nav" data-menu>
+            <a href="#accueil">Accueil</a>
             <a href="#vehicules">Vehicules</a>
-            <a href="#chauffeur">Avec chauffeur</a>
-            <a href="#prestations">Prestations</a>
             <a href="#contact">Contact</a>
         </nav>
 
