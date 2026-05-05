@@ -18,7 +18,7 @@ Route::post('/admin/login', function (Request $request) {
         'password' => ['required', 'string'],
     ]);
 
-    if ($request->input('password') !== env('ADMIN_PASSWORD', 'admin123')) {
+    if (! hash_equals((string) config('app.admin_password'), (string) $request->input('password'))) {
         return back()->withErrors(['password' => 'Mot de passe incorrect.']);
     }
 
