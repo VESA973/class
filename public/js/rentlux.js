@@ -196,8 +196,12 @@ if (daysInput) {
 filterButtons.forEach((button) => {
     button.addEventListener("click", () => {
         const category = button.dataset.filter;
-        categorySelect.value = category;
-        syncModelOptions();
+
+        if (categorySelect) {
+            categorySelect.value = category;
+            syncModelOptions();
+        }
+
         filterFleet(category);
     });
 });

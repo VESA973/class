@@ -98,6 +98,10 @@ select {
     color: #fff;
 }
 
+.main-nav a.is-active {
+    color: #fff;
+}
+
 .header-cta {
     justify-self: end;
     border: 1px solid rgba(255, 255, 255, .25);
@@ -115,6 +119,27 @@ select {
     overflow: hidden;
     display: flex;
     align-items: flex-end;
+}
+
+.page-hero {
+    width: min(1180px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 150px 0 52px;
+    border-bottom: 1px solid var(--line);
+}
+
+.page-hero h1 {
+    max-width: 860px;
+}
+
+.page-hero p:not(.eyebrow) {
+    max-width: 680px;
+    color: var(--muted);
+    font-size: 19px;
+}
+
+.page-section {
+    padding-top: 54px;
 }
 
 .hero picture,

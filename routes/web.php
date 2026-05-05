@@ -7,7 +7,10 @@ use App\Http\Controllers\VehicleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', HomeController::class)->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/vehicules', [HomeController::class, 'vehicles'])->name('vehicles.page');
+Route::get('/prestations', [HomeController::class, 'prestations'])->name('prestations.page');
+Route::get('/contact', [HomeController::class, 'contact'])->name('contact.page');
 Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store');
 
 Route::get('/admin/login', function () {
