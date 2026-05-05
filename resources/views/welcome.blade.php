@@ -183,20 +183,37 @@
             </div>
             <p class="prestations-lead">Nos chauffeurs et leurs voitures sont à votre disposition.</p>
 
-            <div class="prestation-grid">
-                @forelse ($prestations as $prestation)
-                    <article class="prestation-card">
-                        <img src="{{ $prestation->display_image }}" alt="{{ $prestation->name }}">
-                        <div>
-                            <h3>{{ $prestation->name }}</h3>
-                            @if ($prestation->description)
-                                <p>{{ $prestation->description }}</p>
-                            @endif
-                        </div>
-                    </article>
-                @empty
-                    <p class="empty-state">Aucune prestation active pour le moment. Ajoutez vos prestations dans l'administration.</p>
-                @endforelse
+            <div class="prestation-carousel" data-prestation-carousel>
+                <div class="carousel-head">
+                    <span data-carousel-count>01 / {{ str_pad((string) max($prestations->count(), 1), 2, '0', STR_PAD_LEFT) }}</span>
+                    <div class="carousel-actions">
+                        <button type="button" aria-label="Prestation precedente" data-carousel-prev>
+                            <span aria-hidden="true">‹</span>
+                        </button>
+                        <button type="button" aria-label="Prestation suivante" data-carousel-next>
+                            <span aria-hidden="true">›</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="prestation-track" data-carousel-track>
+                    @forelse ($prestations as $prestation)
+                        <article class="prestation-card" data-carousel-card>
+                            <img src="{{ $prestation->display_image }}" alt="{{ $prestation->name }}">
+                            <div>
+                                <span>Prestation</span>
+                                <h3>{{ $prestation->name }}</h3>
+                                @if ($prestation->description)
+                                    <p>{{ $prestation->description }}</p>
+                                @endif
+                            </div>
+                        </article>
+                    @empty
+                        <p class="empty-state">Aucune prestation active pour le moment. Ajoutez vos prestations dans l'administration.</p>
+                    @endforelse
+                </div>
+
+                <div class="carousel-dots" data-carousel-dots aria-label="Navigation des prestations"></div>
             </div>
         </section>
 

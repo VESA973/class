@@ -15,6 +15,7 @@ const cards = document.querySelectorAll(".vehicle-card");
 const menuToggle = document.querySelector("[data-menu-toggle]");
 const menu = document.querySelector("[data-menu]");
 const header = document.querySelector("[data-header]");
+const prestationCarousel = document.querySelector("[data-prestation-carousel]");
 
 function formatPrice(value) {
     return new Intl.NumberFormat("fr-FR", {
@@ -68,6 +69,79 @@ function toggleHeader() {
     header.classList.toggle("is-scrolled", window.scrollY > 24);
 }
 
+function initPrestationCarousel() {
+    if (!prestationCarousel) {
+        return;
+    }
+
+    const track = prestationCarousel.querySelector("[data-carousel-track]");
+    const carouselCards = Array.from(prestationCarousel.querySelectorAll("[data-carousel-card]"));
+    const prevButton = prestationCarousel.querySelector("[data-carousel-prev]");
+    const nextButton = prestationCarousel.querySelector("[data-carousel-next]");
+    const count = prestationCarousel.querySelector("[data-carousel-count]");
+    const dots = prestationCarousel.querySelector("[data-carousel-dots]");
+    let activeIndex = 0;
+
+    if (!track || !carouselCards.length) {
+        prevButton?.setAttribute("disabled", "disabled");
+        nextButton?.setAttribute("disabled", "disabled");
+        return;
+    }
+
+    function twoDigits(value) {
+        return String(value).padStart(2, "0");
+    }
+
+    function setActive(index, shouldScroll = true) {
+        activeIndex = Math.max(0, Math.min(index, carouselCards.length - 1));
+
+        carouselCards.forEach((card, cardIndex) => {
+            card.classList.toggle("is-active", cardIndex === activeIndex);
+        });
+
+        dots.querySelectorAll("button").forEach((dot, dotIndex) => {
+            dot.classList.toggle("is-active", dotIndex === activeIndex);
+        });
+
+        count.textContent = `${twoDigits(activeIndex + 1)} / ${twoDigits(carouselCards.length)}`;
+        prevButton.disabled = activeIndex === 0;
+        nextButton.disabled = activeIndex === carouselCards.length - 1;
+
+        if (shouldScroll) {
+            carouselCards[activeIndex].scrollIntoView({
+                behavior: "smooth",
+                block: "nearest",
+                inline: "start",
+            });
+        }
+    }
+
+    carouselCards.forEach((_, index) => {
+        const dot = document.createElement("button");
+        dot.type = "button";
+        dot.setAttribute("aria-label", `Afficher la prestation ${index + 1}`);
+        dot.addEventListener("click", () => setActive(index));
+        dots.append(dot);
+    });
+
+    prevButton.addEventListener("click", () => setActive(activeIndex - 1));
+    nextButton.addEventListener("click", () => setActive(activeIndex + 1));
+
+    track.addEventListener("scroll", () => {
+        const nextIndex = carouselCards.reduce((closestIndex, card, index) => {
+            const cardDistance = Math.abs(card.offsetLeft - track.scrollLeft);
+            const closestDistance = Math.abs(carouselCards[closestIndex].offsetLeft - track.scrollLeft);
+            return cardDistance < closestDistance ? index : closestIndex;
+        }, activeIndex);
+
+        if (nextIndex !== activeIndex) {
+            setActive(nextIndex, false);
+        }
+    }, { passive: true });
+
+    setActive(0, false);
+}
+
 categorySelect.addEventListener("change", () => {
     syncModelOptions();
     filterFleet(categorySelect.value);
@@ -108,4 +182,5 @@ if (startDateInput) {
 }
 
 syncModelOptions();
+initPrestationCarousel();
 toggleHeader();
