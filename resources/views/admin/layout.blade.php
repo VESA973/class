@@ -11,6 +11,7 @@
         <a class="admin-brand" href="{{ route('admin.dashboard') }}">CLASS’AFFAIRE</a>
         <nav>
             <a href="{{ route('admin.vehicles.index') }}">Vehicules</a>
+            <a href="{{ route('admin.prestations.index') }}">Prestations</a>
             <a href="{{ route('admin.reservations.index') }}">Reservations</a>
             <a href="{{ route('home') }}">Voir le site</a>
             <form method="POST" action="{{ route('admin.logout') }}">

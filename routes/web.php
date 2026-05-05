@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PrestationController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\VehicleController;
 use Illuminate\Http\Request;
@@ -36,6 +37,7 @@ Route::post('/admin/logout', function (Request $request) {
 Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function (): void {
     Route::redirect('/', '/admin/vehicles')->name('dashboard');
     Route::resource('vehicles', VehicleController::class)->except(['show']);
+    Route::resource('prestations', PrestationController::class)->except(['show']);
     Route::get('reservations', [ReservationController::class, 'index'])->name('reservations.index');
     Route::get('reservations/{reservation}', [ReservationController::class, 'show'])->name('reservations.show');
     Route::patch('reservations/{reservation}', [ReservationController::class, 'update'])->name('reservations.update');

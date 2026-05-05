@@ -263,7 +263,7 @@ h1 {
 
 .intro-section,
 .fleet-section,
-.services-section,
+.prestations-section,
 .contact-section,
 .chauffeur-section {
     width: min(1180px, calc(100% - 40px));
@@ -292,7 +292,7 @@ h1 {
 .intro-copy p,
 .chauffeur-section p,
 .contact-section p,
-.service-grid p {
+.prestation-card p {
     color: var(--muted);
 }
 
@@ -306,12 +306,12 @@ h1 {
 }
 
 .fleet-section,
-.services-section {
+.prestations-section {
     padding: 76px 0;
 }
 
 .fleet-section .section-heading,
-.services-section .section-heading {
+.prestations-section .section-heading {
     display: flex;
     align-items: end;
     justify-content: space-between;
@@ -449,7 +449,6 @@ h1 {
 }
 
 .stats span,
-.service-grid article,
 .contact-panel {
     background: var(--panel-soft);
     border: 1px solid var(--line);
@@ -467,19 +466,71 @@ h1 {
     font-size: 21px;
 }
 
-.service-grid {
+.prestations-lead {
+    max-width: 560px;
+    margin: -8px 0 28px auto;
+    color: var(--muted);
+    font-size: 18px;
+}
+
+.prestation-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1.15fr .85fr .85fr;
     gap: 18px;
 }
 
-.service-grid article {
+.prestation-card {
+    position: relative;
+    min-height: 360px;
+    overflow: hidden;
+    background: var(--panel-soft);
+    border: 1px solid var(--line);
+}
+
+.prestation-card:first-child {
+    grid-row: span 2;
+    min-height: 738px;
+}
+
+.prestation-card img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .35s ease;
+}
+
+.prestation-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, .08), rgba(0, 0, 0, .78));
+}
+
+.prestation-card:hover img {
+    transform: scale(1.04);
+}
+
+.prestation-card div {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
     padding: 24px;
 }
 
-.service-grid h3 {
+.prestation-card h3 {
     margin-bottom: 12px;
-    font-size: 22px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(28px, 3vw, 42px);
+    font-weight: 500;
+    line-height: 1.02;
+}
+
+.prestation-card p {
+    margin-bottom: 0;
 }
 
 .contact-section {
@@ -564,8 +615,13 @@ h1 {
     }
 
     .fleet-grid,
-    .service-grid {
+    .prestation-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .prestation-card:first-child {
+        grid-row: auto;
+        min-height: 360px;
     }
 }
 
@@ -593,22 +649,26 @@ h1 {
 
     .intro-section,
     .fleet-section,
-    .services-section,
+    .prestations-section,
     .contact-section,
     .chauffeur-section {
         width: min(100% - 28px, 1180px);
     }
 
     .fleet-section .section-heading,
-    .services-section .section-heading,
+    .prestations-section .section-heading,
     .site-footer {
         display: grid;
     }
 
     .fleet-grid,
-    .service-grid,
+    .prestation-grid,
     .stats {
         grid-template-columns: 1fr;
+    }
+
+    .prestations-lead {
+        margin-left: 0;
     }
 
     .contact-panel a {

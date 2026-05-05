@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Prestation;
 use App\Models\Reservation;
 use App\Models\Vehicle;
 use Carbon\Carbon;
@@ -15,19 +16,30 @@ class ReservationController extends Controller
     {
         $validated = $request->validate([
             'vehicle_id' => ['required', 'exists:vehicles,id'],
+            'prestation_id' => ['nullable', 'exists:prestations,id'],
             'customer_name' => ['required', 'string', 'max:120'],
             'customer_email' => ['nullable', 'email', 'max:160'],
             'customer_phone' => ['required', 'string', 'max:40'],
             'start_date' => ['required', 'date', 'after_or_equal:today'],
             'days' => ['required', 'integer', 'min:1', 'max:90'],
             'pickup_location' => ['required', 'string', 'max:180'],
-            'service_type' => ['required', 'string', 'max:60'],
+            'service_type' => ['nullable', 'string', 'max:60'],
             'message' => ['nullable', 'string', 'max:2000'],
         ]);
 
         $vehicle = Vehicle::query()
             ->where('is_available', true)
             ->findOrFail($validated['vehicle_id']);
+
+        if (! empty($validated['prestation_id'])) {
+            $prestation = Prestation::query()
+                ->where('is_active', true)
+                ->findOrFail($validated['prestation_id']);
+
+            $validated['service_type'] = $prestation->name;
+        } else {
+            $validated['service_type'] = $validated['service_type'] ?? 'Sans chauffeur';
+        }
 
         $validated['estimated_total'] = $vehicle->daily_price * (int) $validated['days'];
         $validated['end_date'] = Carbon::parse($validated['start_date'])
@@ -45,7 +57,7 @@ class ReservationController extends Controller
     public function index(Request $request): View
     {
         $reservations = Reservation::query()
-            ->with('vehicle')
+            ->with(['prestation', 'vehicle'])
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->input('status')))
             ->latest()
             ->paginate(12)
@@ -60,7 +72,7 @@ class ReservationController extends Controller
     public function show(Reservation $reservation): View
     {
         return view('admin.reservations.show', [
-            'reservation' => $reservation->load('vehicle'),
+            'reservation' => $reservation->load(['prestation', 'vehicle']),
             'statuses' => Reservation::STATUSES,
         ]);
     }

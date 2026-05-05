@@ -24,7 +24,7 @@
             <h2>Vehicule</h2>
             <img class="preview" src="{{ $reservation->vehicle->display_image }}" alt="{{ $reservation->vehicle->name }}">
             <p><strong>Modele:</strong> {{ $reservation->vehicle->name }}</p>
-            <p><strong>Type:</strong> {{ $reservation->service_type }}</p>
+            <p><strong>Prestation:</strong> {{ $reservation->prestation?->name ?: $reservation->service_type }}</p>
             <p><strong>Dates:</strong> {{ $reservation->start_date->format('d/m/Y') }} au {{ optional($reservation->end_date)->format('d/m/Y') }}</p>
             <p><strong>Total estimatif:</strong> {{ number_format($reservation->estimated_total, 0, ',', ' ') }} EUR</p>
         </section>

@@ -23,7 +23,7 @@
         <nav class="main-nav" data-menu>
             <a href="#vehicules">Vehicules</a>
             <a href="#chauffeur">Avec chauffeur</a>
-            <a href="#services">Services</a>
+            <a href="#prestations">Prestations</a>
             <a href="#contact">Contact</a>
         </nav>
 
@@ -73,10 +73,12 @@
                         </select>
                     </label>
                     <label>
-                        Service
-                        <select name="service_type" required>
-                            <option value="Sans chauffeur">Sans chauffeur</option>
-                            <option value="Avec chauffeur">Avec chauffeur</option>
+                        Prestation
+                        <select name="prestation_id">
+                            <option value="">Choisir une prestation</option>
+                            @foreach ($prestations as $prestation)
+                                <option value="{{ $prestation->id }}">{{ $prestation->name }}</option>
+                            @endforeach
                         </select>
                     </label>
                     <label>
@@ -174,24 +176,27 @@
             </div>
         </section>
 
-        <section class="services-section" id="services">
+        <section class="prestations-section" id="prestations">
             <div class="section-heading">
-                <p class="eyebrow">Services inclus</p>
-                <h2>Tout ce qu'une location premium doit couvrir.</h2>
+                <p class="eyebrow">Prestations</p>
+                <h2>Choisissez de faire appel à nous pour tous types d’évènements comme les mariages, les transferts, les soirées et bien d’autres.</h2>
             </div>
-            <div class="service-grid">
-                <article>
-                    <h3>Livraison flexible</h3>
-                    <p>Hotel, domicile, gare ou aeroport selon votre programme.</p>
-                </article>
-                <article>
-                    <h3>Selection verifiee</h3>
-                    <p>Vehicules controles, propres et presentes avec conditions claires.</p>
-                </article>
-                <article>
-                    <h3>Reservation rapide</h3>
-                    <p>Estimation immediate puis confirmation par telephone ou WhatsApp.</p>
-                </article>
+            <p class="prestations-lead">Nos chauffeurs et leurs voitures sont à votre disposition.</p>
+
+            <div class="prestation-grid">
+                @forelse ($prestations as $prestation)
+                    <article class="prestation-card">
+                        <img src="{{ $prestation->display_image }}" alt="{{ $prestation->name }}">
+                        <div>
+                            <h3>{{ $prestation->name }}</h3>
+                            @if ($prestation->description)
+                                <p>{{ $prestation->description }}</p>
+                            @endif
+                        </div>
+                    </article>
+                @empty
+                    <p class="empty-state">Aucune prestation active pour le moment. Ajoutez vos prestations dans l'administration.</p>
+                @endforelse
             </div>
         </section>
 

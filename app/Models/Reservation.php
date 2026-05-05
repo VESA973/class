@@ -14,6 +14,7 @@ class Reservation extends Model
 
     protected $fillable = [
         'vehicle_id',
+        'prestation_id',
         'customer_name',
         'customer_email',
         'customer_phone',
@@ -40,5 +41,10 @@ class Reservation extends Model
     public function vehicle(): BelongsTo
     {
         return $this->belongsTo(Vehicle::class);
+    }
+
+    public function prestation(): BelongsTo
+    {
+        return $this->belongsTo(Prestation::class);
     }
 }

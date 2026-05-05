@@ -24,6 +24,7 @@
                 <tr>
                     <th>Client</th>
                     <th>Vehicule</th>
+                    <th>Prestation</th>
                     <th>Dates</th>
                     <th>Total</th>
                     <th>Statut</th>
@@ -38,6 +39,7 @@
                             <span>{{ $reservation->customer_phone }}</span>
                         </td>
                         <td>{{ $reservation->vehicle->name }}</td>
+                        <td>{{ $reservation->prestation?->name ?: $reservation->service_type }}</td>
                         <td>{{ $reservation->start_date->format('d/m/Y') }} - {{ $reservation->days }} jour(s)</td>
                         <td>{{ number_format($reservation->estimated_total, 0, ',', ' ') }} EUR</td>
                         <td><span class="tag">{{ ucfirst($reservation->status) }}</span></td>
@@ -45,7 +47,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6">Aucune reservation pour le moment.</td>
+                        <td colspan="7">Aucune reservation pour le moment.</td>
                     </tr>
                 @endforelse
             </tbody>

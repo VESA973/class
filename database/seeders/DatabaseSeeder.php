@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Prestation;
 use App\Models\Vehicle;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -71,6 +72,46 @@ class DatabaseSeeder extends Seeder
                     'is_available' => true,
                     'with_chauffeur' => false,
                 ], $vehicle),
+            );
+        }
+
+        $prestations = [
+            [
+                'name' => 'Mariages',
+                'description' => 'Une arrivée élégante et un accompagnement discret pour les moments importants.',
+                'image_url' => 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1200&q=80',
+                'sort_order' => 10,
+            ],
+            [
+                'name' => 'Transferts',
+                'description' => 'Aéroports, gares, hôtels et trajets professionnels avec prise en charge soignée.',
+                'image_url' => 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80',
+                'sort_order' => 20,
+            ],
+            [
+                'name' => 'Soirées',
+                'description' => 'Chauffeur privé pour vos sorties, dîners, événements VIP et retours en sérénité.',
+                'image_url' => 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1200&q=80',
+                'sort_order' => 30,
+            ],
+            [
+                'name' => 'Évènements privés',
+                'description' => 'Mise à disposition de véhicules avec chauffeur selon votre programme.',
+                'image_url' => 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1200&q=80',
+                'sort_order' => 40,
+            ],
+            [
+                'name' => 'Voyages d’affaires',
+                'description' => 'Déplacements ponctuels, rendez-vous multi-adresses et accueil de collaborateurs.',
+                'image_url' => 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80',
+                'sort_order' => 50,
+            ],
+        ];
+
+        foreach ($prestations as $prestation) {
+            Prestation::updateOrCreate(
+                ['name' => $prestation['name']],
+                array_merge(['is_active' => true], $prestation),
             );
         }
     }
