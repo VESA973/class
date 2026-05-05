@@ -26,11 +26,19 @@ function formatPrice(value) {
 }
 
 function filteredVehicles() {
+    if (!categorySelect) {
+        return vehicles;
+    }
+
     const category = categorySelect.value;
     return vehicles.filter((vehicle) => category === "Tous" || vehicle.category === category);
 }
 
 function syncModelOptions() {
+    if (!modelSelect) {
+        return;
+    }
+
     const options = filteredVehicles();
     modelSelect.innerHTML = "";
 
@@ -46,10 +54,18 @@ function syncModelOptions() {
 }
 
 function selectedVehicle() {
+    if (!modelSelect) {
+        return vehicles[0];
+    }
+
     return vehicles.find((vehicle) => vehicle.id === modelSelect.value) || filteredVehicles()[0] || vehicles[0];
 }
 
 function updateEstimate() {
+    if (!daysInput || !priceEstimate) {
+        return;
+    }
+
     const vehicle = selectedVehicle();
     const days = Math.max(Number(daysInput.value) || 1, 1);
     priceEstimate.textContent = vehicle ? formatPrice(vehicle.price * days) : "Sur demande";
@@ -66,7 +82,9 @@ function filterFleet(category) {
 }
 
 function toggleHeader() {
-    header.classList.toggle("is-scrolled", window.scrollY > 24);
+    if (header) {
+        header.classList.toggle("is-scrolled", window.scrollY > 24);
+    }
 }
 
 function initPrestationCarousel() {
@@ -82,9 +100,15 @@ function initPrestationCarousel() {
     const dots = prestationCarousel.querySelector("[data-carousel-dots]");
     let activeIndex = 0;
 
-    if (!track || !carouselCards.length) {
-        prevButton?.setAttribute("disabled", "disabled");
-        nextButton?.setAttribute("disabled", "disabled");
+    if (!track || !prevButton || !nextButton || !count || !dots || !carouselCards.length) {
+        if (prevButton) {
+            prevButton.setAttribute("disabled", "disabled");
+        }
+
+        if (nextButton) {
+            nextButton.setAttribute("disabled", "disabled");
+        }
+
         return;
     }
 
@@ -108,11 +132,16 @@ function initPrestationCarousel() {
         nextButton.disabled = activeIndex === carouselCards.length - 1;
 
         if (shouldScroll) {
-            carouselCards[activeIndex].scrollIntoView({
-                behavior: "smooth",
-                block: "nearest",
-                inline: "start",
-            });
+            const targetLeft = carouselCards[activeIndex].offsetLeft - track.offsetLeft;
+
+            if (typeof track.scrollTo === "function") {
+                track.scrollTo({
+                    left: targetLeft,
+                    behavior: "smooth",
+                });
+            } else {
+                track.scrollLeft = targetLeft;
+            }
         }
     }
 
@@ -124,13 +153,20 @@ function initPrestationCarousel() {
         dots.append(dot);
     });
 
-    prevButton.addEventListener("click", () => setActive(activeIndex - 1));
-    nextButton.addEventListener("click", () => setActive(activeIndex + 1));
+    prevButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        setActive(activeIndex - 1);
+    });
+
+    nextButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        setActive(activeIndex + 1);
+    });
 
     track.addEventListener("scroll", () => {
         const nextIndex = carouselCards.reduce((closestIndex, card, index) => {
-            const cardDistance = Math.abs(card.offsetLeft - track.scrollLeft);
-            const closestDistance = Math.abs(carouselCards[closestIndex].offsetLeft - track.scrollLeft);
+            const cardDistance = Math.abs((card.offsetLeft - track.offsetLeft) - track.scrollLeft);
+            const closestDistance = Math.abs((carouselCards[closestIndex].offsetLeft - track.offsetLeft) - track.scrollLeft);
             return cardDistance < closestDistance ? index : closestIndex;
         }, activeIndex);
 
@@ -142,13 +178,20 @@ function initPrestationCarousel() {
     setActive(0, false);
 }
 
-categorySelect.addEventListener("change", () => {
-    syncModelOptions();
-    filterFleet(categorySelect.value);
-});
+if (categorySelect) {
+    categorySelect.addEventListener("change", () => {
+        syncModelOptions();
+        filterFleet(categorySelect.value);
+    });
+}
 
-modelSelect.addEventListener("change", updateEstimate);
-daysInput.addEventListener("input", updateEstimate);
+if (modelSelect) {
+    modelSelect.addEventListener("change", updateEstimate);
+}
+
+if (daysInput) {
+    daysInput.addEventListener("input", updateEstimate);
+}
 
 filterButtons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -159,26 +202,31 @@ filterButtons.forEach((button) => {
     });
 });
 
-menuToggle.addEventListener("click", () => {
-    const isOpen = menu.classList.toggle("is-open");
-    header.classList.toggle("is-open", isOpen);
-    menuToggle.setAttribute("aria-expanded", String(isOpen));
-});
-
-menu.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", () => {
-        menu.classList.remove("is-open");
-        header.classList.remove("is-open");
-        menuToggle.setAttribute("aria-expanded", "false");
+if (menuToggle && menu && header) {
+    menuToggle.addEventListener("click", () => {
+        const isOpen = menu.classList.toggle("is-open");
+        header.classList.toggle("is-open", isOpen);
+        menuToggle.setAttribute("aria-expanded", String(isOpen));
     });
-});
+
+    menu.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", () => {
+            menu.classList.remove("is-open");
+            header.classList.remove("is-open");
+            menuToggle.setAttribute("aria-expanded", "false");
+        });
+    });
+}
 
 window.addEventListener("scroll", toggleHeader, { passive: true });
 
 if (startDateInput) {
     const today = new Date().toISOString().slice(0, 10);
     startDateInput.min = today;
-    startDateInput.value ||= today;
+
+    if (!startDateInput.value) {
+        startDateInput.value = today;
+    }
 }
 
 syncModelOptions();
