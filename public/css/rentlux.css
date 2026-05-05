@@ -289,10 +289,20 @@ h1 {
 }
 
 .intro-section > p,
+.intro-copy p,
 .chauffeur-section p,
 .contact-section p,
 .service-grid p {
     color: var(--muted);
+}
+
+.intro-copy {
+    display: grid;
+    gap: 16px;
+}
+
+.intro-copy p {
+    margin-bottom: 0;
 }
 
 .fleet-section,

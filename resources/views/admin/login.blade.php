@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Connexion admin - Prestige Drive</title>
+    <title>Connexion admin - CLASS’AFFAIRE</title>
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 </head>
 <body class="login-page">

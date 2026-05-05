@@ -3,16 +3,16 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Location de voitures de luxe avec ou sans chauffeur a Paris, Cannes et aeroport.">
-    <title>Prestige Drive - Location voiture de luxe</title>
+    <meta name="description" content="Class’Affaire, entreprise de location de voiture avec chauffeur depuis 2021.">
+    <title>CLASS’AFFAIRE - Location voiture avec chauffeur</title>
     <link rel="preconnect" href="https://images.unsplash.com">
     <link rel="stylesheet" href="{{ asset('css/rentlux.css') }}">
 </head>
 <body>
     <header class="site-header" data-header>
-        <a class="brand" href="#accueil" aria-label="Prestige Drive">
-            <span class="brand-mark">PD</span>
-            <span>Prestige Drive</span>
+        <a class="brand" href="#accueil" aria-label="CLASS’AFFAIRE">
+            <span class="brand-mark">CA</span>
+            <span>CLASS’AFFAIRE</span>
         </a>
 
         <button class="menu-toggle" type="button" aria-label="Ouvrir le menu" aria-expanded="false" data-menu-toggle>
@@ -39,8 +39,8 @@
             <div class="hero-overlay"></div>
 
             <div class="hero-content">
-                <p class="eyebrow">Location premium a Paris, Cannes et aeroport</p>
-                <h1>Voiture de luxe a Paris</h1>
+                <p class="eyebrow">Location premium avec chauffeur</p>
+                <h1>CLASS’AFFAIRE</h1>
                 <p class="hero-copy">Une selection de SUV, supercars et berlines avec reservation rapide, livraison sur demande et service chauffeur pour vos deplacements prives ou professionnels.</p>
 
                 @if (session('reservation_success'))
@@ -114,10 +114,14 @@
 
         <section class="intro-section">
             <div class="section-heading">
-                <p class="eyebrow">Experience sur mesure</p>
-                <h2>Un parc haut de gamme pret pour chaque occasion.</h2>
+                <p class="eyebrow">Quelques mots</p>
+                <h2>En quelques mots</h2>
             </div>
-            <p>Choisissez votre vehicule, indiquez votre duree, puis recevez une confirmation claire. La page reprend l'esprit sombre, selectif et catalogue de Rentline, avec une identite differente et du contenu original.</p>
+            <div class="intro-copy">
+                <p>Depuis sa fondation en 2021, notre Entreprise de location de voiture avec chauffeur cherche à promouvoir un savoir faire, un service à la clientèle et des tarifs les meilleurs qui soient.</p>
+                <p>Chez Class’Affaire, nous savons qu'offrir des locations d'une qualité irréprochable, même parmi les plus basiques, peut faire toute la différence dans le voyage de nos clients.</p>
+                <p>Alors, que vous cherchiez de l'aide pour organiser votre prochaine aventure, votre prochain évènement ou vous souhaitez tout simplement des conseils pour louer le bon véhicule, contactez nous dès maintenant.</p>
+            </div>
         </section>
 
         <section class="fleet-section" id="vehicules">
@@ -199,14 +203,14 @@
             </div>
             <div class="contact-panel">
                 <a href="tel:+33180114483">+33 1 80 11 44 83</a>
-                <a href="mailto:contact@prestigedrive.fr">contact@prestigedrive.fr</a>
+                <a href="mailto:contact@classaffaire.fr">contact@classaffaire.fr</a>
                 <span>174 Rue de la Belle Etoile, Roissy Charles de Gaulle</span>
             </div>
         </section>
     </main>
 
     <footer class="site-footer">
-        <span>Prestige Drive</span>
+        <span>CLASS’AFFAIRE</span>
         <span>Location de voitures de luxe avec ou sans chauffeur.</span>
     </footer>
 

@@ -3,12 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Administration') - Prestige Drive</title>
+    <title>@yield('title', 'Administration') - CLASS’AFFAIRE</title>
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 </head>
 <body>
     <aside class="admin-sidebar">
-        <a class="admin-brand" href="{{ route('admin.dashboard') }}">Prestige Drive</a>
+        <a class="admin-brand" href="{{ route('admin.dashboard') }}">CLASS’AFFAIRE</a>
         <nav>
             <a href="{{ route('admin.vehicles.index') }}">Vehicules</a>
             <a href="{{ route('admin.reservations.index') }}">Reservations</a>
