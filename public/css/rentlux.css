@@ -176,7 +176,7 @@ h1 {
 
 .booking-panel {
     display: grid;
-    grid-template-columns: 1.25fr 1.45fr .8fr .8fr auto;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     align-items: end;
     gap: 12px;
     padding: 14px;
@@ -225,6 +225,8 @@ h1 {
 }
 
 .primary-btn {
+    border: 0;
+    cursor: pointer;
     display: inline-flex;
     min-height: 48px;
     align-items: center;
@@ -234,6 +236,29 @@ h1 {
     color: var(--ink);
     font-weight: 800;
     text-transform: uppercase;
+}
+
+.success-alert {
+    max-width: 760px;
+    margin: 0 0 18px;
+    padding: 14px 16px;
+    background: rgba(214, 169, 95, .16);
+    border: 1px solid rgba(214, 169, 95, .48);
+    color: #fff;
+}
+
+.error-alert {
+    background: rgba(150, 44, 44, .24);
+    border-color: rgba(222, 92, 92, .6);
+}
+
+.empty-state {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 28px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    color: var(--muted);
 }
 
 .intro-section,

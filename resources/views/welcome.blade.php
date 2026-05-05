@@ -43,32 +43,71 @@
                 <h1>Voiture de luxe a Paris</h1>
                 <p class="hero-copy">Une selection de SUV, supercars et berlines avec reservation rapide, livraison sur demande et service chauffeur pour vos deplacements prives ou professionnels.</p>
 
-                <form class="booking-panel" id="bookingForm">
+                @if (session('reservation_success'))
+                    <div class="success-alert">{{ session('reservation_success') }}</div>
+                @endif
+
+                @if ($errors->any())
+                    <div class="success-alert error-alert">
+                        @foreach ($errors->all() as $error)
+                            <div>{{ $error }}</div>
+                        @endforeach
+                    </div>
+                @endif
+
+                <form class="booking-panel" id="bookingForm" method="POST" action="{{ route('reservations.store') }}">
+                    @csrf
                     <label>
                         Type de vehicule
                         <select id="categorySelect" name="category">
                             <option value="Tous">Tous les vehicules</option>
-                            <option value="SUV">SUV</option>
-                            <option value="Supercar">Supercar</option>
-                            <option value="Berline">Berline sportive</option>
-                            <option value="Chauffeur">Avec chauffeur</option>
+                            @foreach ($vehicles->pluck('category')->unique()->values() as $category)
+                                <option value="{{ $category }}">{{ $category }}</option>
+                            @endforeach
                         </select>
                     </label>
                     <label>
                         Modele
-                        <select id="modelSelect" name="model">
+                        <select id="modelSelect" name="vehicle_id" required>
                             <option value="">Selectionner un modele</option>
                         </select>
+                    </label>
+                    <label>
+                        Service
+                        <select name="service_type" required>
+                            <option value="Sans chauffeur">Sans chauffeur</option>
+                            <option value="Avec chauffeur">Avec chauffeur</option>
+                        </select>
+                    </label>
+                    <label>
+                        Date de depart
+                        <input id="startDateInput" type="date" name="start_date" required>
                     </label>
                     <label>
                         Nombre de jours
                         <input id="daysInput" type="number" name="days" min="1" value="3">
                     </label>
+                    <label>
+                        Lieu de depart
+                        <input type="text" name="pickup_location" placeholder="Paris, aeroport, hotel..." required>
+                    </label>
+                    <label>
+                        Nom complet
+                        <input type="text" name="customer_name" placeholder="Votre nom" required>
+                    </label>
+                    <label>
+                        Telephone
+                        <input type="tel" name="customer_phone" placeholder="+33..." required>
+                    </label>
+                    <label>
+                        Email
+                        <input type="email" name="customer_email" placeholder="email@exemple.fr">
+                    </label>
                     <div class="estimate">
                         <span>Prix estimatif</span>
                         <strong id="priceEstimate">900 EUR</strong>
                     </div>
-                    <a class="primary-btn" id="reserveLink" href="https://wa.me/33180114483" target="_blank" rel="noreferrer">Reserver</a>
+                    <button class="primary-btn" type="submit">Envoyer</button>
                 </form>
             </div>
         </section>
@@ -89,108 +128,31 @@
 
             <div class="filters" aria-label="Filtres vehicules">
                 <button class="filter active" type="button" data-filter="Tous">Tous</button>
-                <button class="filter" type="button" data-filter="SUV">SUV</button>
-                <button class="filter" type="button" data-filter="Supercar">Supercar</button>
-                <button class="filter" type="button" data-filter="Berline">Berline</button>
-                <button class="filter" type="button" data-filter="Chauffeur">Avec chauffeur</button>
+                @foreach ($vehicles->pluck('category')->unique()->values() as $category)
+                    <button class="filter" type="button" data-filter="{{ $category }}">{{ $category }}</button>
+                @endforeach
             </div>
 
             <div class="fleet-grid" id="fleetGrid">
-                <article class="vehicle-card" data-category="SUV" data-price="1000" data-name="Lamborghini Urus">
-                    <div class="vehicle-media">
-                        <img src="https://images.unsplash.com/photo-1617814076668-9f44d08b4727?auto=format&fit=crop&w=900&q=80" alt="Lamborghini Urus noir">
-                        <span>Disponible</span>
-                    </div>
-                    <div class="vehicle-body">
-                        <p>A partir de 1000 EUR/jour</p>
-                        <h3>Lamborghini Urus</h3>
-                        <ul>
-                            <li>641 ch</li>
-                            <li>Essence</li>
-                            <li>Auto</li>
-                        </ul>
-                    </div>
-                </article>
-
-                <article class="vehicle-card" data-category="Supercar" data-price="1750" data-name="Ferrari SF90 Stradale">
-                    <div class="vehicle-media">
-                        <img src="https://images.unsplash.com/photo-1592198084033-aade902d1aae?auto=format&fit=crop&w=900&q=80" alt="Ferrari rouge sportive">
-                        <span>Disponible</span>
-                    </div>
-                    <div class="vehicle-body">
-                        <p>A partir de 1750 EUR/jour</p>
-                        <h3>Ferrari SF90 Stradale</h3>
-                        <ul>
-                            <li>769 ch</li>
-                            <li>Hybride</li>
-                            <li>Auto</li>
-                        </ul>
-                    </div>
-                </article>
-
-                <article class="vehicle-card" data-category="Berline" data-price="450" data-name="Porsche Panamera Turbo">
-                    <div class="vehicle-media">
-                        <img src="https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&w=900&q=80" alt="Porsche sombre dans un garage">
-                        <span>Disponible</span>
-                    </div>
-                    <div class="vehicle-body">
-                        <p>A partir de 450 EUR/jour</p>
-                        <h3>Porsche Panamera Turbo</h3>
-                        <ul>
-                            <li>563 ch</li>
-                            <li>Essence</li>
-                            <li>Auto</li>
-                        </ul>
-                    </div>
-                </article>
-
-                <article class="vehicle-card" data-category="SUV" data-price="375" data-name="Mercedes GLC 63s AMG">
-                    <div class="vehicle-media">
-                        <img src="https://images.unsplash.com/photo-1617469767053-d3b523a0b982?auto=format&fit=crop&w=900&q=80" alt="Mercedes AMG stationnee">
-                        <span>Disponible</span>
-                    </div>
-                    <div class="vehicle-body">
-                        <p>A partir de 375 EUR/jour</p>
-                        <h3>Mercedes GLC 63s AMG</h3>
-                        <ul>
-                            <li>503 ch</li>
-                            <li>Essence</li>
-                            <li>Auto</li>
-                        </ul>
-                    </div>
-                </article>
-
-                <article class="vehicle-card" data-category="Chauffeur" data-price="1200" data-name="Rolls Royce Ghost">
-                    <div class="vehicle-media">
-                        <img src="https://images.unsplash.com/photo-1631295868223-63265b40d9e4?auto=format&fit=crop&w=900&q=80" alt="Rolls Royce de luxe">
-                        <span>Chauffeur</span>
-                    </div>
-                    <div class="vehicle-body">
-                        <p>Service chauffeur</p>
-                        <h3>Rolls Royce Ghost</h3>
-                        <ul>
-                            <li>563 ch</li>
-                            <li>Essence</li>
-                            <li>Auto</li>
-                        </ul>
-                    </div>
-                </article>
-
-                <article class="vehicle-card" data-category="Supercar" data-price="1500" data-name="Lamborghini Aventador S">
-                    <div class="vehicle-media">
-                        <img src="https://images.unsplash.com/photo-1621135802920-133df287f89c?auto=format&fit=crop&w=900&q=80" alt="Lamborghini sportive orange">
-                        <span>Disponible</span>
-                    </div>
-                    <div class="vehicle-body">
-                        <p>A partir de 1500 EUR/jour</p>
-                        <h3>Lamborghini Aventador S</h3>
-                        <ul>
-                            <li>730 ch</li>
-                            <li>Essence</li>
-                            <li>Auto</li>
-                        </ul>
-                    </div>
-                </article>
+                @forelse ($vehicles as $vehicle)
+                    <article class="vehicle-card" data-id="{{ $vehicle->id }}" data-category="{{ $vehicle->category }}" data-price="{{ $vehicle->daily_price }}" data-name="{{ $vehicle->name }}">
+                        <div class="vehicle-media">
+                            <img src="{{ $vehicle->display_image }}" alt="{{ $vehicle->name }}">
+                            <span>{{ $vehicle->with_chauffeur ? 'Chauffeur' : 'Disponible' }}</span>
+                        </div>
+                        <div class="vehicle-body">
+                            <p>A partir de {{ number_format($vehicle->daily_price, 0, ',', ' ') }} EUR/jour</p>
+                            <h3>{{ $vehicle->name }}</h3>
+                            <ul>
+                                <li>{{ $vehicle->horsepower ? $vehicle->horsepower.' ch' : 'Puissance sur demande' }}</li>
+                                <li>{{ $vehicle->fuel_type }}</li>
+                                <li>{{ $vehicle->transmission }}</li>
+                            </ul>
+                        </div>
+                    </article>
+                @empty
+                    <p class="empty-state">Aucun vehicule disponible pour le moment. Ajoutez vos vehicules dans l'administration.</p>
+                @endforelse
             </div>
         </section>
 

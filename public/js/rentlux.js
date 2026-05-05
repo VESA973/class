@@ -1,4 +1,5 @@
 const vehicles = Array.from(document.querySelectorAll(".vehicle-card")).map((card) => ({
+    id: card.dataset.id,
     name: card.dataset.name,
     category: card.dataset.category,
     price: Number(card.dataset.price),
@@ -7,9 +8,8 @@ const vehicles = Array.from(document.querySelectorAll(".vehicle-card")).map((car
 const categorySelect = document.querySelector("#categorySelect");
 const modelSelect = document.querySelector("#modelSelect");
 const daysInput = document.querySelector("#daysInput");
+const startDateInput = document.querySelector("#startDateInput");
 const priceEstimate = document.querySelector("#priceEstimate");
-const reserveLink = document.querySelector("#reserveLink");
-const bookingForm = document.querySelector("#bookingForm");
 const filterButtons = document.querySelectorAll("[data-filter]");
 const cards = document.querySelectorAll(".vehicle-card");
 const menuToggle = document.querySelector("[data-menu-toggle]");
@@ -31,21 +31,27 @@ function filteredVehicles() {
 
 function syncModelOptions() {
     const options = filteredVehicles();
-    modelSelect.innerHTML = options
-        .map((vehicle) => `<option value="${vehicle.name}">${vehicle.name}</option>`)
-        .join("");
+    modelSelect.innerHTML = "";
+
+    if (!options.length) {
+        modelSelect.add(new Option("Aucun modele disponible", ""));
+    }
+
+    options.forEach((vehicle) => {
+        modelSelect.add(new Option(vehicle.name, vehicle.id));
+    });
+
     updateEstimate();
 }
 
 function selectedVehicle() {
-    return vehicles.find((vehicle) => vehicle.name === modelSelect.value) || filteredVehicles()[0] || vehicles[0];
+    return vehicles.find((vehicle) => vehicle.id === modelSelect.value) || filteredVehicles()[0] || vehicles[0];
 }
 
 function updateEstimate() {
     const vehicle = selectedVehicle();
     const days = Math.max(Number(daysInput.value) || 1, 1);
-    priceEstimate.textContent = formatPrice(vehicle.price * days);
-    reserveLink.href = `https://wa.me/33180114483?text=${encodeURIComponent(`Bonjour, je souhaite reserver ${vehicle.name} pour ${days} jour(s).`)}`;
+    priceEstimate.textContent = vehicle ? formatPrice(vehicle.price * days) : "Sur demande";
 }
 
 function filterFleet(category) {
@@ -69,11 +75,6 @@ categorySelect.addEventListener("change", () => {
 
 modelSelect.addEventListener("change", updateEstimate);
 daysInput.addEventListener("input", updateEstimate);
-
-bookingForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    reserveLink.click();
-});
 
 filterButtons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -99,5 +100,12 @@ menu.querySelectorAll("a").forEach((link) => {
 });
 
 window.addEventListener("scroll", toggleHeader, { passive: true });
+
+if (startDateInput) {
+    const today = new Date().toISOString().slice(0, 10);
+    startDateInput.min = today;
+    startDateInput.value ||= today;
+}
+
 syncModelOptions();
 toggleHeader();
