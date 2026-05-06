@@ -11,7 +11,7 @@
         <div class="hero-content">
             <p class="eyebrow">Location premium avec chauffeur</p>
             <h1>CLASS&rsquo;AFFAIRE</h1>
-            <p class="hero-copy">Une selection de SUV, supercars et berlines avec reservation rapide, livraison sur demande et service chauffeur pour vos deplacements prives ou professionnels.</p>
+            <p class="hero-copy">Une sélection de SUV, supercars et berlines avec réservation rapide, livraison sur demande et service chauffeur pour vos déplacements privés ou professionnels.</p>
 
             @if (session('reservation_success'))
                 <div class="success-alert">{{ session('reservation_success') }}</div>
@@ -28,18 +28,18 @@
             <form class="booking-panel" id="bookingForm" method="POST" action="{{ route('reservations.store') }}">
                 @csrf
                 <label>
-                    Type de vehicule
+                    Type de véhicule
                     <select id="categorySelect" name="category">
-                        <option value="Tous">Tous les vehicules</option>
+                        <option value="Tous">Tous les véhicules</option>
                         @foreach ($vehicles->pluck('category')->unique()->values() as $category)
                             <option value="{{ $category }}">{{ $category }}</option>
                         @endforeach
                     </select>
                 </label>
                 <label>
-                    Modele
+                    Modèle
                     <select id="modelSelect" name="vehicle_id" required>
-                        <option value="">Selectionner un modele</option>
+                        <option value="">Sélectionner un modèle</option>
                     </select>
                 </label>
                 <label>
@@ -52,7 +52,7 @@
                     </select>
                 </label>
                 <label>
-                    Date de depart
+                    Date de départ
                     <input id="startDateInput" type="date" name="start_date" required>
                 </label>
                 <label>
@@ -60,15 +60,15 @@
                     <input id="daysInput" type="number" name="days" min="1" value="3">
                 </label>
                 <label>
-                    Lieu de depart
-                    <input type="text" name="pickup_location" placeholder="Paris, aeroport, hotel..." required>
+                    Lieu de départ
+                    <input type="text" name="pickup_location" placeholder="Paris, aéroport, hôtel..." required>
                 </label>
                 <label>
                     Nom complet
                     <input type="text" name="customer_name" placeholder="Votre nom" required>
                 </label>
                 <label>
-                    Telephone
+                    Téléphone
                     <input type="tel" name="customer_phone" placeholder="+33..." required>
                 </label>
                 <label>
@@ -90,9 +90,9 @@
             <h2>En quelques mots</h2>
         </div>
         <div class="intro-copy">
-            <p>Depuis sa fondation en 2021, notre Entreprise de location de voiture avec chauffeur cherche a promouvoir un savoir faire, un service a la clientele et des tarifs les meilleurs qui soient.</p>
-            <p>Chez Class&rsquo;Affaire, nous savons qu'offrir des locations d'une qualite irreprochable, meme parmi les plus basiques, peut faire toute la difference dans le voyage de nos clients.</p>
-            <p>Alors, que vous cherchiez de l'aide pour organiser votre prochaine aventure, votre prochain evenement ou vous souhaitez tout simplement des conseils pour louer le bon vehicule, contactez nous des maintenant.</p>
+            <p>Depuis sa fondation en 2021, notre entreprise de location de voiture avec chauffeur cherche à promouvoir un savoir-faire, un service à la clientèle et des tarifs les meilleurs qui soient.</p>
+            <p>Chez Class&rsquo;Affaire, nous savons qu'offrir des locations d'une qualité irréprochable, même parmi les plus basiques, peut faire toute la différence dans le voyage de nos clients.</p>
+            <p>Alors, que vous cherchiez de l'aide pour organiser votre prochaine aventure, votre prochain évènement ou vous souhaitez tout simplement des conseils pour louer le bon véhicule, contactez-nous dès maintenant.</p>
         </div>
     </section>
 
@@ -100,11 +100,11 @@
         <img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1500&q=80" alt="Voiture de prestige devant un batiment moderne">
         <div>
             <p class="eyebrow">Avec chauffeur</p>
-            <h2>Un service discret pour les transferts, evenements et voyages d'affaires.</h2>
-            <p>Accueil aeroport, mise a disposition horaire, itineraires multi-adresses et vehicules de representation. Le chauffeur confirme les details avant chaque trajet.</p>
+            <h2>Un service discret pour les transferts, évènements et voyages d'affaires.</h2>
+            <p>Accueil aéroport, mise à disposition horaire, itinéraires multi-adresses et véhicules de représentation. Le chauffeur confirme les détails avant chaque trajet.</p>
             <div class="stats">
-                <span><strong>24/7</strong> Disponibilite</span>
-                <span><strong>30 min</strong> Reponse moyenne</span>
+                <span><strong>24/7</strong> Disponibilité</span>
+                <span><strong>30 min</strong> Réponse moyenne</span>
                 <span><strong>Paris</strong> Cannes et Roissy</span>
             </div>
         </div>

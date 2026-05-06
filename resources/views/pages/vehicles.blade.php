@@ -1,16 +1,16 @@
 @extends('layouts.site')
 
-@section('title', 'Vehicules - CLASS&rsquo;AFFAIRE')
+@section('title', 'Véhicules - CLASS&rsquo;AFFAIRE')
 
 @section('content')
     <section class="page-hero">
-        <p class="eyebrow">Vehicules</p>
+        <p class="eyebrow">Véhicules</p>
         <h1>Catalogue disponible</h1>
-        <p>Retrouvez notre selection de vehicules disponibles avec ou sans chauffeur.</p>
+        <p>Retrouvez notre sélection de véhicules disponibles avec ou sans chauffeur.</p>
     </section>
 
     <section class="fleet-section page-section">
-        <div class="filters" aria-label="Filtres vehicules">
+        <div class="filters" aria-label="Filtres véhicules">
             <button class="filter active" type="button" data-filter="Tous">Tous</button>
             @foreach ($vehicles->pluck('category')->unique()->values() as $category)
                 <button class="filter" type="button" data-filter="{{ $category }}">{{ $category }}</button>
@@ -35,7 +35,7 @@
                     </div>
                 </article>
             @empty
-                <p class="empty-state">Aucun vehicule disponible pour le moment. Ajoutez vos vehicules dans l'administration.</p>
+                <p class="empty-state">Aucun véhicule disponible pour le moment. Ajoutez vos véhicules dans l'administration.</p>
             @endforelse
         </div>
     </section>

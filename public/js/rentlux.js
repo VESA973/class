@@ -43,7 +43,7 @@ function syncModelOptions() {
     modelSelect.innerHTML = "";
 
     if (!options.length) {
-        modelSelect.add(new Option("Aucun modele disponible", ""));
+        modelSelect.add(new Option("Aucun modèle disponible", ""));
     }
 
     options.forEach((vehicle) => {

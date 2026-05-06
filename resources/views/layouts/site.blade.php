@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="@yield('description', 'Class&rsquo;Affaire, entreprise de location de voiture avec chauffeur depuis 2021.')">
-    <title>@yield('title', 'CLASS&rsquo;AFFAIRE - Location voiture avec chauffeur')</title>
+    <title>@yield('title', 'CLASS&rsquo;AFFAIRE - Location de voiture avec chauffeur')</title>
     <link rel="preconnect" href="https://images.unsplash.com">
     <link rel="stylesheet" href="{{ asset('css/rentlux.css') }}">
 </head>
@@ -22,7 +22,7 @@
 
         <nav class="main-nav" data-menu>
             <a href="{{ route('home') }}" @class(['is-active' => request()->routeIs('home')])>Accueil</a>
-            <a href="{{ route('vehicles.page') }}" @class(['is-active' => request()->routeIs('vehicles.page')])>Vehicules</a>
+            <a href="{{ route('vehicles.page') }}" @class(['is-active' => request()->routeIs('vehicles.page')])>Véhicules</a>
             <a href="{{ route('prestations.page') }}" @class(['is-active' => request()->routeIs('prestations.page')])>Prestations</a>
             <a href="{{ route('contact.page') }}" @class(['is-active' => request()->routeIs('contact.page')])>Contact</a>
         </nav>

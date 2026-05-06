@@ -5,15 +5,15 @@
 @section('content')
     <section class="page-hero">
         <p class="eyebrow">Contact</p>
-        <h1>Votre demande de vehicule</h1>
-        <p>Indiquez le modele, les dates et le lieu de depart. Un conseiller vous recontacte avec la disponibilite et les conditions.</p>
+        <h1>Votre demande de véhicule</h1>
+        <p>Indiquez le modèle, les dates et le lieu de départ. Un conseiller vous recontacte avec la disponibilité et les conditions.</p>
     </section>
 
     <section class="contact-section page-section">
         <div>
-            <p class="eyebrow">Coordonnees</p>
+            <p class="eyebrow">Coordonnées</p>
             <h2>Contactez CLASS&rsquo;AFFAIRE</h2>
-            <p>Nous vous accompagnons pour vos transferts, evenements, voyages d'affaires et demandes sur mesure.</p>
+            <p>Nous vous accompagnons pour vos transferts, évènements, voyages d'affaires et demandes sur mesure.</p>
         </div>
         <div class="contact-panel">
             <a href="tel:+33180114483">+33 1 80 11 44 83</a>
