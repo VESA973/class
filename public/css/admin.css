@@ -278,7 +278,8 @@ textarea:focus {
 
 .logo-preview {
     max-width: 260px;
-    max-height: 140px;
+    max-height: none;
+    height: auto;
     object-fit: contain;
     padding: 16px;
     background: #0b0b0b;

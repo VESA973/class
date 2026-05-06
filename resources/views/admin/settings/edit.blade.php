@@ -17,7 +17,7 @@
         @if ($settings->logo_url)
             <div>
                 <p class="field-note">Logo actuel</p>
-                <img class="logo-preview" src="{{ $settings->logo_url }}" alt="Logo actuel">
+                <img class="logo-preview" src="{{ $settings->logo_url }}" alt="Logo actuel" style="width: {{ $settings->logo_width ?? 46 }}px;" data-logo-preview>
             </div>
         @endif
 
@@ -51,6 +51,12 @@
         if (logoSizeInput && logoSizeValue) {
             logoSizeInput.addEventListener('input', () => {
                 logoSizeValue.textContent = logoSizeInput.value;
+
+                const logoPreview = document.querySelector('[data-logo-preview]');
+
+                if (logoPreview) {
+                    logoPreview.style.width = `${logoSizeInput.value}px`;
+                }
             });
         }
     </script>
