@@ -13,6 +13,7 @@
             <a href="{{ route('admin.vehicles.index') }}">Vehicules</a>
             <a href="{{ route('admin.prestations.index') }}">Prestations</a>
             <a href="{{ route('admin.reservations.index') }}">Reservations</a>
+            <a href="{{ route('admin.settings.edit') }}">Logo du site</a>
             <a href="{{ route('home') }}">Voir le site</a>
             <form method="POST" action="{{ route('admin.logout') }}">
                 @csrf

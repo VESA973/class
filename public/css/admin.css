@@ -271,6 +271,27 @@ textarea:focus {
     object-fit: cover;
 }
 
+.logo-preview {
+    max-width: 260px;
+    max-height: 140px;
+    object-fit: contain;
+    padding: 16px;
+    background: #0b0b0b;
+    border: 1px solid var(--line);
+}
+
+.field-note {
+    margin: 0 0 10px;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.danger-zone {
+    margin-top: 18px;
+}
+
 .detail-grid {
     align-items: start;
 }

@@ -202,6 +202,12 @@ h3 {
     font-family: var(--font-title);
 }
 
+.brand-logo {
+    width: 46px;
+    height: 46px;
+    object-fit: contain;
+}
+
 .hero-copy {
     max-width: 610px;
     margin-bottom: 34px;
