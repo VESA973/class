@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('site_settings', function (Blueprint $table): void {
             $table->id();
             $table->string('logo_path')->nullable();
+            $table->unsignedSmallInteger('logo_width')->default(46);
             $table->timestamps();
         });
     }

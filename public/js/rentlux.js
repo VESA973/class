@@ -16,6 +16,8 @@ const menuToggle = document.querySelector("[data-menu-toggle]");
 const menu = document.querySelector("[data-menu]");
 const header = document.querySelector("[data-header]");
 const prestationCarousel = document.querySelector("[data-prestation-carousel]");
+const logoSizeInput = document.querySelector("[data-logo-size]");
+const logoSizeValue = document.querySelector("[data-logo-size-value]");
 
 function formatPrice(value) {
     return new Intl.NumberFormat("fr-FR", {
@@ -231,6 +233,12 @@ if (startDateInput) {
     if (!startDateInput.value) {
         startDateInput.value = today;
     }
+}
+
+if (logoSizeInput && logoSizeValue) {
+    logoSizeInput.addEventListener("input", () => {
+        logoSizeValue.textContent = logoSizeInput.value;
+    });
 }
 
 syncModelOptions();

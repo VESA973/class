@@ -26,6 +26,12 @@
             <input type="file" name="logo" accept="image/*">
         </label>
 
+        <label>
+            Taille du logo
+            <input type="range" name="logo_width" min="32" max="220" value="{{ old('logo_width', $settings->logo_width ?? 46) }}" data-logo-size>
+            <span class="field-note"><span data-logo-size-value>{{ old('logo_width', $settings->logo_width ?? 46) }}</span> px</span>
+        </label>
+
         <button class="btn" type="submit">Enregistrer le logo</button>
     </form>
 
@@ -37,4 +43,15 @@
             <button class="btn btn-secondary" type="submit">Supprimer le logo</button>
         </form>
     @endif
+
+    <script>
+        const logoSizeInput = document.querySelector('[data-logo-size]');
+        const logoSizeValue = document.querySelector('[data-logo-size-value]');
+
+        if (logoSizeInput && logoSizeValue) {
+            logoSizeInput.addEventListener('input', () => {
+                logoSizeValue.textContent = logoSizeInput.value;
+            });
+        }
+    </script>
 @endsection

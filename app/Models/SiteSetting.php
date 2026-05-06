@@ -9,7 +9,15 @@ class SiteSetting extends Model
 {
     protected $fillable = [
         'logo_path',
+        'logo_width',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'logo_width' => 'integer',
+        ];
+    }
 
     public static function current(): self
     {

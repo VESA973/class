@@ -31,6 +31,11 @@ textarea {
     font: inherit;
 }
 
+input[type="range"] {
+    padding: 0;
+    accent-color: var(--gold);
+}
+
 .admin-sidebar {
     position: fixed;
     inset: 0 auto 0 0;

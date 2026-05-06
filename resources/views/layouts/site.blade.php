@@ -12,7 +12,7 @@
     <header class="site-header" data-header>
         <a class="brand" href="{{ route('home') }}" aria-label="CLASS&rsquo;AFFAIRE">
             @if (optional($siteSettings)->logo_url)
-                <img class="brand-logo" src="{{ $siteSettings->logo_url }}" alt="Logo CLASS’AFFAIRE">
+                <img class="brand-logo" src="{{ $siteSettings->logo_url }}" alt="Logo CLASS’AFFAIRE" style="width: {{ $siteSettings->logo_width ?? 46 }}px;">
             @else
                 <span class="brand-mark">CA</span>
             @endif

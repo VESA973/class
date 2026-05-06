@@ -21,6 +21,7 @@ class SiteSettingController extends Controller
     {
         $validated = $request->validate([
             'logo' => ['nullable', 'image', 'max:4096'],
+            'logo_width' => ['required', 'integer', 'min:32', 'max:220'],
         ]);
 
         $settings = SiteSetting::current();
@@ -32,9 +33,10 @@ class SiteSettingController extends Controller
 
             $validated['logo_path'] = $request->file('logo')->store('site', 'public');
             unset($validated['logo']);
-
-            $settings->update($validated);
         }
+
+        unset($validated['logo']);
+        $settings->update($validated);
 
         return redirect()
             ->route('admin.settings.edit')

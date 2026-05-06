@@ -204,6 +204,7 @@ h3 {
 
 .brand-logo {
     width: 46px;
+    max-width: 220px;
     height: 46px;
     object-fit: contain;
 }
