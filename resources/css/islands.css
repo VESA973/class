@@ -1,0 +1,74 @@
+/*
+ * CSS des iles React inserees dans les pages Blade existantes.
+ *
+ * Pas de "preflight" Tailwind global : il remettrait a zero les marges et
+ * boutons de rentlux.css / admin.css. On applique a la place un reset limite
+ * aux iles ([data-island]) et aux composants shadcn rendus en portail
+ * (popover, select, sheet...), tous marques d'un attribut data-slot.
+ */
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+@import 'tw-animate-css';
+@import './theme.css';
+
+@source '../js/**/*.tsx';
+@source '../js/**/*.ts';
+
+@layer base {
+    :where([data-island], [data-slot], [data-sonner-toaster]),
+    :where([data-island], [data-slot], [data-sonner-toaster]) *,
+    :where([data-island], [data-slot], [data-sonner-toaster]) *::before,
+    :where([data-island], [data-slot], [data-sonner-toaster]) *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        border: 0 solid;
+        border-color: var(--ui-border);
+        outline-color: color-mix(in oklab, var(--ui-ring) 50%, transparent);
+    }
+
+    :where([data-island], [data-slot]) :where(button, input, select, textarea),
+    :where(button[data-slot], input[data-slot], textarea[data-slot]) {
+        font: inherit;
+        color: inherit;
+        letter-spacing: inherit;
+        background-color: transparent;
+        border-radius: 0;
+        appearance: none;
+    }
+
+    :where([data-island], [data-slot]) :where(button, [role='button']),
+    :where(button[data-slot]) {
+        cursor: pointer;
+    }
+
+    :where([data-island], [data-slot]) :where(button:disabled) {
+        cursor: default;
+    }
+
+    :where([data-island], [data-slot]) :where(ul, ol) {
+        list-style: none;
+    }
+
+    :where([data-island], [data-slot]) :where(img, svg) {
+        display: block;
+        vertical-align: middle;
+    }
+
+    :where([data-island], [data-slot]) :where(h1, h2, h3, h4) {
+        font-size: inherit;
+        font-weight: inherit;
+    }
+
+    :where([data-island], [data-slot]) :where(input::placeholder, textarea::placeholder) {
+        color: var(--ui-muted-foreground);
+        opacity: 1;
+    }
+
+    [data-island] {
+        color: var(--ui-foreground);
+        font-family: var(--ui-font);
+        line-height: 1.5;
+    }
+}

@@ -294,6 +294,15 @@ textarea:focus {
     text-transform: uppercase;
 }
 
+.hero-preview {
+    display: block;
+    width: 100%;
+    max-width: 720px;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border: 1px solid var(--line);
+}
+
 .danger-zone {
     margin-top: 18px;
 }
@@ -340,6 +349,30 @@ nav[role="navigation"] {
 .login-card form {
     display: grid;
     gap: 18px;
+}
+
+.login-card .remember {
+    display: flex;
+    align-items: center;
+    text-transform: none;
+}
+
+.login-card .remember input {
+    width: auto;
+}
+
+.admin-user {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    color: var(--gold);
+    font-size: 13px;
+}
+
+.form-hint {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
 }
 
 @media (max-width: 860px) {

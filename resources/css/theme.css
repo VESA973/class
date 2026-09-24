@@ -1,0 +1,80 @@
+/*
+ * Jetons de couleur shadcn/ui partages par app.css et islands.css.
+ * Mode sombre = palette du site public (bleu nuit Pantone Black 6 C + gris argent).
+ * Prefixe --ui- : rentlux.css et admin.css utilisent deja --muted, --line, --panel...
+ */
+@custom-variant dark (&:is(.dark *));
+
+:root {
+    --ui-radius: 0.75rem;
+    --ui-font: Inter, 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    --ui-background: #ffffff;
+    --ui-foreground: #101820;
+    --ui-card: #ffffff;
+    --ui-card-foreground: #101820;
+    --ui-popover: #ffffff;
+    --ui-popover-foreground: #101820;
+    --ui-primary: #101820;
+    --ui-primary-foreground: #ffffff;
+    --ui-secondary: #eef0f2;
+    --ui-secondary-foreground: #101820;
+    --ui-muted: #eef0f2;
+    --ui-muted-foreground: #5b6168;
+    --ui-accent: #e4e7ea;
+    --ui-accent-foreground: #101820;
+    --ui-destructive: #c0392b;
+    --ui-success: #1f8a5b;
+    --ui-border: #d9dcdf;
+    --ui-input: #cfd3d7;
+    --ui-ring: #101820;
+}
+
+.dark {
+    --ui-background: #101820;
+    --ui-foreground: #ffffff;
+    --ui-card: #151e27;
+    --ui-card-foreground: #ffffff;
+    --ui-popover: #151e27;
+    --ui-popover-foreground: #ffffff;
+    --ui-primary: #e3e4e5;
+    --ui-primary-foreground: #101820;
+    --ui-secondary: #1b2530;
+    --ui-secondary-foreground: #ffffff;
+    --ui-muted: #1b2530;
+    --ui-muted-foreground: #bbbcbd;
+    --ui-accent: #24303c;
+    --ui-accent-foreground: #ffffff;
+    --ui-destructive: #ff7a6b;
+    --ui-success: #4fd1a1;
+    --ui-border: rgba(187, 188, 189, 0.28);
+    --ui-input: rgba(187, 188, 189, 0.36);
+    --ui-ring: #bbbcbd;
+}
+
+@theme inline {
+    --font-sans: var(--ui-font);
+    --radius-sm: calc(var(--ui-radius) - 4px);
+    --radius-md: calc(var(--ui-radius) - 2px);
+    --radius-lg: var(--ui-radius);
+    --radius-xl: calc(var(--ui-radius) + 4px);
+    --color-background: var(--ui-background);
+    --color-foreground: var(--ui-foreground);
+    --color-card: var(--ui-card);
+    --color-card-foreground: var(--ui-card-foreground);
+    --color-popover: var(--ui-popover);
+    --color-popover-foreground: var(--ui-popover-foreground);
+    --color-primary: var(--ui-primary);
+    --color-primary-foreground: var(--ui-primary-foreground);
+    --color-secondary: var(--ui-secondary);
+    --color-secondary-foreground: var(--ui-secondary-foreground);
+    --color-muted: var(--ui-muted);
+    --color-muted-foreground: var(--ui-muted-foreground);
+    --color-accent: var(--ui-accent);
+    --color-accent-foreground: var(--ui-accent-foreground);
+    --color-destructive: var(--ui-destructive);
+    --color-success: var(--ui-success);
+    --color-border: var(--ui-border);
+    --color-input: var(--ui-input);
+    --color-ring: var(--ui-ring);
+}

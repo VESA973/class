@@ -5,14 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Prestation;
 use App\Models\Reservation;
 use App\Models\Vehicle;
+use App\Services\ReservationAvailability;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class ReservationController extends Controller
 {
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, ReservationAvailability $availability): RedirectResponse
     {
         $validated = $request->validate([
             'vehicle_id' => ['required', 'exists:vehicles,id'],
@@ -47,7 +49,32 @@ class ReservationController extends Controller
             ->toDateString();
         $validated['status'] = 'pending';
 
-        Reservation::create($validated);
+        // Jours entiers : du premier jour 00:00 au lendemain du dernier jour 00:00.
+        $start = Carbon::parse($validated['start_date'])->startOfDay();
+        $end = Carbon::parse($validated['end_date'])->startOfDay()->addDay();
+
+        // Verrou sur le vehicule pour que deux demandes simultanees ne reservent pas le meme creneau.
+        $conflict = DB::transaction(function () use ($vehicle, $start, $end, $availability, $validated) {
+            Vehicle::query()->whereKey($vehicle->id)->lockForUpdate()->first();
+
+            $conflict = $availability->conflicts($vehicle->id, $start, $end)->first();
+
+            if (! $conflict) {
+                Reservation::create($validated);
+            }
+
+            return $conflict;
+        });
+
+        if ($conflict) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'start_date' => 'Ce véhicule est déjà réservé '
+                        .ReservationAvailability::describe($conflict->start_at, $conflict->end_at)
+                        .', veuillez choisir d\'autres dates.',
+                ]);
+        }
 
         return redirect()
             ->route('home')

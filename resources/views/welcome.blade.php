@@ -3,8 +3,12 @@
 @section('content')
     <section class="hero">
         <picture>
-            <source media="(max-width: 720px)" srcset="https://images.unsplash.com/photo-1600712242805-5f78671b24da?auto=format&fit=crop&w=900&q=80">
-            <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?auto=format&fit=crop&w=2200&q=82" alt="Voiture sportive de luxe sur route sombre">
+            @if ($heroImageUrl)
+                <img src="{{ $heroImageUrl }}" alt="Voiture de prestige CLASS’AFFAIRE">
+            @else
+                <source media="(max-width: 720px)" srcset="https://images.unsplash.com/photo-1600712242805-5f78671b24da?auto=format&fit=crop&w=900&q=80">
+                <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?auto=format&fit=crop&w=2200&q=82" alt="Voiture sportive de luxe sur route sombre">
+            @endif
         </picture>
         <div class="hero-overlay"></div>
 

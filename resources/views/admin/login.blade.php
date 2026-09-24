@@ -22,8 +22,15 @@
         <form method="POST" action="{{ route('admin.login.store') }}">
             @csrf
             <label>
+                Email
+                <input type="email" name="email" value="{{ old('email') }}" autocomplete="username" required autofocus>
+            </label>
+            <label>
                 Mot de passe
-                <input type="password" name="password" required autofocus>
+                <input type="password" name="password" autocomplete="current-password" required>
+            </label>
+            <label class="remember">
+                <input type="checkbox" name="remember" value="1" @checked(old('remember'))> Rester connecte
             </label>
             <button class="btn" type="submit">Entrer</button>
         </form>

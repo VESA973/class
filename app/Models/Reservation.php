@@ -20,6 +20,8 @@ class Reservation extends Model
         'customer_phone',
         'start_date',
         'end_date',
+        'start_at',
+        'end_at',
         'days',
         'pickup_location',
         'service_type',
@@ -33,9 +35,29 @@ class Reservation extends Model
         return [
             'start_date' => 'date',
             'end_date' => 'date',
+            'start_at' => 'datetime',
+            'end_at' => 'datetime',
             'days' => 'integer',
             'estimated_total' => 'integer',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        // Les reservations creees sans heure (ancien formulaire) recoivent une
+        // periode en jours entiers, pour rester visibles dans les controles de
+        // disponibilite et le planning.
+        static::saving(function (Reservation $reservation): void {
+            if ($reservation->start_at || ! $reservation->start_date) {
+                return;
+            }
+
+            $lastDay = $reservation->end_date
+                ?? $reservation->start_date->copy()->addDays(max((int) $reservation->days, 1) - 1);
+
+            $reservation->start_at = $reservation->start_date->copy()->startOfDay();
+            $reservation->end_at = $lastDay->copy()->startOfDay()->addDay();
+        });
     }
 
     public function vehicle(): BelongsTo

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Prestation;
+use App\Models\SiteSetting;
 use App\Models\Vehicle;
 use Illuminate\View\View;
 
@@ -13,6 +14,7 @@ class HomeController extends Controller
         return view('welcome', [
             'prestations' => $this->activePrestations(),
             'vehicles' => $this->availableVehicles(),
+            'heroImageUrl' => SiteSetting::current()->hero_image_url,
         ]);
     }
 

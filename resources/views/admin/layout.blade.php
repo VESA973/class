@@ -12,9 +12,13 @@
         <nav>
             <a href="{{ route('admin.vehicles.index') }}">Vehicules</a>
             <a href="{{ route('admin.prestations.index') }}">Prestations</a>
+            <a href="{{ route('admin.planning.index') }}">Planning</a>
             <a href="{{ route('admin.reservations.index') }}">Reservations</a>
             <a href="{{ route('admin.settings.edit') }}">Logo du site</a>
+            <a href="{{ route('admin.hero.edit') }}">Photo d'accueil</a>
+            <a href="{{ route('admin.users.index') }}">Utilisateurs</a>
             <a href="{{ route('home') }}">Voir le site</a>
+            <span class="admin-user">{{ auth()->user()->name }}</span>
             <form method="POST" action="{{ route('admin.logout') }}">
                 @csrf
                 <button type="submit">Deconnexion</button>

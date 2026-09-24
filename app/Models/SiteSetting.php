@@ -10,6 +10,7 @@ class SiteSetting extends Model
     protected $fillable = [
         'logo_path',
         'logo_width',
+        'hero_image_path',
     ];
 
     protected function casts(): array
@@ -31,5 +32,14 @@ class SiteSetting extends Model
         }
 
         return Storage::url($this->logo_path);
+    }
+
+    public function getHeroImageUrlAttribute(): ?string
+    {
+        if (! $this->hero_image_path) {
+            return null;
+        }
+
+        return Storage::url($this->hero_image_path);
     }
 }

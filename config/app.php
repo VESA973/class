@@ -54,8 +54,6 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
-    'admin_password' => env('ADMIN_PASSWORD', 'admin123'),
-
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

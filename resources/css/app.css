@@ -1,11 +1,40 @@
 @import 'tailwindcss';
+@import 'tw-animate-css';
+@import './theme.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
+@source '../**/*.tsx';
+@source '../**/*.ts';
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+}
+
+/*
+ * Apparition au defilement (layout modern) : seulement si JS actif et mouvement autorise.
+ * Couche "components" : les utilitaires Tailwind (hover:, transition) gardent la priorite.
+ */
+@layer components {
+    @media (prefers-reduced-motion: no-preference) {
+        .js [data-reveal] {
+            opacity: 0;
+            transform: translateY(24px);
+            transition:
+                opacity 0.7s ease,
+                transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
+                translate 0.3s ease,
+                box-shadow 0.3s ease;
+            transition-delay: var(--reveal-delay, 0ms), var(--reveal-delay, 0ms), 0ms, 0ms;
+        }
+
+        .js [data-reveal].is-revealed {
+            opacity: 1;
+            transform: none;
+        }
+    }
 }
