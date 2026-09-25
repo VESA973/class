@@ -15,6 +15,7 @@ const islands: Record<string, IslandLoader> = {
     HeroSearch: () => import('@/islands/HeroSearch'),
     Planning: () => import('@/islands/Planning'),
     VehicleManager: () => import('@/islands/VehicleManager'),
+    LegalEditor: () => import('@/islands/LegalEditor'),
 };
 
 function readProps(element: HTMLElement): Record<string, unknown> {

@@ -11,6 +11,27 @@ Toutes les évolutions notables du site CLASS'AFFAIRE. Format inspiré de [Keep 
   l'API de réservation, les pages admin et les changements de statut répondent comme avant.
 - Tests : la fabrique `UserFactory` crée des comptes actifs (`is_active`), `ExampleTest` utilise une base de test.
 
+### Module 7 — Pages légales
+- 4 pages pré-remplies (tables `legal_pages`, `legal_page_versions`) : **Mentions légales** (LCEN art. 6-III),
+  **CGU**, **Politique de confidentialité** (RGPD art. 13, adaptée aux traitements réels du site : réservation,
+  devis, emails, services tiers IGN / Bunny Fonts / Unsplash / OpenStreetMap), **Conditions générales de location**
+  (dont l'exclusion du droit de rétractation, art. L221-28 12° C. conso., et la médiation de la consommation).
+  Modèles dans `database/legal/*.html`, à faire relire par un professionnel.
+- **Informations de l'entreprise** (Pages légales › Informations) : raison sociale, forme, capital, RCS, SIRET,
+  TVA, siège, directeur de publication, hébergeur, contact RGPD, médiateur, durées de conservation. Insérées
+  automatiquement via des variables (`{raison_sociale}`…) ; partagées avec les devis. Les informations manquantes
+  et les passages « [À compléter …] » sont surlignés sur le site et signalés dans l'admin.
+- **Éditeur de texte riche** (Tiptap) : titres, gras, italique, listes, citation, liens, annuler/rétablir,
+  insertion des variables. HTML nettoyé côté serveur (`symfony/html-sanitizer` : scripts, événements, liens
+  `javascript:` et images supprimés).
+- **Historique des versions** : une version par modification (auteur, date, note), aperçu et restauration.
+- Pages publiques `/mentions-legales`, `/cgu`, `/politique-de-confidentialite`, `/conditions-generales-de-location`
+  au design du site (sommaire automatique, date de dernière mise à jour, liens vers les autres pages) ;
+  **liens automatiques dans le pied de page** ; SEO, adresse modifiable (redirection 301), sitemap.
+- Formulaire de réservation : mention d'information RGPD avec lien vers la politique de confidentialité.
+- Dépendances : `symfony/html-sanitizer` ^8.1, `@tiptap/react`, `@tiptap/starter-kit`, `@tiptap/pm`, `@tiptap/extension-link`.
+- Tests : `LegalModuleTest` (6 tests). 65 tests au total.
+
 ### Module 6 — SEO
 - Balises sur toutes les pages publiques (`partials/seo-head.blade.php`) : `title`, `meta description`, `robots`
   (index / noindex), `canonical`, Open Graph et Twitter (image de partage). Valeurs par défaut automatiques :

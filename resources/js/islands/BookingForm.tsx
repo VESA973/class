@@ -55,7 +55,7 @@ type Props = {
     initialEnd?: string | null;
     initialPickup?: string | null;
     csrfToken: string;
-    urls: { store: string; bookedPeriods: string; available: string; home: string };
+    urls: { store: string; bookedPeriods: string; available: string; home: string; privacy?: string | null };
 };
 
 type Confirmation = {
@@ -569,6 +569,7 @@ export default function BookingForm({ vehicles, initialVehicleId, initialStart, 
                         end={validPeriod ? selectedEnd : null}
                         estimate={estimate}
                         submitting={form.formState.isSubmitting}
+                        privacyUrl={urls.privacy}
                     />
                 </form>
             </Form>
@@ -681,7 +682,9 @@ function BookingSummary({
     end,
     estimate,
     submitting,
+    privacyUrl,
 }: {
+    privacyUrl?: string | null;
     vehicle: BookingVehicle | undefined;
     start: Date | null;
     end: Date | null;
@@ -730,6 +733,14 @@ function BookingSummary({
                     {submitting ? 'Envoi en cours…' : 'Envoyer ma demande'}
                 </Button>
                 <p className="text-center text-xs text-muted-foreground">Aucun paiement en ligne. Confirmation par notre équipe.</p>
+                <p className="text-center text-xs leading-relaxed text-muted-foreground">
+                    Vos données servent uniquement à traiter votre demande.{' '}
+                    {privacyUrl && (
+                        <a href={privacyUrl} className="underline underline-offset-2 hover:text-foreground">
+                            Politique de confidentialité
+                        </a>
+                    )}
+                </p>
             </CardFooter>
         </Card>
     );

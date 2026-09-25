@@ -61,7 +61,21 @@
         </table>
     </div>
 
-    @foreach ($extraSections as $section)
-        @include($section['view'], $section['data'])
-    @endforeach
+    <div class="table-card">
+        <table>
+            <thead><tr><th>Page légale</th><th>Adresse</th><th>Balises</th><th>Indexation</th><th></th></tr></thead>
+            <tbody>
+                @foreach ($legalPages as $legalPage)
+                    @php($meta = $legalMetas[$legalPage->id] ?? null)
+                    <tr>
+                        <td><strong>{{ $legalPage->title }}</strong>@unless ($legalPage->is_published)<span>Masquée</span>@endunless</td>
+                        <td>/{{ $legalPage->slug }}</td>
+                        <td>{!! $badge($meta) !!}</td>
+                        <td>{!! $meta?->noindex ? '<span class="tag tag-danger">noindex</span>' : '<span class="tag">Indexée</span>' !!}</td>
+                        <td><a href="{{ route('admin.seo.legal.edit', $legalPage) }}">Modifier</a></td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 @endsection

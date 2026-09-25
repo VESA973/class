@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LegalPage;
 use App\Models\SeoMeta;
 use App\Models\Vehicle;
 use App\Services\Seo;
@@ -31,7 +32,8 @@ class SeoController extends Controller
             ]),
             'vehicles' => Vehicle::query()->orderBy('name')->get(['id', 'name', 'slug', 'is_available']),
             'vehicleMetas' => $vehicleMetas,
-            'extraSections' => app()->bound('seo.admin_sections') ? app('seo.admin_sections')() : [],
+            'legalPages' => LegalPage::query()->orderBy('position')->get(['id', 'title', 'slug', 'is_published']),
+            'legalMetas' => SeoMeta::query()->where('seoable_type', (new LegalPage)->getMorphClass())->get()->keyBy('seoable_id'),
         ]);
     }
 
@@ -78,6 +80,30 @@ class SeoController extends Controller
         return redirect()->route('admin.seo.vehicles.edit', $vehicle)->with('status', $slugChanged
             ? 'Balises enregistrées. Nouvelle adresse active : l’ancienne redirige automatiquement (301).'
             : 'Balises SEO enregistrées.');
+    }
+
+    public function editLegal(LegalPage $legalPage): View
+    {
+        return $this->form($legalPage->title, $legalPage->url, $this->seo->metaFor(null, $legalPage), $legalPage->title.' - CLASS’AFFAIRE',
+            $legalPage->title.' du site CLASS’AFFAIRE, location de voitures de prestige avec ou sans chauffeur.',
+            route('admin.seo.legal.update', $legalPage), ['value' => $legalPage->slug, 'prefix' => url('/').'/']);
+    }
+
+    public function updateLegal(Request $request, LegalPage $legalPage): RedirectResponse
+    {
+        $reserved = ['admin', 'vehicules', 'prestations', 'contact', 'reserver', 'api', 'storage', 'build', 'sitemap', 'robots', 'up'];
+        $data = $request->validate([
+            'slug' => ['required', 'string', 'max:120', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/', Rule::notIn($reserved), Rule::unique('legal_pages', 'slug')->ignore($legalPage)],
+        ], [
+            'slug.regex' => 'Adresse invalide : lettres minuscules, chiffres et tirets uniquement.',
+            'slug.not_in' => 'Cette adresse est réservée par le site.',
+            'slug.unique' => 'Cette adresse est déjà utilisée.',
+        ]);
+
+        $this->save($request, SeoMeta::query()->firstOrNew(['seoable_type' => $legalPage->getMorphClass(), 'seoable_id' => $legalPage->id]));
+        $legalPage->update(['slug' => $data['slug']]); // l'ancienne adresse redirige automatiquement (301)
+
+        return redirect()->route('admin.seo.legal.edit', $legalPage)->with('status', 'Balises SEO enregistrées.');
     }
 
     public function settings(): View

@@ -41,6 +41,9 @@ class BookingPageController extends Controller
                     'bookedPeriods' => route('api.vehicles.booked-periods', ['vehicle' => '__VEHICLE__']),
                     'available' => route('api.vehicles.available'),
                     'home' => route('home'),
+                    'privacy' => \App\Models\LegalPage::query()->where('key', 'privacy')->where('is_published', true)->value('slug') !== null
+                        ? url('/'.\App\Models\LegalPage::query()->where('key', 'privacy')->value('slug'))
+                        : null,
                 ],
             ],
         ]);

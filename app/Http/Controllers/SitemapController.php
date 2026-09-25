@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LegalPage;
 use App\Models\SeoMeta;
 use App\Models\Vehicle;
 use App\Services\Seo;
@@ -29,9 +30,13 @@ class SitemapController extends Controller
                 $urls[] = ['loc' => route('vehicles.show', $vehicle), 'lastmod' => $vehicle->updated_at?->toAtomString(), 'priority' => '0.7'];
             });
 
-        foreach (app()->bound('seo.extra_sitemap_urls') ? app('seo.extra_sitemap_urls')() : [] as $extra) {
-            $urls[] = $extra;
-        }
+        $noindexLegal = SeoMeta::query()->where('noindex', true)->where('seoable_type', (new LegalPage)->getMorphClass())->pluck('seoable_id')->all();
+
+        LegalPage::query()->where('is_published', true)->whereNotIn('id', $noindexLegal)->orderBy('position')
+            ->get(['id', 'slug', 'updated_at'])
+            ->each(function (LegalPage $page) use (&$urls) {
+                $urls[] = ['loc' => $page->url, 'lastmod' => $page->updated_at?->toAtomString(), 'priority' => '0.3'];
+            });
 
         return response()->view('seo.sitemap', ['urls' => $urls], 200, ['Content-Type' => 'application/xml; charset=UTF-8']);
     }

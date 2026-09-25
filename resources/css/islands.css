@@ -72,3 +72,19 @@
         line-height: 1.5;
     }
 }
+
+/* Contenu de l'editeur des pages legales (Tiptap). */
+@layer components {
+    .legal-editor-content h2 { margin: 1.4em 0 0.5em; font-size: 1.25rem; font-weight: 600; }
+    .legal-editor-content h3 { margin: 1.2em 0 0.4em; font-size: 1.05rem; font-weight: 600; }
+    .legal-editor-content h4 { margin: 1em 0 0.4em; font-weight: 600; }
+    .legal-editor-content p { margin: 0 0 0.8em; }
+    .legal-editor-content ul { margin: 0 0 0.9em 1.3em; list-style: disc; }
+    .legal-editor-content ol { margin: 0 0 0.9em 1.3em; list-style: decimal; }
+    .legal-editor-content li { margin: 0.2em 0; }
+    .legal-editor-content li p { margin: 0; }
+    .legal-editor-content blockquote { margin: 0 0 0.9em; padding-left: 1em; border-left: 3px solid var(--ui-border); color: var(--ui-muted-foreground); }
+    .legal-editor-content a { text-decoration: underline; text-underline-offset: 3px; }
+    .legal-editor-content hr { margin: 1.5em 0; border-top: 1px solid var(--ui-border); }
+    .legal-editor-content strong { font-weight: 600; }
+}

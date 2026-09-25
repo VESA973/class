@@ -105,7 +105,15 @@
             </div>
         </div>
         <div class="border-t border-border">
-            <p class="mx-auto max-w-7xl px-4 py-5 text-xs text-muted-foreground sm:px-6 lg:px-8">© {{ now()->year }} CLASS’AFFAIRE. Tous droits réservés.</p>
+            <div class="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-5 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+                <p>© {{ now()->year }} CLASS’AFFAIRE. Tous droits réservés.</p>
+                <nav aria-label="Informations légales" class="flex flex-wrap gap-x-5 gap-y-2">
+                    @foreach (\App\Models\LegalPage::footerLinks() as $legalLink)
+                        <a href="{{ $legalLink['url'] }}" class="hover:text-foreground">{{ $legalLink['title'] }}</a>
+                    @endforeach
+                    @stack('footer-links')
+                </nav>
+            </div>
         </div>
     </footer>
 

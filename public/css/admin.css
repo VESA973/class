@@ -1411,3 +1411,41 @@ code,
         grid-template-columns: 1fr;
     }
 }
+
+/* ------------------------------------------------------- Pages legales */
+.legal-grid {
+    grid-template-columns: minmax(0, 1.8fr) minmax(260px, 1fr);
+}
+
+.legal-preview {
+    display: block;
+    max-width: 820px;
+    color: var(--muted);
+    line-height: 1.75;
+}
+
+.legal-preview h2 {
+    margin: 1.6em 0 .5em;
+    color: var(--text);
+}
+
+.legal-preview ul {
+    padding-left: 1.3em;
+}
+
+.legal-preview strong {
+    color: var(--text);
+}
+
+.legal-todo {
+    padding: 0 .3em;
+    border-radius: 4px;
+    background: var(--warning-bg);
+    color: var(--warning);
+}
+
+@media (max-width: 1100px) {
+    .legal-grid {
+        grid-template-columns: 1fr;
+    }
+}

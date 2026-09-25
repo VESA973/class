@@ -11,6 +11,8 @@ use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\FleetController;
 use App\Http\Controllers\HeroImageController;
 use App\Http\Controllers\HomePreviewController;
+use App\Http\Controllers\LegalPageController;
+use App\Http\Controllers\PublicLegalPageController;
 use App\Http\Controllers\ParametersController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\QuoteSettingsController;
@@ -93,6 +95,15 @@ Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function
     Route::put('seo/pages/{page}', [SeoController::class, 'updatePage'])->name('seo.pages.update');
     Route::get('seo/vehicules/{vehicle}', [SeoController::class, 'editVehicle'])->name('seo.vehicles.edit');
     Route::put('seo/vehicules/{vehicle}', [SeoController::class, 'updateVehicle'])->name('seo.vehicles.update');
+    Route::get('seo/pages-legales/{legalPage}', [SeoController::class, 'editLegal'])->name('seo.legal.edit');
+    Route::put('seo/pages-legales/{legalPage}', [SeoController::class, 'updateLegal'])->name('seo.legal.update');
+    Route::get('pages-legales', [LegalPageController::class, 'index'])->name('legal.index');
+    Route::get('pages-legales/informations', [LegalPageController::class, 'info'])->name('legal.info');
+    Route::put('pages-legales/informations', [LegalPageController::class, 'updateInfo'])->name('legal.info.update');
+    Route::get('pages-legales/{legalPage}', [LegalPageController::class, 'edit'])->whereNumber('legalPage')->name('legal.edit');
+    Route::put('pages-legales/{legalPage}', [LegalPageController::class, 'update'])->whereNumber('legalPage')->name('legal.update');
+    Route::get('pages-legales/{legalPage}/versions/{version}', [LegalPageController::class, 'version'])->name('legal.version');
+    Route::post('pages-legales/{legalPage}/versions/{version}/restaurer', [LegalPageController::class, 'restore'])->name('legal.restore');
     Route::get('seo/redirections', [RedirectController::class, 'index'])->name('seo.redirects');
     Route::post('seo/redirections', [RedirectController::class, 'store'])->name('seo.redirects.store');
     Route::delete('seo/redirections/{redirect}', [RedirectController::class, 'destroy'])->name('seo.redirects.destroy');
@@ -113,3 +124,6 @@ Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function
     Route::get('planning/events', [PlanningController::class, 'events'])->name('planning.events');
     Route::patch('planning/reservations/{reservation}/status', [PlanningController::class, 'updateStatus'])->name('planning.status');
 });
+
+// Pages legales (/mentions-legales, /cgu...) : route declaree en dernier, adresse modifiable dans l'admin.
+Route::get('/{slug}', PublicLegalPageController::class)->where('slug', '[a-z0-9]+(?:-[a-z0-9]+)*')->name('legal.show');

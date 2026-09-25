@@ -22,7 +22,7 @@
         ['title' => 'Site', 'items' => [
             ['route' => 'admin.hero.edit', 'pattern' => 'admin.hero.*', 'label' => "Photo d'accueil", 'icon' => 'image'],
             ['route' => 'admin.seo.index', 'pattern' => 'admin.seo.*', 'label' => 'SEO', 'icon' => 'search'],
-            ['label' => 'Pages légales', 'icon' => 'scale', 'soon' => true],
+            ['route' => 'admin.legal.index', 'pattern' => 'admin.legal.*', 'label' => 'Pages légales', 'icon' => 'scale'],
             ['label' => 'Cookies', 'icon' => 'cookie', 'soon' => true],
         ]],
         ['title' => 'Paramètres', 'items' => [
