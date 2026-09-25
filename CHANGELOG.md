@@ -11,6 +11,24 @@ Toutes les évolutions notables du site CLASS'AFFAIRE. Format inspiré de [Keep 
   l'API de réservation, les pages admin et les changements de statut répondent comme avant.
 - Tests : la fabrique `UserFactory` crée des comptes actifs (`is_active`), `ExampleTest` utilise une base de test.
 
+### Module 2 — Gestion des véhicules en deux colonnes
+- `/admin/vehicles` devient un gestionnaire (React + shadcn/ui) : **liste à gauche** (miniature, nom, catégorie,
+  prix, statut « Visible / Masqué », état « Libre / En location », pictogramme 3D) avec **recherche**, **filtres**
+  (catégorie, statut, disponibilité) et **tri** (nom, prix, catégorie, dernières modifications) ;
+  **fiche à droite** éditable sur place (tous les champs existants, photo, modèle 3D, vidéo, description).
+- Un clic sur un véhicule met à jour la fiche sans recharger ; le véhicule ouvert est gardé dans l'URL (`?vehicle=`).
+- Protection des modifications non enregistrées (dialogue au changement de véhicule, alerte à la fermeture de l'onglet).
+- Création et suppression depuis le gestionnaire (confirmation, rappel qu'on peut plutôt masquer le véhicule).
+- Mobile : la liste s'affiche seule, la fiche s'ouvre en plein écran avec « Retour à la liste ».
+- Routes inchangées : `store`, `update` et `destroy` répondent aussi en JSON quand le gestionnaire les appelle ;
+  les formulaires classiques (`/admin/vehicles/create`, `/edit`) fonctionnent toujours et redirigent comme avant.
+- Nouvelle route `GET /admin/vehicles/data` (liste en une seule requête SQL, sans N+1).
+- `admin.css` : les règles sur les balises (`input`, `label`, `table`…) passent dans une couche CSS
+  `admin-base` de faible priorité, pour ne pas écraser les composants React. Aucun changement visuel ailleurs.
+- Composants shadcn ajoutés : `switch`, `textarea`.
+- Tests : `AdminVehicleManagerTest` (6 tests : liste JSON sans N+1, création/modification/suppression JSON,
+  erreurs par champ, envoi photo + modèle 3D, formulaires classiques, page). 26 tests au total.
+
 ### Module 1 — Refonte visuelle du back-office
 - `public/css/admin.css` réécrit autour de **design tokens** (variables CSS en tête de fichier) : même identité
   que le site public (fond zinc sombre, accent blanc argenté, police Inter, coins arrondis). Tous les noms de

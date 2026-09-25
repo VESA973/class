@@ -48,6 +48,7 @@ Route::post('/admin/logout', [AuthController::class, 'destroy'])->name('admin.lo
 
 Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function (): void {
     Route::get('/', DashboardController::class)->name('dashboard');
+    Route::get('vehicles/data', [VehicleController::class, 'data'])->name('vehicles.data');
     Route::resource('vehicles', VehicleController::class)->except(['show']);
     Route::resource('prestations', PrestationController::class)->except(['show']);
     Route::get('settings', [SiteSettingController::class, 'edit'])->name('settings.edit');
