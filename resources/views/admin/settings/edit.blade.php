@@ -30,6 +30,7 @@
             Taille du logo
             <input type="range" name="logo_width" min="32" max="220" value="{{ old('logo_width', $settings->logo_width ?? 46) }}" data-logo-size>
             <span class="field-note"><span data-logo-size-value>{{ old('logo_width', $settings->logo_width ?? 46) }}</span> px</span>
+            <span class="field-note">Le logo s’affiche seul dans le menu du haut (jusqu’à 220 px de large et 64 px de haut) : 120 à 180 px conviennent en général.</span>
         </label>
 
         <button class="btn" type="submit">Enregistrer le logo</button>

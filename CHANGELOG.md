@@ -16,6 +16,8 @@ Toutes les évolutions notables du site CLASS'AFFAIRE. Format inspiré de [Keep 
 - **Fuseau horaire de Guyane** (`America/Cayenne`, UTC−3, sans heure d'été) au lieu de Paris : disponibilités et
   réservations (« maintenant »), dates des devis et numérotation annuelle, dates affichées dans l'admin, date de retour
   de maintenance. Réglable par `APP_LOCAL_TIMEZONE` dans `.env` ; les dates techniques restent stockées en UTC.
+- **Menu du haut** : le logo s'affiche seul (le nom « CLASS’AFFAIRE » n'apparaît plus que s'il n'y a pas de logo),
+  zone agrandie (menu 80 px, logo jusqu'à 220 × 64 px, limité à 55 % de l'écran sur mobile).
 - Numéro en dur retiré de la page de réservation (formulaire React et `noscript`).
 - Tests : `ContactSettingsTest` (8 tests) — 84 tests au total.
 

@@ -28,14 +28,16 @@
     <a href="#contenu" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground">Aller au contenu</a>
 
     <header class="fixed inset-x-0 top-0 z-50 transition-colors duration-300 data-[scrolled=true]:border-b data-[scrolled=true]:border-border data-[scrolled=true]:bg-background/85 data-[scrolled=true]:backdrop-blur-lg" data-site-header>
-        <div class="mx-auto flex h-18 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-            <a href="{{ route('home') }}" class="flex items-center gap-3 font-semibold tracking-wide text-white data-[scrolled=true]:text-foreground" aria-label="CLASS’AFFAIRE, accueil" data-header-text>
+        <div class="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+            <a href="{{ route('home') }}" class="flex min-w-0 shrink items-center gap-3 font-semibold tracking-wide text-white data-[scrolled=true]:text-foreground" aria-label="CLASS’AFFAIRE, accueil" data-header-text>
                 @if ($siteSettings?->logo_url)
-                    <img src="{{ $siteSettings->logo_url }}" alt="" class="h-auto max-h-12 w-auto" style="width: {{ min($siteSettings->logo_width ?? 46, 120) }}px">
+                    {{-- Logo seul, sans le nom a cote. Largeur reglable dans Admin > Logo du site. --}}
+                    <img src="{{ $siteSettings->logo_url }}" alt="" class="h-auto max-h-16 w-auto max-w-[55vw] object-contain" style="width: {{ min($siteSettings->logo_width ?? 46, 220) }}px">
                 @else
+                    {{-- Aucun logo envoye : le nom du site sert de logo. --}}
                     <span class="grid size-10 place-items-center rounded-lg border border-current text-sm font-bold">CA</span>
+                    <span class="text-sm uppercase sm:text-base">CLASS’AFFAIRE</span>
                 @endif
-                <span class="text-sm uppercase sm:text-base">CLASS’AFFAIRE</span>
             </a>
 
             <nav class="hidden items-center gap-1 lg:flex" aria-label="Navigation principale">
