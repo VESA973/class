@@ -111,7 +111,7 @@
                     @foreach (\App\Models\LegalPage::footerLinks() as $legalLink)
                         <a href="{{ $legalLink['url'] }}" class="hover:text-foreground">{{ $legalLink['title'] }}</a>
                     @endforeach
-                    @stack('footer-links')
+                    <a href="#" class="hover:text-foreground" data-cookie-manage>Gérer mes cookies</a>
                 </nav>
             </div>
         </div>
@@ -156,6 +156,7 @@
             reveal.forEach(function (el) { observer.observe(el); });
         })();
     </script>
+    @include('partials.cookie-banner')
     @stack('scripts')
 </body>
 </html>

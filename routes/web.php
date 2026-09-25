@@ -4,6 +4,8 @@ use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\VehicleAvailabilityController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingPageController;
+use App\Http\Controllers\CookieAdminController;
+use App\Http\Controllers\CookieConsentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmailLogController;
 use App\Http\Controllers\EmailSettingsController;
@@ -44,6 +46,7 @@ Route::permanentRedirect('/nouvelle-accueil', '/');
 Route::get('/site.webmanifest', WebManifestController::class)->name('webmanifest');
 Route::get('/sitemap.xml', [SitemapController::class, 'sitemap'])->name('sitemap');
 Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
+Route::post('/cookies/consentement', [CookieConsentController::class, 'store'])->middleware('throttle:20,1')->name('cookies.consent');
 
 Route::prefix('api')->name('api.')->group(function (): void {
     Route::get('vehicles/available', [VehicleAvailabilityController::class, 'available'])
@@ -104,6 +107,10 @@ Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function
     Route::put('pages-legales/{legalPage}', [LegalPageController::class, 'update'])->whereNumber('legalPage')->name('legal.update');
     Route::get('pages-legales/{legalPage}/versions/{version}', [LegalPageController::class, 'version'])->name('legal.version');
     Route::post('pages-legales/{legalPage}/versions/{version}/restaurer', [LegalPageController::class, 'restore'])->name('legal.restore');
+    Route::get('cookies', [CookieAdminController::class, 'edit'])->name('cookies.edit');
+    Route::put('cookies', [CookieAdminController::class, 'update'])->name('cookies.update');
+    Route::post('cookies/redemander', [CookieAdminController::class, 'renew'])->name('cookies.renew');
+    Route::get('cookies/registre', [CookieAdminController::class, 'registry'])->name('cookies.registry');
     Route::get('seo/redirections', [RedirectController::class, 'index'])->name('seo.redirects');
     Route::post('seo/redirections', [RedirectController::class, 'store'])->name('seo.redirects.store');
     Route::delete('seo/redirections/{redirect}', [RedirectController::class, 'destroy'])->name('seo.redirects.destroy');

@@ -3,6 +3,7 @@
 use App\Models\User;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\Facades\Validator;
 
 Artisan::command('inspire', function () {
@@ -32,3 +33,7 @@ Artisan::command('admin:create-user', function () {
 
     $this->info("Utilisateur {$email} cree.");
 })->purpose('Creer un utilisateur pour acceder a l\'administration');
+
+// Suppression automatique des preuves de consentement cookies de plus de 13 mois.
+// Necessite la tache planifiee du serveur : * * * * * php artisan schedule:run
+Schedule::command('model:prune', ['--model' => [\App\Models\CookieConsent::class]])->daily();

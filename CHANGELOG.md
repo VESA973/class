@@ -11,6 +11,24 @@ Toutes les évolutions notables du site CLASS'AFFAIRE. Format inspiré de [Keep 
   l'API de réservation, les pages admin et les changements de statut répondent comme avant.
 - Tests : la fabrique `UserFactory` crée des comptes actifs (`is_active`), `ExampleTest` utilise une base de test.
 
+### Module 8 — Cookies (CNIL)
+- **Bandeau** sur toutes les pages publiques (`partials/cookie-banner.blade.php`, JavaScript léger sans dépendance) :
+  « Tout accepter » et « Tout refuser » **strictement identiques**, « Personnaliser » par catégorie (nécessaires,
+  mesure d'audience, marketing), fenêtre accessible au clavier (focus piégé, Échap).
+- **Aucun script non essentiel avant consentement** : les codes collés dans l'admin sont placés dans des `<template>`
+  inertes et activés seulement pour les catégories acceptées ; au retrait du consentement, la page est rechargée et
+  les cookies listés (ex. `_ga`) sont supprimés.
+- Choix conservé dans le cookie `cc_consent` **6 mois maximum**, puis redemandé ; redemandé aussi quand la
+  politique change de version (bouton « Redemander le consentement à tous »).
+- Lien permanent **« Gérer mes cookies »** dans le pied de page.
+- **Registre des consentements** (table `cookie_consents`) : identifiant aléatoire, choix par catégorie, version,
+  date — sans adresse IP ni information sur l'appareil ; statistiques sur 30 jours ; suppression automatique après
+  13 mois (`model:prune`, planifié chaque jour).
+- **Admin › Cookies** : activation, textes, couleurs, libellés et descriptions des catégories, scripts, cookies à
+  supprimer en cas de refus.
+- Page Contact : la carte OpenStreetMap n'est chargée qu'au clic (service tiers).
+- Tests : `CookieModuleTest` (5 tests). 70 tests au total.
+
 ### Module 7 — Pages légales
 - 4 pages pré-remplies (tables `legal_pages`, `legal_page_versions`) : **Mentions légales** (LCEN art. 6-III),
   **CGU**, **Politique de confidentialité** (RGPD art. 13, adaptée aux traitements réels du site : réservation,

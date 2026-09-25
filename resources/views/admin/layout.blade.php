@@ -23,7 +23,7 @@
             ['route' => 'admin.hero.edit', 'pattern' => 'admin.hero.*', 'label' => "Photo d'accueil", 'icon' => 'image'],
             ['route' => 'admin.seo.index', 'pattern' => 'admin.seo.*', 'label' => 'SEO', 'icon' => 'search'],
             ['route' => 'admin.legal.index', 'pattern' => 'admin.legal.*', 'label' => 'Pages légales', 'icon' => 'scale'],
-            ['label' => 'Cookies', 'icon' => 'cookie', 'soon' => true],
+            ['route' => 'admin.cookies.edit', 'pattern' => 'admin.cookies.*', 'label' => 'Cookies', 'icon' => 'cookie'],
         ]],
         ['title' => 'Paramètres', 'items' => [
             ['route' => 'admin.settings.edit', 'pattern' => 'admin.settings.*', 'label' => 'Logo du site', 'icon' => 'settings'],

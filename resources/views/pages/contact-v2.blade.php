@@ -42,16 +42,34 @@
             </div>
 
             <div class="relative min-h-80 overflow-hidden rounded-2xl border border-white/10 bg-card" data-reveal>
-                {{-- Carte OpenStreetMap (sans cle), assombrie pour le theme --}}
-                <iframe
-                    title="Plan d’accès : {{ $contact['address'] }}"
-                    src="https://www.openstreetmap.org/export/embed.html?bbox=2.4990%2C48.9800%2C2.5210%2C48.9905&amp;layer=mapnik&amp;marker=48.985214%2C2.510013"
-                    loading="lazy"
-                    referrerpolicy="no-referrer"
-                    class="absolute inset-0 size-full [filter:invert(0.92)_hue-rotate(180deg)_saturate(0.6)_brightness(0.95)]"
-                ></iframe>
-                <a href="https://www.openstreetmap.org/?mlat=48.985214&amp;mlon=2.510013#map=16/48.98521/2.51001" target="_blank" rel="noopener" class="absolute bottom-3 right-3 rounded-full bg-black/70 px-3 py-1.5 text-xs text-white backdrop-blur hover:bg-black/90">Agrandir le plan</a>
+                {{-- Carte OpenStreetMap chargee seulement a la demande (service tiers : adresse IP transmise a OpenStreetMap) --}}
+                <div class="absolute inset-0 grid place-items-center p-6 text-center" data-map-placeholder>
+                    <div>
+                        <x-icon name="map-pin" class="mx-auto size-8 text-muted-foreground" />
+                        <p class="mt-3 font-medium">{{ $contact['address'] }}</p>
+                        <button type="button" class="mt-4 inline-flex h-11 items-center gap-2 rounded-md border border-white/15 px-5 text-sm font-semibold transition hover:bg-white/5" data-map-load>Afficher la carte</button>
+                        <p class="mx-auto mt-3 max-w-xs text-xs text-muted-foreground">La carte est fournie par OpenStreetMap : l’afficher transmet votre adresse IP à ce service.</p>
+                    </div>
+                </div>
+                <template data-map-template>
+                    <iframe
+                        title="Plan d’accès : {{ $contact['address'] }}"
+                        src="https://www.openstreetmap.org/export/embed.html?bbox=2.4990%2C48.9800%2C2.5210%2C48.9905&amp;layer=mapnik&amp;marker=48.985214%2C2.510013"
+                        referrerpolicy="no-referrer"
+                        class="absolute inset-0 size-full [filter:invert(0.92)_hue-rotate(180deg)_saturate(0.6)_brightness(0.95)]"
+                    ></iframe>
+                </template>
+                <a href="https://www.openstreetmap.org/?mlat=48.985214&amp;mlon=2.510013#map=16/48.98521/2.51001" target="_blank" rel="noopener" class="absolute bottom-3 right-3 z-10 rounded-full bg-black/70 px-3 py-1.5 text-xs text-white backdrop-blur hover:bg-black/90">Ouvrir dans OpenStreetMap</a>
             </div>
         </div>
     </section>
 @endsection
+
+@push('scripts')
+    <script>
+        document.querySelector('[data-map-load]').addEventListener('click', function () {
+            var placeholder = document.querySelector('[data-map-placeholder]');
+            placeholder.replaceWith(document.querySelector('[data-map-template]').content.cloneNode(true));
+        });
+    </script>
+@endpush

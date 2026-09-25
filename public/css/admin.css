@@ -1449,3 +1449,24 @@ code,
         grid-template-columns: 1fr;
     }
 }
+
+/* -------------------------------------------------------------- Cookies */
+.category-box {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+}
+
+.category-box legend {
+    padding: 0 6px;
+    font-weight: 600;
+}
+
+.color-grid input[type="color"] {
+    height: 44px;
+    padding: 4px;
+    cursor: pointer;
+}
