@@ -11,6 +11,24 @@ Toutes les évolutions notables du site CLASS'AFFAIRE. Format inspiré de [Keep 
   l'API de réservation, les pages admin et les changements de statut répondent comme avant.
 - Tests : la fabrique `UserFactory` crée des comptes actifs (`is_active`), `ExampleTest` utilise une base de test.
 
+### Module 4 — Emails
+- **Configuration** (Admin › Emails) : choix entre les réglages du `.env` (par défaut, rien ne change) et un
+  **serveur SMTP personnalisé** (hôte, port, chiffrement STARTTLS / SSL / aucun, identifiant, mot de passe) ;
+  adresse et nom d'expédition ; adresse qui reçoit les nouvelles demandes ; option « Envoyer via la file
+  d'attente ». Le mot de passe est **chiffré** (`APP_KEY`) et jamais réaffiché. Bouton **« Envoyer un email de test »**.
+- **Modèles éditables** (table `email_templates`) : accusé de réception de demande (client), notification admin
+  de nouvelle demande, envoi de devis (prêt pour le module Devis). Objet + contenu en Markdown simple, variables
+  cliquables (`{nom_client}`, `{vehicule}`, `{numero_devis}`…), **aperçu en direct**, activation/désactivation.
+  Les valeurs des variables sont échappées (aucune injection HTML possible).
+- **Mise en page HTML sombre** aux couleurs du site, styles inlinés pour Gmail/Outlook, version texte incluse.
+- **Historique** (table `email_logs`) : date, destinataire, objet, type, statut (envoyé / échec / en file
+  d'attente), message d'erreur, lien vers la réservation ; recherche et filtre par statut.
+- Service unique `App\Services\EmailService` ; les emails de réservation (`ReservationMailer`) utilisent
+  désormais les modèles. Un échec d'envoi est enregistré dans l'historique et ne bloque jamais la réservation.
+- File d'attente optionnelle : job `SendLoggedEmail` (3 tentatives).
+- Anciennes classes `NewReservationAdminMail` / `ReservationReceivedMail` conservées (non supprimées), plus utilisées.
+- Tests : `EmailModuleTest` (8 tests). 43 tests au total.
+
 ### Module 3 — Paramètres : favicon et mode maintenance
 - **Paramètres globaux** : nouvelle table `settings` (clé → valeur JSON) et service `App\Services\Settings`,
   lu une seule fois puis gardé en cache (vidé automatiquement à chaque modification). Servira aussi au SEO,

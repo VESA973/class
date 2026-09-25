@@ -17,7 +17,7 @@
             ['label' => 'Devis', 'icon' => 'file-text', 'soon' => true],
         ]],
         ['title' => 'Communication', 'items' => [
-            ['label' => 'Emails', 'icon' => 'mail', 'soon' => true],
+            ['route' => 'admin.emails.settings', 'pattern' => 'admin.emails.*', 'label' => 'Emails', 'icon' => 'mail'],
         ]],
         ['title' => 'Site', 'items' => [
             ['route' => 'admin.hero.edit', 'pattern' => 'admin.hero.*', 'label' => "Photo d'accueil", 'icon' => 'image'],

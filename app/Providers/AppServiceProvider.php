@@ -27,6 +27,9 @@ class AppServiceProvider extends ServiceProvider
         // Seules les listes de l'admin sont paginees.
         Paginator::defaultView('admin.partials.pagination');
 
+        // Serveur d'envoi des emails regle depuis l'admin (sinon : fichier .env).
+        $this->app->make(\App\Services\MailSettings::class)->apply();
+
         View::composer(['layouts.site', 'layouts.modern'], function ($view): void {
             $settings = null;
 
