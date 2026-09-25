@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\VehicleAvailabilityController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingPageController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FleetController;
 use App\Http\Controllers\HeroImageController;
 use App\Http\Controllers\HomePreviewController;
@@ -46,7 +47,7 @@ Route::post('/admin/login', [AuthController::class, 'store'])->name('admin.login
 Route::post('/admin/logout', [AuthController::class, 'destroy'])->name('admin.logout');
 
 Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function (): void {
-    Route::redirect('/', '/admin/vehicles')->name('dashboard');
+    Route::get('/', DashboardController::class)->name('dashboard');
     Route::resource('vehicles', VehicleController::class)->except(['show']);
     Route::resource('prestations', PrestationController::class)->except(['show']);
     Route::get('settings', [SiteSettingController::class, 'edit'])->name('settings.edit');

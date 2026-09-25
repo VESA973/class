@@ -12,6 +12,14 @@ class Reservation extends Model
 
     public const STATUSES = ['pending', 'confirmed', 'cancelled', 'completed'];
 
+    /** Libelles affiches dans l'admin. */
+    public const STATUS_LABELS = [
+        'pending' => 'En attente',
+        'confirmed' => 'Confirmée',
+        'cancelled' => 'Annulée',
+        'completed' => 'Terminée',
+    ];
+
     protected $fillable = [
         'vehicle_id',
         'prestation_id',
@@ -61,6 +69,11 @@ class Reservation extends Model
             $reservation->start_at = $reservation->start_date->copy()->startOfDay();
             $reservation->end_at = $lastDay->copy()->startOfDay()->addDay();
         });
+    }
+
+    public function getStatusLabelAttribute(): string
+    {
+        return self::STATUS_LABELS[$this->status] ?? ucfirst((string) $this->status);
     }
 
     public function vehicle(): BelongsTo

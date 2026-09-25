@@ -10,6 +10,7 @@ const ICONS = [
     'arrow-right', 'calendar-check', 'calendar-days', 'car-front', 'check', 'circle-check', 'clock', 'fuel', 'gauge',
     'headset', 'mail', 'map-pin', 'menu', 'moon', 'phone', 'quote', 'search', 'send', 'settings-2', 'shield-check',
     'sparkles', 'star', 'sun', 'truck', 'user-round', 'x', 'users', 'rotate-3d', 'play', 'image', 'arrow-left', 'box',
+    'layout-dashboard', 'clipboard-list', 'scale', 'cookie', 'settings', 'external-link', 'log-out', 'wrench', 'file-text', 'hourglass', 'calendar-clock', 'bell',
 ];
 
 const escape = (value) => String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;');

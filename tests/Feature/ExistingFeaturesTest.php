@@ -94,6 +94,23 @@ class ExistingFeaturesTest extends TestCase
         $this->assertSame('cancelled', $reservation->fresh()->status);
     }
 
+    public function test_dashboard_shows_counters_and_recent_requests(): void
+    {
+        $this->actingAs(User::factory()->create(['name' => 'Admin']));
+        Reservation::create([
+            'vehicle_id' => $this->vehicle->id, 'customer_name' => 'Client Tableau', 'customer_phone' => '0600000000',
+            'start_date' => '2030-01-10', 'end_date' => '2030-01-10', 'days' => 1, 'pickup_location' => 'Paris',
+            'estimated_total' => 1000, 'status' => 'pending',
+        ]);
+
+        $this->get('/admin')
+            ->assertOk()
+            ->assertSee('Bonjour Admin')
+            ->assertSee('Demandes en attente')
+            ->assertSee('Client Tableau')
+            ->assertSee('En attente');
+    }
+
     /** @return list<string> */
     private function adminPages(): array
     {

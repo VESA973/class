@@ -6,13 +6,13 @@
     <div class="page-head">
         <div>
             <p class="eyebrow">Demandes clients</p>
-            <h1>Reservations</h1>
+            <h1>Réservations</h1>
         </div>
         <form class="inline-filter" method="GET">
             <select name="status" onchange="this.form.submit()">
                 <option value="">Tous les statuts</option>
                 @foreach ($statuses as $status)
-                    <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
+                    <option value="{{ $status }}" @selected(request('status') === $status)>{{ \App\Models\Reservation::STATUS_LABELS[$status] ?? $status }}</option>
                 @endforeach
             </select>
         </form>
@@ -23,7 +23,7 @@
             <thead>
                 <tr>
                     <th>Client</th>
-                    <th>Vehicule</th>
+                    <th>Véhicule</th>
                     <th>Prestation</th>
                     <th>Dates</th>
                     <th>Total</th>
@@ -40,14 +40,14 @@
                         </td>
                         <td>{{ $reservation->vehicle->name }}</td>
                         <td>{{ $reservation->prestation?->name ?: $reservation->service_type }}</td>
-                        <td>{{ $reservation->start_date->format('d/m/Y') }} - {{ $reservation->days }} jour(s)</td>
+                        <td>{{ $reservation->start_at?->format('d/m/Y H:i') ?? $reservation->start_date->format('d/m/Y') }}<span>{{ $reservation->days }} jour(s)</span></td>
                         <td>{{ number_format($reservation->estimated_total, 0, ',', ' ') }} EUR</td>
-                        <td><span class="tag">{{ ucfirst($reservation->status) }}</span></td>
+                        <td><span class="tag tag-{{ $reservation->status }}">{{ $reservation->status_label }}</span></td>
                         <td><a href="{{ route('admin.reservations.show', $reservation) }}">Voir</a></td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7">Aucune reservation pour le moment.</td>
+                        <td colspan="7" class="empty-state">Aucune réservation pour le moment.</td>
                     </tr>
                 @endforelse
             </tbody>

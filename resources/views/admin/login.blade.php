@@ -4,10 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Connexion admin - CLASS’AFFAIRE</title>
-    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link rel="stylesheet" href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v={{ filemtime(public_path('css/admin.css')) }}">
 </head>
 <body class="login-page">
     <main class="login-card">
+        <p class="admin-brand"><span class="admin-brand-mark">CA</span> CLASS’AFFAIRE</p>
         <p class="eyebrow">Administration</p>
         <h1>Connexion</h1>
 

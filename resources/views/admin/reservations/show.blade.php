@@ -16,7 +16,9 @@
             <h2>Client</h2>
             <p><strong>Telephone:</strong> {{ $reservation->customer_phone }}</p>
             <p><strong>Email:</strong> {{ $reservation->customer_email ?: '-' }}</p>
-            <p><strong>Lieu:</strong> {{ $reservation->pickup_location }}</p>
+            <p><strong>Départ :</strong> {{ $reservation->pickup_location }}</p>
+            <p><strong>Destination :</strong> {{ $reservation->destination ?: '-' }}</p>
+            <p><strong>Passagers :</strong> {{ $reservation->passengers ?: '-' }}</p>
             <p><strong>Message:</strong> {{ $reservation->message ?: '-' }}</p>
         </section>
 
@@ -25,7 +27,8 @@
             <img class="preview" src="{{ $reservation->vehicle->display_image }}" alt="{{ $reservation->vehicle->name }}">
             <p><strong>Modele:</strong> {{ $reservation->vehicle->name }}</p>
             <p><strong>Prestation:</strong> {{ $reservation->prestation?->name ?: $reservation->service_type }}</p>
-            <p><strong>Dates:</strong> {{ $reservation->start_date->format('d/m/Y') }} au {{ optional($reservation->end_date)->format('d/m/Y') }}</p>
+            <p><strong>Dates :</strong> {{ $reservation->start_at?->format('d/m/Y H:i') ?? $reservation->start_date->format('d/m/Y') }} au {{ $reservation->end_at?->format('d/m/Y H:i') ?? optional($reservation->end_date)->format('d/m/Y') }}</p>
+            <p><strong>Statut :</strong> <span class="tag tag-{{ $reservation->status }}">{{ $reservation->status_label }}</span></p>
             <p><strong>Total estimatif:</strong> {{ number_format($reservation->estimated_total, 0, ',', ' ') }} EUR</p>
         </section>
     </div>
@@ -37,7 +40,7 @@
             Statut
             <select name="status">
                 @foreach ($statuses as $status)
-                    <option value="{{ $status }}" @selected($reservation->status === $status)>{{ ucfirst($status) }}</option>
+                    <option value="{{ $status }}" @selected($reservation->status === $status)>{{ \App\Models\Reservation::STATUS_LABELS[$status] ?? $status }}</option>
                 @endforeach
             </select>
         </label>
