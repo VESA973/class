@@ -82,6 +82,25 @@
             @endif
         </section>
 
+        <section class="form-card" aria-labelledby="footer-title">
+            <div class="section-head">
+                <div>
+                    <h2 id="footer-title">Pied de page</h2>
+                    <p class="form-hint">Le titre et la phrase de présentation affichés en bas de toutes les pages du site.</p>
+                </div>
+            </div>
+
+            <label>
+                Titre
+                <input name="footer_title" maxlength="80" value="{{ old('footer_title', $values['footer_title']) }}" placeholder="{{ \App\Services\ContactSettings::DEFAULT_FOOTER_TITLE }}">
+            </label>
+            <label>
+                Texte de présentation
+                <textarea name="footer_text" rows="3" maxlength="400" placeholder="{{ \App\Services\ContactSettings::DEFAULT_FOOTER_TEXT }}">{{ old('footer_text', $values['footer_text']) }}</textarea>
+            </label>
+            <p class="form-hint">400 caractères maximum. Laissez vide pour revenir au texte d’origine.</p>
+        </section>
+
         <div class="form-actions">
             <button class="btn" type="submit">Enregistrer</button>
         </div>

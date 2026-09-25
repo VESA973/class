@@ -83,8 +83,8 @@
     <footer class="border-t border-border bg-card">
         <div class="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 lg:grid-cols-4 lg:px-8">
             <div class="lg:col-span-2">
-                <p class="text-lg font-semibold uppercase tracking-wide">CLASS’AFFAIRE</p>
-                <p class="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">Location de voitures de prestige avec ou sans chauffeur depuis 2021. Transferts, évènements et voyages d’affaires à Paris, Cannes et Roissy.</p>
+                <p class="text-lg font-semibold uppercase tracking-wide">{{ $contact['footer_title'] ?? 'CLASS’AFFAIRE' }}</p>
+                <p class="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">{{ $contact['footer_text'] ?? \App\Services\ContactSettings::DEFAULT_FOOTER_TEXT }}</p>
             </div>
             <nav aria-label="Liens du pied de page">
                 <p class="text-sm font-semibold">Navigation</p>

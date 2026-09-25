@@ -20,6 +20,10 @@ class ContactSettings
         '262' => ['La Réunion, Mayotte', 'RE'],
     ];
 
+    public const DEFAULT_FOOTER_TITLE = 'CLASS’AFFAIRE';
+
+    public const DEFAULT_FOOTER_TEXT = 'Location de voitures de prestige avec ou sans chauffeur depuis 2021. Transferts, évènements et voyages d’affaires à Paris, Cannes et Roissy.';
+
     /** Le site est base en Guyane. */
     public const DEFAULT_COUNTRY_CODE = '594';
 
@@ -27,7 +31,7 @@ class ContactSettings
     {
     }
 
-    /** @return array{phone: string, phone_href: string, email: string, address: string, country_code: string, country_iso: string, whatsapp_enabled: bool, whatsapp_number: string, whatsapp_message: string} */
+    /** @return array{phone: string, phone_href: string, email: string, address: string, country_code: string, country_iso: string, footer_title: string, footer_text: string, whatsapp_enabled: bool, whatsapp_number: string, whatsapp_message: string} */
     public function values(): array
     {
         // Valeurs d'origine (config/home.php), memorisees avant toute surcharge.
@@ -47,6 +51,8 @@ class ContactSettings
             'address' => $this->settings->get('contact.address') ?: $defaults['address'],
             'country_code' => $countryCode,
             'country_iso' => self::COUNTRIES[$countryCode][1],
+            'footer_title' => $this->settings->get('contact.footer_title') ?: self::DEFAULT_FOOTER_TITLE,
+            'footer_text' => $this->settings->get('contact.footer_text') ?: self::DEFAULT_FOOTER_TEXT,
             'whatsapp_enabled' => (bool) $this->settings->get('contact.whatsapp_enabled', false),
             'whatsapp_number' => (string) $this->settings->get('contact.whatsapp_number', ''),
             'whatsapp_message' => $this->settings->get('contact.whatsapp_message') ?: 'Bonjour, je souhaite des informations sur la location d’un véhicule.',
@@ -66,6 +72,8 @@ class ContactSettings
                 'address' => $values['address'],
                 'country_code' => $values['country_code'],
                 'country_iso' => $values['country_iso'],
+                'footer_title' => $values['footer_title'],
+                'footer_text' => $values['footer_text'],
             ],
             'booking.contact_phone' => $values['phone'],
         ]);

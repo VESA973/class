@@ -114,6 +114,16 @@ class ContactSettingsTest extends TestCase
         $this->get('/')->assertSee('https://wa.me/594694123456', false);
     }
 
+    public function test_footer_text_is_editable(): void
+    {
+        $this->get('/')->assertSee('depuis 2021');
+
+        $this->save(['footer_title' => 'CLASS’AFFAIRE GUYANE', 'footer_text' => 'Location de prestige à Cayenne et Kourou.']);
+        auth()->logout();
+
+        $this->get('/')->assertOk()->assertSee('CLASS’AFFAIRE GUYANE')->assertSee('Location de prestige à Cayenne et Kourou.')->assertDontSee('depuis 2021');
+    }
+
     public function test_country_code_must_be_known(): void
     {
         $this->save(['country_code' => '999'])->assertSessionHasErrors('country_code');

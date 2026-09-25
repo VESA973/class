@@ -24,6 +24,8 @@ class ContactSettingsController extends Controller
             'email' => ['required', 'email', 'max:255'],
             'address' => ['required', 'string', 'max:255'],
             'country_code' => ['required', 'in:'.implode(',', array_keys(ContactSettings::COUNTRIES))],
+            'footer_title' => ['nullable', 'string', 'max:80'],
+            'footer_text' => ['nullable', 'string', 'max:400'],
             'whatsapp_number' => ['nullable', 'string', 'max:40', 'regex:/^[+0-9 ().-]*$/'],
             'whatsapp_message' => ['nullable', 'string', 'max:500'],
         ], [
@@ -43,6 +45,8 @@ class ContactSettingsController extends Controller
             'contact.email' => $data['email'],
             'contact.address' => $data['address'],
             'contact.country_code' => $data['country_code'],
+            'contact.footer_title' => trim((string) ($data['footer_title'] ?? '')),
+            'contact.footer_text' => trim((string) ($data['footer_text'] ?? '')),
             'contact.whatsapp_number' => $whatsapp,
             'contact.whatsapp_enabled' => $enabled,
             'contact.whatsapp_message' => $data['whatsapp_message'] ?? '',

@@ -46,7 +46,8 @@ demandes récentes et prochains départs. Chaque carte est cliquable.
 ## Paramètres
 - **Coordonnées & WhatsApp** : pays / indicatif (Guyane +594 par défaut), téléphone, email et adresse affichés partout (en-tête, pied de page, Contact,
   réservation, emails, devis, pages légales, SEO). Bouton WhatsApp : cocher « Afficher », saisir le numéro
-  (06 94… ou +594 694…, l’indicatif est ajouté automatiquement), message pré-rempli ; lien « Tester » après enregistrement.
+  (06 94… ou +594 694…, l’indicatif est ajouté automatiquement), message pré-rempli ; lien « Tester » après enregistrement. Carte « Pied de page » : titre et phrase de
+  présentation en bas de toutes les pages.
 - **Favicon & maintenance** : favicon (PNG 512×512, toutes les tailles générées) ; mode maintenance (page 503,
   message, date de retour, IP autorisées, aperçu). Vous continuez à voir le site une fois connecté.
 - **Utilisateurs** : comptes d’accès à l’administration (activer / désactiver).

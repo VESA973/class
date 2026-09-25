@@ -12,6 +12,7 @@ Toutes les évolutions notables du site CLASS'AFFAIRE. Format inspiré de [Keep 
 - **Pays / indicatif** (Guyane française +594 par défaut ; France, Guadeloupe, Martinique, Réunion au choix) : les
   numéros saisis au format national (05 94…, 06 94…) reçoivent cet indicatif dans les liens d'appel et WhatsApp ;
   exemple du champ téléphone de la réservation et code pays schema.org (GF) adaptés.
+- **Pied de page** : titre et texte de présentation modifiables dans Coordonnées & WhatsApp (vide = texte d'origine).
 - Numéro en dur retiré de la page de réservation (formulaire React et `noscript`).
 - Tests : `ContactSettingsTest` (8 tests) — 84 tests au total.
 
