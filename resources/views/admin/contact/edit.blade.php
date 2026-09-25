@@ -23,10 +23,19 @@
             </div>
 
             <label>
-                Téléphone
-                <input name="phone" type="tel" maxlength="40" required value="{{ old('phone', $values['phone']) }}" placeholder="+33 1 80 11 44 83">
+                Pays (indicatif téléphonique)
+                <select name="country_code">
+                    @foreach (\App\Services\ContactSettings::COUNTRIES as $code => [$label])
+                        <option value="{{ $code }}" @selected(old('country_code', $values['country_code']) == $code)>{{ $label }} (+{{ $code }})</option>
+                    @endforeach
+                </select>
             </label>
-            <p class="form-hint">Écrivez-le comme il doit s’afficher. Le lien d’appel (tel:) est généré automatiquement : <strong>{{ $values['phone_href'] }}</strong></p>
+            <p class="form-hint">Un numéro saisi au format national (05 94…, 06 94…) reçoit automatiquement cet indicatif dans les liens d’appel et WhatsApp.</p>
+            <label>
+                Téléphone
+                <input name="phone" type="tel" maxlength="40" required value="{{ old('phone', $values['phone']) }}" placeholder="05 94 12 34 56">
+            </label>
+            <p class="form-hint">Écrivez-le comme il doit s’afficher (ex. 05 94 12 34 56 ou +594 594 12 34 56). Le lien d’appel (tel:) est généré automatiquement : <strong>{{ $values['phone_href'] }}</strong></p>
             <label>
                 Email de contact
                 <input name="email" type="email" maxlength="255" required value="{{ old('email', $values['email']) }}">
@@ -59,9 +68,9 @@
             </label>
             <label>
                 Numéro WhatsApp
-                <input name="whatsapp_number" type="tel" maxlength="40" value="{{ old('whatsapp_number', $values['whatsapp_number'] ? '+'.$values['whatsapp_number'] : '') }}" placeholder="+33 6 12 34 56 78">
+                <input name="whatsapp_number" type="tel" maxlength="40" value="{{ old('whatsapp_number', $values['whatsapp_number'] ? '+'.$values['whatsapp_number'] : '') }}" placeholder="06 94 12 34 56">
             </label>
-            <p class="form-hint">Format international conseillé (+33…). Un numéro français en 06 / 07 est converti automatiquement.</p>
+            <p class="form-hint">Numéro national (06 94…) ou international (+594 694…). L’indicatif du pays choisi dans « Coordonnées » est ajouté automatiquement.</p>
             <label>
                 Message pré-rempli
                 <textarea name="whatsapp_message" rows="3" maxlength="500">{{ old('whatsapp_message', $values['whatsapp_message']) }}</textarea>

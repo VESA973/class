@@ -55,7 +55,7 @@ class EmailTemplate extends Model
     public static function sampleVariables(): array
     {
         return [
-            'nom_client' => 'Jean Dupont', 'email_client' => 'jean.dupont@exemple.fr', 'telephone_client' => '+33 6 12 34 56 78',
+            'nom_client' => 'Jean Dupont', 'email_client' => 'jean.dupont@exemple.fr', 'telephone_client' => '+594 694 12 34 56',
             'message_client' => 'Siège enfant, s’il vous plaît.', 'numero_reservation' => '128', 'vehicule' => 'Rolls Royce Ghost',
             'date_depart' => '12/10/2026 à 09:30', 'date_retour' => '12/10/2026 à 18:00', 'lieu_depart' => 'Gare de Lyon, 75012 Paris',
             'destination' => 'Aéroport Charles de Gaulle, 95700 Roissy-en-France', 'passagers' => '3', 'montant_estime' => '1 200 €',

@@ -23,6 +23,7 @@ class ContactSettingsController extends Controller
             'phone' => ['required', 'string', 'max:40', 'regex:/^[+0-9 ().-]{6,40}$/'],
             'email' => ['required', 'email', 'max:255'],
             'address' => ['required', 'string', 'max:255'],
+            'country_code' => ['required', 'in:'.implode(',', array_keys(ContactSettings::COUNTRIES))],
             'whatsapp_number' => ['nullable', 'string', 'max:40', 'regex:/^[+0-9 ().-]*$/'],
             'whatsapp_message' => ['nullable', 'string', 'max:500'],
         ], [
@@ -30,17 +31,18 @@ class ContactSettingsController extends Controller
             'whatsapp_number.regex' => 'Numéro WhatsApp invalide.',
         ]);
 
-        $whatsapp = ContactSettings::normalizeWhatsapp((string) ($data['whatsapp_number'] ?? ''));
+        $whatsapp = ContactSettings::normalizeWhatsapp((string) ($data['whatsapp_number'] ?? ''), $data['country_code']);
         $enabled = $request->boolean('whatsapp_enabled');
 
         if ($enabled && (strlen($whatsapp) < 8 || strlen($whatsapp) > 15)) {
-            throw ValidationException::withMessages(['whatsapp_number' => 'Indiquez un numéro WhatsApp complet (ex. +33 6 12 34 56 78) pour activer le bouton.']);
+            throw ValidationException::withMessages(['whatsapp_number' => 'Indiquez un numéro WhatsApp complet (ex. 06 94 12 34 56 ou +594 694 12 34 56) pour activer le bouton.']);
         }
 
         $settings->set([
             'contact.phone' => trim($data['phone']),
             'contact.email' => $data['email'],
             'contact.address' => $data['address'],
+            'contact.country_code' => $data['country_code'],
             'contact.whatsapp_number' => $whatsapp,
             'contact.whatsapp_enabled' => $enabled,
             'contact.whatsapp_message' => $data['whatsapp_message'] ?? '',

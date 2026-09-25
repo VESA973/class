@@ -37,6 +37,7 @@ class BookingPageController extends Controller
                 'initialPickup' => $initial['pickup'] ?? null,
                 'csrfToken' => csrf_token(),
                 'contactPhone' => config('home.contact.phone'),
+                'phoneCountryCode' => config('home.contact.country_code'),
                 'urls' => [
                     'store' => route('api.reservations.store'),
                     'bookedPeriods' => route('api.vehicles.booked-periods', ['vehicle' => '__VEHICLE__']),

@@ -19,6 +19,7 @@ class ContactSettingsTest extends TestCase
             'phone' => '+33 6 00 00 00 01',
             'email' => 'hello@example.com',
             'address' => '1 rue de Test, Paris',
+            'country_code' => '33',
             'whatsapp_enabled' => '1',
             'whatsapp_number' => '06 12 34 56 78',
             'whatsapp_message' => 'Bonjour !',
@@ -90,11 +91,31 @@ class ContactSettingsTest extends TestCase
 
     public function test_whatsapp_number_normalization(): void
     {
-        $this->assertSame('33612345678', ContactSettings::normalizeWhatsapp('06 12 34 56 78'));
+        // Guyane par defaut
+        $this->assertSame('594694123456', ContactSettings::normalizeWhatsapp('06 94 12 34 56'));
+        $this->assertSame('594694123456', ContactSettings::normalizeWhatsapp('+594 694 12 34 56'));
+        $this->assertSame('594694123456', ContactSettings::normalizeWhatsapp('00594 694 12 34 56'));
+        $this->assertSame('33612345678', ContactSettings::normalizeWhatsapp('06 12 34 56 78', '33'));
         $this->assertSame('33612345678', ContactSettings::normalizeWhatsapp('+33 6 12 34 56 78'));
-        $this->assertSame('33612345678', ContactSettings::normalizeWhatsapp('0033 6 12 34 56 78'));
         $this->assertSame('14155552671', ContactSettings::normalizeWhatsapp('+1 (415) 555-2671'));
+        $this->assertSame('', ContactSettings::normalizeWhatsapp(''));
+        $this->assertSame('+594594123456', ContactSettings::telHref('05 94 12 34 56'));
         $this->assertSame('+33180114483', ContactSettings::telHref('+33 1 80 11 44 83'));
-        $this->assertSame('0180114483', ContactSettings::telHref('01 80 11 44 83'));
+        $this->assertSame('+33180114483', ContactSettings::telHref('01 80 11 44 83', '33'));
+    }
+
+    public function test_guyane_is_the_default_country(): void
+    {
+        $this->save(['country_code' => '594', 'phone' => '05 94 12 34 56', 'whatsapp_number' => '06 94 12 34 56']);
+        auth()->logout();
+
+        $this->assertSame('594', app(ContactSettings::class)->values()['country_code']);
+        $this->get('/contact')->assertOk()->assertSee('tel:+594594123456', false)->assertSee('05 94 12 34 56');
+        $this->get('/')->assertSee('https://wa.me/594694123456', false);
+    }
+
+    public function test_country_code_must_be_known(): void
+    {
+        $this->save(['country_code' => '999'])->assertSessionHasErrors('country_code');
     }
 }

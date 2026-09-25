@@ -140,7 +140,7 @@ class Seo
                 'streetAddress' => $business['street'],
                 'postalCode' => $business['postal_code'],
                 'addressLocality' => $business['city'],
-                'addressCountry' => 'FR',
+                'addressCountry' => config('home.contact.country_iso', 'FR'),
             ],
             'areaServed' => array_values(array_filter(array_map('trim', explode(',', (string) $business['area_served'])))),
             'sameAs' => array_values(array_filter(array_map('trim', preg_split('/[\s,]+/', (string) $business['same_as'])))) ?: null,

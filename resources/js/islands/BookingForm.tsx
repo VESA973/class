@@ -56,6 +56,7 @@ type Props = {
     initialPickup?: string | null;
     csrfToken: string;
     contactPhone?: string | null;
+    phoneCountryCode?: string | null;
     urls: { store: string; bookedPeriods: string; available: string; home: string; privacy?: string | null };
 };
 
@@ -147,7 +148,7 @@ function initialPeriod(start?: string | null, end?: string | null) {
     return { range: { from: startOfDay(from), to: startOfDay(to) }, startTime: time(from), endTime: time(to) };
 }
 
-export default function BookingForm({ vehicles, initialVehicleId, initialStart, initialEnd, initialPickup, csrfToken, contactPhone, urls }: Props) {
+export default function BookingForm({ vehicles, initialVehicleId, initialStart, initialEnd, initialPickup, csrfToken, contactPhone, phoneCountryCode, urls }: Props) {
     const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
     const [suggestions, setSuggestions] = useState<Period[]>([]);
     const [calendarOpen, setCalendarOpen] = useState(false);
@@ -537,7 +538,7 @@ export default function BookingForm({ vehicles, initialVehicleId, initialStart, 
                                         <FormItem>
                                             <FormLabel>Téléphone</FormLabel>
                                             <FormControl>
-                                                <Input type="tel" autoComplete="tel" placeholder="+33…" {...field} />
+                                                <Input type="tel" autoComplete="tel" placeholder={phoneCountryCode ? `+${phoneCountryCode}…` : "Votre numéro"} {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
