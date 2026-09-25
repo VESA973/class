@@ -38,33 +38,6 @@ return [
      */
     'testimonials' => [],
 
-    'faq' => [
-        [
-            'question' => 'Comment réserver un véhicule ?',
-            'answer' => 'Choisissez votre véhicule, vos dates et vos horaires sur la page de réservation, puis envoyez votre demande. Les créneaux déjà réservés sont indiqués dans le calendrier.',
-        ],
-        [
-            'question' => 'Ma réservation est-elle confirmée immédiatement ?',
-            'answer' => 'Votre demande est enregistrée immédiatement et vous recevez un récapitulatif par email. Notre équipe vous recontacte ensuite pour la confirmer.',
-        ],
-        [
-            'question' => 'Faut-il payer en ligne ?',
-            'answer' => 'Non, aucun paiement n’est demandé en ligne. Les conditions vous sont précisées par notre équipe lors de la confirmation.',
-        ],
-        [
-            'question' => 'Puis-je louer un véhicule avec chauffeur ?',
-            'answer' => 'Oui. Nous proposons des prestations avec chauffeur pour les transferts, évènements, soirées et voyages d’affaires.',
-        ],
-        [
-            'question' => 'Pouvez-vous livrer le véhicule ?',
-            'answer' => 'Oui, la livraison est possible sur demande : indiquez simplement le lieu de prise en charge lors de votre réservation.',
-        ],
-        [
-            'question' => 'Comment modifier ou annuler ma demande ?',
-            'answer' => 'Contactez-nous par téléphone au +33 1 80 11 44 83 ou par email à contact@classaffaire.fr en indiquant votre numéro de référence.',
-        ],
-    ],
-
     'contact' => [
         'phone' => '+33 1 80 11 44 83',
         'phone_href' => '+33180114483',

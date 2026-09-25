@@ -1,20 +1,23 @@
-@php($contact = config('home.contact'))
+@php
+    $contact = config('home.contact');
+    $navigation = [
+        ['home', 'Accueil', 'home'],
+        ['vehicles.page', 'Véhicules', 'vehicles.*'],
+        ['prestations.page', 'Prestations', 'prestations.*'],
+        ['contact.page', 'Contact', 'contact.*'],
+    ];
+@endphp
 <!DOCTYPE html>
-<html lang="fr" class="scroll-smooth">
+<html lang="fr" class="dark scroll-smooth">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="@yield('description', 'Class’Affaire, location de voitures de prestige avec ou sans chauffeur à Paris, Cannes et Roissy depuis 2021.')">
     <title>@yield('title', 'CLASS’AFFAIRE - Location de voitures de prestige')</title>
-    <script>
-        // Theme avant le premier rendu (evite le flash) : choix memorise, sinon preference systeme.
-        (function () {
-            var theme = null;
-            try { theme = localStorage.getItem('theme'); } catch (e) {}
-            var dark = theme ? theme === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
-            document.documentElement.classList.add(dark ? 'dark' : 'light', 'js');
-        })();
-    </script>
+    <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="#0a0a0a">
+    {{-- Theme sombre uniquement. La classe "js" active les animations d'apparition. --}}
+    <script>document.documentElement.classList.add('js');</script>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link rel="stylesheet" href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap">
     <link rel="preconnect" href="https://images.unsplash.com">
@@ -36,16 +39,12 @@
             </a>
 
             <nav class="hidden items-center gap-1 lg:flex" aria-label="Navigation principale">
-                @foreach ([['home', 'Accueil'], ['vehicles.page', 'Véhicules'], ['prestations.page', 'Prestations'], ['contact.page', 'Contact']] as [$routeName, $label])
-                    <a href="{{ route($routeName) }}" class="rounded-md px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white data-[scrolled=true]:text-muted-foreground data-[scrolled=true]:hover:bg-accent data-[scrolled=true]:hover:text-foreground" data-header-text @if (request()->routeIs($routeName)) aria-current="page" @endif>{{ $label }}</a>
+                @foreach ($navigation as [$routeName, $label, $pattern])
+                    <a href="{{ route($routeName) }}" class="rounded-md px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white aria-[current=page]:text-white aria-[current=page]:underline aria-[current=page]:underline-offset-8 data-[scrolled=true]:text-muted-foreground data-[scrolled=true]:hover:bg-accent data-[scrolled=true]:hover:text-foreground data-[scrolled=true]:aria-[current=page]:text-foreground" data-header-text @if (request()->routeIs($pattern)) aria-current="page" @endif>{{ $label }}</a>
                 @endforeach
             </nav>
 
             <div class="flex items-center gap-2">
-                <button type="button" class="grid size-10 place-items-center rounded-md text-white/85 transition hover:bg-white/10 hover:text-white data-[scrolled=true]:text-muted-foreground data-[scrolled=true]:hover:bg-accent data-[scrolled=true]:hover:text-foreground" data-theme-toggle data-header-text aria-label="Changer de thème (clair / sombre)">
-                    <x-icon name="sun" class="hidden size-5 dark:block" />
-                    <x-icon name="moon" class="size-5 dark:hidden" />
-                </button>
                 <a href="tel:{{ $contact['phone_href'] }}" class="hidden items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-white/85 transition hover:text-white md:flex data-[scrolled=true]:text-muted-foreground data-[scrolled=true]:hover:text-foreground" data-header-text>
                     <x-icon name="phone" class="size-4" /> {{ $contact['phone'] }}
                 </a>
@@ -61,8 +60,8 @@
 
         <div id="menu-mobile" class="hidden border-t border-border bg-background/95 backdrop-blur-lg lg:hidden" data-menu>
             <nav class="mx-auto grid max-w-7xl gap-1 px-4 py-4 sm:px-6" aria-label="Navigation mobile">
-                @foreach ([['home', 'Accueil'], ['vehicles.page', 'Véhicules'], ['prestations.page', 'Prestations'], ['contact.page', 'Contact']] as [$routeName, $label])
-                    <a href="{{ route($routeName) }}" class="rounded-md px-3 py-3 font-medium hover:bg-accent">{{ $label }}</a>
+                @foreach ($navigation as [$routeName, $label, $pattern])
+                    <a href="{{ route($routeName) }}" class="rounded-md px-3 py-3 font-medium hover:bg-accent aria-[current=page]:bg-accent" @if (request()->routeIs($pattern)) aria-current="page" @endif>{{ $label }}</a>
                 @endforeach
                 <a href="{{ route('booking.create') }}" class="mt-2 inline-flex h-11 items-center justify-center gap-2 rounded-md bg-primary font-semibold text-primary-foreground">Réserver un véhicule</a>
                 <a href="tel:{{ $contact['phone_href'] }}" class="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-border font-medium"><x-icon name="phone" class="size-4" /> {{ $contact['phone'] }}</a>
@@ -122,14 +121,6 @@
                 onScroll();
             });
 
-            document.querySelector('[data-theme-toggle]').addEventListener('click', function () {
-                var root = document.documentElement;
-                var dark = !root.classList.contains('dark');
-                root.classList.toggle('dark', dark);
-                root.classList.toggle('light', !dark);
-                try { localStorage.setItem('theme', dark ? 'dark' : 'light'); } catch (e) {}
-            });
-
             window.addEventListener('scroll', onScroll, { passive: true });
             onScroll();
 
@@ -150,5 +141,6 @@
             reveal.forEach(function (el) { observer.observe(el); });
         })();
     </script>
+    @stack('scripts')
 </body>
 </html>

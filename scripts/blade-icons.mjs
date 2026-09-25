@@ -9,7 +9,7 @@ import { writeFileSync } from 'node:fs';
 const ICONS = [
     'arrow-right', 'calendar-check', 'calendar-days', 'car-front', 'check', 'circle-check', 'clock', 'fuel', 'gauge',
     'headset', 'mail', 'map-pin', 'menu', 'moon', 'phone', 'quote', 'search', 'send', 'settings-2', 'shield-check',
-    'sparkles', 'star', 'sun', 'truck', 'user-round', 'x',
+    'sparkles', 'star', 'sun', 'truck', 'user-round', 'x', 'users', 'rotate-3d', 'play', 'image', 'arrow-left', 'box',
 ];
 
 const escape = (value) => String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;');

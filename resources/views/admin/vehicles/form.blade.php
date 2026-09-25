@@ -49,6 +49,14 @@
                 <input name="transmission" value="{{ old('transmission', $vehicle->transmission) }}" required>
             </label>
             <label>
+                Nombre de places
+                <input type="number" min="1" max="9" name="seats" value="{{ old('seats', $vehicle->seats) }}" placeholder="5">
+            </label>
+            <label>
+                Video 3D (URL .mp4, facultatif)
+                <input type="url" name="video_url" value="{{ old('video_url', $vehicle->video_url) }}" placeholder="https://...">
+            </label>
+            <label>
                 Image a uploader
                 <input type="file" name="image" accept="image/*">
             </label>
@@ -60,6 +68,17 @@
 
         @if ($vehicle->exists)
             <img class="preview" src="{{ $vehicle->display_image }}" alt="{{ $vehicle->name }}">
+        @endif
+
+        <label>
+            Modele 3D (.glb, 50 Mo max)
+            <input type="file" name="model" accept=".glb,model/gltf-binary">
+        </label>
+        @if ($vehicle->model_url)
+            <div class="checkboxes">
+                <span class="field-note">Modele 3D actuel : <a href="{{ $vehicle->model_url }}" target="_blank" rel="noopener">voir le fichier</a></span>
+                <label><input type="checkbox" name="remove_model" value="1"> Supprimer le modele 3D</label>
+            </div>
         @endif
 
         <label>

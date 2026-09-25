@@ -13,7 +13,6 @@ type IslandLoader = () => Promise<{ default: ComponentType<any> }>;
 const islands: Record<string, IslandLoader> = {
     BookingForm: () => import('@/islands/BookingForm'),
     HeroSearch: () => import('@/islands/HeroSearch'),
-    Faq: () => import('@/islands/Faq'),
     Planning: () => import('@/islands/Planning'),
 };
 
@@ -29,11 +28,8 @@ function readProps(element: HTMLElement): Record<string, unknown> {
 async function mountIslands(): Promise<void> {
     const elements = document.querySelectorAll<HTMLElement>('[data-island]');
 
-    // Le site public est sombre : les composants shadcn suivent sauf si la page
-    // demande explicitement le theme clair (<html class="light">).
-    if (elements.length > 0 && !document.documentElement.classList.contains('light')) {
-        document.documentElement.classList.add('dark');
-    }
+    // Theme sombre uniquement (les pages Blade plus anciennes n'ont pas la classe en dur).
+    document.documentElement.classList.add('dark');
 
     await Promise.all(
         Array.from(elements).map(async (element) => {

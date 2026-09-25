@@ -5,30 +5,12 @@ import {
   OctagonXIcon,
   TriangleAlertIcon,
 } from "lucide-react"
-import { useEffect, useState } from "react"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
 
-// Le site n'utilise pas next-themes : on suit la classe "dark" posee sur <html>.
-function useDocumentTheme(): ToasterProps["theme"] {
-  const read = () => (document.documentElement.classList.contains("dark") ? "dark" : "light")
-  const [theme, setTheme] = useState<ToasterProps["theme"]>(read)
-
-  useEffect(() => {
-    const observer = new MutationObserver(() => setTheme(read()))
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] })
-
-    return () => observer.disconnect()
-  }, [])
-
-  return theme
-}
-
 const Toaster = ({ ...props }: ToasterProps) => {
-  const theme = useDocumentTheme()
-
   return (
     <Sonner
-      theme={theme}
+      theme="dark" // Site en theme sombre uniquement
       className="toaster group"
       icons={{
         success: <CircleCheckIcon className="size-4" />,

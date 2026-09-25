@@ -99,6 +99,8 @@ class PlanningController extends Controller
                 'customerEmail' => $reservation->customer_email,
                 'customerPhone' => $reservation->customer_phone,
                 'pickupLocation' => $reservation->pickup_location,
+                'destination' => $reservation->destination,
+                'passengers' => $reservation->passengers,
                 'serviceType' => $reservation->service_type,
                 'days' => $reservation->days,
                 'estimatedTotal' => $reservation->estimated_total,

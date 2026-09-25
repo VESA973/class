@@ -1,55 +1,41 @@
 /*
  * Jetons de couleur shadcn/ui partages par app.css et islands.css.
- * Mode sombre = palette du site public (bleu nuit Pantone Black 6 C + gris argent).
+ * Theme SOMBRE UNIQUEMENT : pas de variante claire, <html class="dark"> est pose en dur.
+ * Fond zinc-950, cartes zinc-900. L'accent (boutons, elements actifs) se change
+ * en une ligne via --ui-brand / --ui-brand-foreground.
  * Prefixe --ui- : rentlux.css et admin.css utilisent deja --muted, --line, --panel...
  */
 @custom-variant dark (&:is(.dark *));
 
 :root {
+    color-scheme: dark;
+
+    /* Accent de marque */
+    --ui-brand: #e4e4e7;
+    --ui-brand-foreground: #0a0a0a;
+
     --ui-radius: 0.75rem;
     --ui-font: Inter, 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
-    --ui-background: #ffffff;
-    --ui-foreground: #101820;
-    --ui-card: #ffffff;
-    --ui-card-foreground: #101820;
-    --ui-popover: #ffffff;
-    --ui-popover-foreground: #101820;
-    --ui-primary: #101820;
-    --ui-primary-foreground: #ffffff;
-    --ui-secondary: #eef0f2;
-    --ui-secondary-foreground: #101820;
-    --ui-muted: #eef0f2;
-    --ui-muted-foreground: #5b6168;
-    --ui-accent: #e4e7ea;
-    --ui-accent-foreground: #101820;
-    --ui-destructive: #c0392b;
-    --ui-success: #1f8a5b;
-    --ui-border: #d9dcdf;
-    --ui-input: #cfd3d7;
-    --ui-ring: #101820;
-}
-
-.dark {
-    --ui-background: #101820;
-    --ui-foreground: #ffffff;
-    --ui-card: #151e27;
-    --ui-card-foreground: #ffffff;
-    --ui-popover: #151e27;
-    --ui-popover-foreground: #ffffff;
-    --ui-primary: #e3e4e5;
-    --ui-primary-foreground: #101820;
-    --ui-secondary: #1b2530;
-    --ui-secondary-foreground: #ffffff;
-    --ui-muted: #1b2530;
-    --ui-muted-foreground: #bbbcbd;
-    --ui-accent: #24303c;
-    --ui-accent-foreground: #ffffff;
-    --ui-destructive: #ff7a6b;
-    --ui-success: #4fd1a1;
-    --ui-border: rgba(187, 188, 189, 0.28);
-    --ui-input: rgba(187, 188, 189, 0.36);
-    --ui-ring: #bbbcbd;
+    --ui-background: #0a0a0a;
+    --ui-foreground: #fafafa;
+    --ui-card: #18181b;
+    --ui-card-foreground: #fafafa;
+    --ui-popover: #18181b;
+    --ui-popover-foreground: #fafafa;
+    --ui-primary: var(--ui-brand);
+    --ui-primary-foreground: var(--ui-brand-foreground);
+    --ui-secondary: #27272a;
+    --ui-secondary-foreground: #fafafa;
+    --ui-muted: #27272a;
+    --ui-muted-foreground: #a1a1aa;
+    --ui-accent: #27272a;
+    --ui-accent-foreground: #fafafa;
+    --ui-destructive: #f87171;
+    --ui-success: #4ade80;
+    --ui-border: rgba(255, 255, 255, 0.1);
+    --ui-input: rgba(255, 255, 255, 0.15);
+    --ui-ring: #a1a1aa;
 }
 
 @theme inline {

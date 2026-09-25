@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class Vehicle extends Model
 {
@@ -13,13 +14,17 @@ class Vehicle extends Model
 
     protected $fillable = [
         'name',
+        'slug',
         'category',
         'horsepower',
         'fuel_type',
         'transmission',
+        'seats',
         'daily_price',
         'image_path',
         'image_url',
+        'model_path',
+        'video_url',
         'description',
         'is_available',
         'with_chauffeur',
@@ -30,9 +35,29 @@ class Vehicle extends Model
         return [
             'daily_price' => 'integer',
             'horsepower' => 'integer',
+            'seats' => 'integer',
             'is_available' => 'boolean',
             'with_chauffeur' => 'boolean',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        // Adresse publique /vehicules/{slug} generee a partir du nom, unique.
+        static::saving(function (Vehicle $vehicle): void {
+            if ($vehicle->slug) {
+                return;
+            }
+
+            $base = Str::slug($vehicle->name) ?: 'vehicule';
+            $slug = $base;
+
+            for ($i = 2; static::query()->where('slug', $slug)->whereKeyNot($vehicle->getKey())->exists(); $i++) {
+                $slug = "{$base}-{$i}";
+            }
+
+            $vehicle->slug = $slug;
+        });
     }
 
     public function reservations(): HasMany
@@ -47,5 +72,11 @@ class Vehicle extends Model
         }
 
         return $this->image_url ?: 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?auto=format&fit=crop&w=1200&q=80';
+    }
+
+    /** URL publique du modele 3D (.glb), ou null. */
+    public function getModelUrlAttribute(): ?string
+    {
+        return $this->model_path ? Storage::url($this->model_path) : null;
     }
 }

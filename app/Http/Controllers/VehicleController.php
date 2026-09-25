@@ -6,6 +6,7 @@ use App\Models\Vehicle;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class VehicleController extends Controller
@@ -34,6 +35,7 @@ class VehicleController extends Controller
     {
         $data = $this->validatedData($request);
         $data['image_path'] = $this->storeImage($request);
+        $data['model_path'] = $this->storeModel($request);
 
         Vehicle::create($data);
 
@@ -64,6 +66,16 @@ class VehicleController extends Controller
             $data['image_path'] = $imagePath;
         }
 
+        $modelPath = $this->storeModel($request);
+
+        if ($modelPath || $request->boolean('remove_model')) {
+            if ($vehicle->model_path) {
+                Storage::disk('public')->delete($vehicle->model_path);
+            }
+
+            $data['model_path'] = $modelPath;
+        }
+
         $vehicle->update($data);
 
         return redirect()
@@ -75,6 +87,10 @@ class VehicleController extends Controller
     {
         if ($vehicle->image_path) {
             Storage::disk('public')->delete($vehicle->image_path);
+        }
+
+        if ($vehicle->model_path) {
+            Storage::disk('public')->delete($vehicle->model_path);
         }
 
         $vehicle->delete();
@@ -92,16 +108,23 @@ class VehicleController extends Controller
             'horsepower' => ['nullable', 'integer', 'min:1', 'max:3000'],
             'fuel_type' => ['required', 'string', 'max:60'],
             'transmission' => ['required', 'string', 'max:60'],
+            'seats' => ['nullable', 'integer', 'min:1', 'max:9'],
             'daily_price' => ['required', 'integer', 'min:1', 'max:100000'],
             'image' => ['nullable', 'image', 'max:4096'],
             'image_url' => ['nullable', 'url', 'max:500'],
             'description' => ['nullable', 'string', 'max:2000'],
+            'model' => ['nullable', 'file', 'extensions:glb', 'max:51200'],
+            'video_url' => ['nullable', 'url', 'max:500'],
+        ], [
+            'model.extensions' => 'Le modèle 3D doit être un fichier .glb.',
+            'model.max' => 'Le modèle 3D ne doit pas dépasser 50 Mo.',
+            'model.uploaded' => 'Le modèle 3D est trop lourd pour le serveur (limite PHP upload_max_filesize).',
         ]);
 
         $data['is_available'] = $request->boolean('is_available');
         $data['with_chauffeur'] = $request->boolean('with_chauffeur');
 
-        unset($data['image']);
+        unset($data['image'], $data['model']);
 
         return $data;
     }
@@ -113,5 +136,15 @@ class VehicleController extends Controller
         }
 
         return $request->file('image')->store('vehicles', 'public');
+    }
+
+    private function storeModel(Request $request): ?string
+    {
+        if (! $request->hasFile('model')) {
+            return null;
+        }
+
+        // Extension forcee : un .glb est souvent detecte comme "bin".
+        return $request->file('model')->storeAs('vehicles/models', Str::random(40).'.glb', 'public');
     }
 }

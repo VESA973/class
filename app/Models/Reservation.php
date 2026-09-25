@@ -24,6 +24,8 @@ class Reservation extends Model
         'end_at',
         'days',
         'pickup_location',
+        'destination',
+        'passengers',
         'service_type',
         'estimated_total',
         'status',
@@ -39,6 +41,7 @@ class Reservation extends Model
             'end_at' => 'datetime',
             'days' => 'integer',
             'estimated_total' => 'integer',
+            'passengers' => 'integer',
         ];
     }
 

@@ -5,13 +5,14 @@ import { z } from 'zod';
 import { addDays, addMonths, isAfter, isBefore, startOfDay } from 'date-fns';
 import { fr } from 'react-day-picker/locale';
 import { motion } from 'framer-motion';
-import { CalendarDays, MapPin, Search } from 'lucide-react';
+import { CalendarDays, Search } from 'lucide-react';
 import { cn } from 'cn';
 
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { AddressAutocomplete } from '@/components/address-autocomplete';
+import { PassengerStepper } from '@/components/passenger-stepper';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TIME_SLOTS, combine, toApiDateTime } from '@/lib/booking';
@@ -21,6 +22,8 @@ type Props = { action: string };
 const schema = z
     .object({
         pickup: z.string().trim().max(180, 'Ce champ est trop long.'),
+        destination: z.string().trim().max(255, 'Ce champ est trop long.'),
+        passengers: z.number().int().min(1).max(9),
         startDate: z.date({ error: 'Date de départ requise.' }),
         startTime: z.string(),
         endDate: z.date({ error: 'Date de retour requise.' }),
@@ -45,11 +48,14 @@ type Values = z.infer<typeof schema>;
 const glassField =
     'h-11 border-white/25 bg-white/10 text-white placeholder:text-white/65 hover:bg-white/15 focus-visible:border-white/60 focus-visible:ring-white/30 dark:bg-white/10 dark:hover:bg-white/15';
 
+/* Le module est pose en bas du hero : les suggestions s'ouvrent vers le haut. */
+const openUpward = 'top-auto bottom-full mt-0 mb-1';
+
 export default function HeroSearch({ action }: Props) {
     const [submitting, setSubmitting] = useState(false);
     const form = useForm<Values>({
         resolver: zodResolver(schema),
-        defaultValues: { pickup: '', startTime: '10:00', endTime: '10:00' },
+        defaultValues: { pickup: '', destination: '', passengers: 1, startTime: '10:00', endTime: '10:00' },
     });
     const startDate = useWatch({ control: form.control, name: 'startDate' });
     const today = startOfDay(new Date());
@@ -59,10 +65,15 @@ export default function HeroSearch({ action }: Props) {
         const params = new URLSearchParams({
             start: toApiDateTime(combine(values.startDate, values.startTime)),
             end: toApiDateTime(combine(values.endDate, values.endTime)),
+            passengers: String(values.passengers),
         });
 
         if (values.pickup) {
             params.set('pickup', values.pickup);
+        }
+
+        if (values.destination) {
+            params.set('destination', values.destination);
         }
 
         window.location.assign(`${action}?${params.toString()}`);
@@ -81,21 +92,55 @@ export default function HeroSearch({ action }: Props) {
                     onSubmit={form.handleSubmit(onSubmit)}
                     noValidate
                     aria-label="Rechercher un véhicule"
-                    className="grid gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)_minmax(0,1fr)_auto] xl:items-start"
+                    className="grid gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-12 lg:items-start"
                 >
                     <FormField
                         control={form.control}
                         name="pickup"
                         render={({ field }) => (
-                            <FormItem className="md:col-span-2 xl:col-span-1">
-                                <FormLabel className="text-white data-[error=true]:text-red-200">Lieu de prise en charge</FormLabel>
-                                <div className="relative">
-                                    <MapPin aria-hidden className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-white/70" />
-                                    <FormControl>
-                                        <Input {...field} placeholder="Paris, aéroport, hôtel…" autoComplete="street-address" className={cn(glassField, 'pl-9')} />
-                                    </FormControl>
-                                </div>
+                            <FormItem className="lg:col-span-5">
+                                <FormLabel className="text-white data-[error=true]:text-red-200">Lieu de départ</FormLabel>
+                                <FormControl>
+                                    <AddressAutocomplete
+                                        {...field}
+                                        placeholder="Adresse, gare, aéroport…"
+                                        className={glassField}
+                                        listClassName={openUpward}
+                                    />
+                                </FormControl>
                                 <FormMessage className="text-red-200" />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="destination"
+                        render={({ field }) => (
+                            <FormItem className="lg:col-span-5">
+                                <FormLabel className="text-white data-[error=true]:text-red-200">Destination</FormLabel>
+                                <FormControl>
+                                    <AddressAutocomplete {...field} placeholder="Où allez-vous ?" className={glassField} listClassName={openUpward} />
+                                </FormControl>
+                                <FormMessage className="text-red-200" />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="passengers"
+                        render={({ field }) => (
+                            <FormItem className="md:col-span-2 lg:col-span-2">
+                                <FormLabel className="text-white">Passagers</FormLabel>
+                                <FormControl>
+                                    <PassengerStepper
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                        className="border-white/25 bg-white/10 text-white"
+                                        buttonClassName="text-white hover:bg-white/15 hover:text-white dark:hover:bg-white/15"
+                                    />
+                                </FormControl>
                             </FormItem>
                         )}
                     />
@@ -123,7 +168,7 @@ export default function HeroSearch({ action }: Props) {
                         defaultMonth={startDate}
                     />
 
-                    <Button type="submit" size="lg" disabled={submitting} className="h-11 bg-white px-6 md:col-span-2 xl:col-span-1 xl:mt-[22px] text-[#101820] hover:bg-white/90 dark:bg-white dark:text-[#101820] dark:hover:bg-white/90">
+                    <Button type="submit" size="lg" disabled={submitting} className="h-11 bg-white px-6 md:col-span-2 lg:col-span-2 lg:mt-[22px] text-[#101820] hover:bg-white/90 dark:bg-white dark:text-[#101820] dark:hover:bg-white/90">
                         <Search aria-hidden className="size-4" /> Rechercher
                     </Button>
                 </form>
@@ -153,7 +198,7 @@ function DateTimeRow({
     const today = startOfDay(new Date());
 
     return (
-        <div className="grid grid-cols-[minmax(0,1fr)_96px] items-start gap-2">
+        <div className="grid grid-cols-[minmax(0,1fr)_96px] items-start gap-2 lg:col-span-5">
             <FormField
                 control={form.control}
                 name={dateName}

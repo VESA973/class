@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        View::composer('layouts.site', function ($view): void {
+        View::composer(['layouts.site', 'layouts.modern'], function ($view): void {
             $settings = null;
 
             if (Schema::hasTable('site_settings')) {

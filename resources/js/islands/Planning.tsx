@@ -21,6 +21,7 @@ import {
     MessageSquare,
     Phone,
     RefreshCw,
+    Users,
     X,
 } from 'lucide-react';
 import { cn } from 'cn';
@@ -56,6 +57,8 @@ type ReservationEvent = {
         customerEmail: string | null;
         customerPhone: string;
         pickupLocation: string;
+        destination: string | null;
+        passengers: number | null;
         serviceType: string;
         days: number;
         estimatedTotal: number;
@@ -441,8 +444,23 @@ function ReservationSheet({
                                 </p>
                             </DetailBlock>
 
-                            <DetailBlock icon={MapPin} title="Prise en charge">
-                                <p>{details.pickupLocation}</p>
+                            <DetailBlock icon={MapPin} title="Trajet">
+                                <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
+                                    <dt className="text-muted-foreground">Départ</dt>
+                                    <dd>{details.pickupLocation}</dd>
+                                    <dt className="text-muted-foreground">Destination</dt>
+                                    <dd>{details.destination ?? <span className="text-muted-foreground">Non précisée</span>}</dd>
+                                </dl>
+                            </DetailBlock>
+
+                            <DetailBlock icon={Users} title="Passagers">
+                                <p>
+                                    {details.passengers ? (
+                                        `${details.passengers} passager${details.passengers > 1 ? 's' : ''}`
+                                    ) : (
+                                        <span className="text-muted-foreground">Non précisé</span>
+                                    )}
+                                </p>
                             </DetailBlock>
 
                             <DetailBlock icon={Phone} title="Client">

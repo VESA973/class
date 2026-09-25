@@ -4,12 +4,14 @@ use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\VehicleAvailabilityController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingPageController;
+use App\Http\Controllers\FleetController;
 use App\Http\Controllers\HeroImageController;
 use App\Http\Controllers\HomePreviewController;
 use App\Http\Controllers\PlanningController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PrestationController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\SitePageController;
 use App\Http\Controllers\SiteSettingController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VehicleController;
@@ -17,9 +19,11 @@ use Illuminate\Support\Facades\Route;
 
 // Accueil : nouvelle page (validee). Pour revenir a l'ancienne : [HomeController::class, 'index'].
 Route::get('/', HomePreviewController::class)->name('home');
-Route::get('/vehicules', [HomeController::class, 'vehicles'])->name('vehicles.page');
-Route::get('/prestations', [HomeController::class, 'prestations'])->name('prestations.page');
-Route::get('/contact', [HomeController::class, 'contact'])->name('contact.page');
+// Pages au nouveau design ; les anciennes versions restent dans HomeController (vehicles, prestations, contact).
+Route::get('/vehicules', [FleetController::class, 'index'])->name('vehicles.page');
+Route::get('/vehicules/{vehicle:slug}', [FleetController::class, 'show'])->name('vehicles.show');
+Route::get('/prestations', [SitePageController::class, 'prestations'])->name('prestations.page');
+Route::get('/contact', [SitePageController::class, 'contact'])->name('contact.page');
 Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store');
 Route::get('/reserver', [BookingPageController::class, 'create'])->name('booking.create');
 Route::permanentRedirect('/nouvelle-accueil', '/');
