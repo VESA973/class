@@ -32,11 +32,12 @@ class HeroImageController extends Controller
         $settings = SiteSetting::current();
 
         if ($settings->hero_image_path) {
-            Storage::disk('public')->delete($settings->hero_image_path);
+            app(\App\Services\ImageOptimizer::class)->delete($settings->hero_image_path); // photo + version WebP
         }
 
         $settings->update([
-            'hero_image_path' => $request->file('hero_image')->store('site', 'public'),
+            // Photo plein ecran : 2400 px max, recompressee et doublee d'une version WebP.
+            'hero_image_path' => app(\App\Services\ImageOptimizer::class)->optimize($request->file('hero_image')->store('site', 'public'), 2400),
         ]);
 
         return redirect()
@@ -49,7 +50,7 @@ class HeroImageController extends Controller
         $settings = SiteSetting::current();
 
         if ($settings->hero_image_path) {
-            Storage::disk('public')->delete($settings->hero_image_path);
+            app(\App\Services\ImageOptimizer::class)->delete($settings->hero_image_path); // photo + version WebP
             $settings->update(['hero_image_path' => null]);
         }
 

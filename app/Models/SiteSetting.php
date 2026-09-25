@@ -20,9 +20,26 @@ class SiteSetting extends Model
         ];
     }
 
+    public const CACHE_KEY = 'site.site_setting.attributes';
+
+    protected static function booted(): void
+    {
+        static::saved(fn () => \Illuminate\Support\Facades\Cache::forget(self::CACHE_KEY));
+    }
+
+    /** Lu sur chaque page publique : garde en cache, vide automatiquement a chaque modification. */
     public static function current(): self
     {
-        return self::query()->firstOrCreate([]);
+        // Le cache ne stocke que des valeurs simples (Laravel refuse de relire des objets PHP) :
+        // on garde les colonnes et on reconstruit le modele.
+        $attributes = \Illuminate\Support\Facades\Cache::rememberForever(self::CACHE_KEY, fn () => self::query()->firstOrCreate([])->getAttributes());
+
+        return (new self)->newFromBuilder($attributes);
+    }
+
+    public function getHeroImageWebpUrlAttribute(): ?string
+    {
+        return \App\Services\ImageOptimizer::webpUrl($this->hero_image_path);
     }
 
     public function getLogoUrlAttribute(): ?string

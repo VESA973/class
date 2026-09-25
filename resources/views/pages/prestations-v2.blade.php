@@ -23,7 +23,10 @@
                             'md:col-span-2 lg:col-span-2' => $loop->first && $prestations->count() > 2,
                         ]) data-reveal style="--reveal-delay: {{ ($loop->index % 3) * 90 }}ms">
                             <div @class(['relative overflow-hidden bg-muted', 'aspect-[16/10]', 'lg:aspect-[21/9]' => $loop->first && $prestations->count() > 2])>
-                                <img src="{{ $prestation->display_image }}" alt="" loading="lazy" decoding="async" onerror="this.hidden = true" class="size-full object-cover transition duration-700 group-hover:scale-105">
+                                <picture>
+                                    @if ($prestation->display_image_webp)<source srcset="{{ $prestation->display_image_webp }}" type="image/webp">@endif
+                                    <img src="{{ $prestation->display_image }}" alt="" loading="lazy" decoding="async" onerror="this.hidden = true" class="size-full object-cover transition duration-700 group-hover:scale-105">
+                                </picture>
                                 <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent"></div>
                                 <div class="absolute inset-x-0 bottom-0 p-5 sm:p-6">
                                     <span class="text-xs font-semibold uppercase tracking-[0.14em] text-white/70">Prestation</span>

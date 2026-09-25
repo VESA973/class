@@ -11,6 +11,27 @@ Toutes les évolutions notables du site CLASS'AFFAIRE. Format inspiré de [Keep 
   l'API de réservation, les pages admin et les changements de statut répondent comme avant.
 - Tests : la fabrique `UserFactory` crée des comptes actifs (`is_active`), `ExampleTest` utilise une base de test.
 
+### Module 9 — Optimisation et sécurité
+- **Dépendances** mises à jour : les 34 alertes de sécurité Composer sont corrigées (Laravel 13.7 → 13.33, Guzzle 8,
+  Symfony, CommonMark…) ; `composer audit` et `npm audit` : 0 vulnérabilité.
+- **En-têtes de sécurité** sur toutes les pages (`SecurityHeaders`) : `X-Content-Type-Options`, `X-Frame-Options`,
+  `Referrer-Policy`, `Permissions-Policy`, `Strict-Transport-Security` en HTTPS.
+- **Admin** : la connexion est vérifiée avant la recherche des éléments en base (un visiteur ne peut pas deviner les
+  identifiants) ; test automatique vérifiant que les 66 routes de l'admin exigent une connexion.
+- **Limitation des tentatives** ajoutée à l'ancien formulaire de réservation (`POST /reservations`), au registre
+  des cookies, à l'email de test et à l'envoi des devis (connexion : déjà 5 tentatives).
+- **Images** : compression et redimensionnement automatiques de toutes les photos envoyées (véhicules, prestations,
+  photo d'accueil, images de partage), version **WebP** servie via `<picture>` avec l'original en secours, rotation
+  EXIF des photos de téléphone ; commande `php artisan images:optimize` pour les photos déjà en ligne.
+- **Cache** des réglages globaux : paramètres (SEO, maintenance, cookies, favicon, emails), réglages du site
+  (logo, photo d'accueil), redirections, liens légaux du pied de page — vidés automatiquement à chaque modification.
+- **Index** ajoutés (véhicules, prestations, réservations, devis) ; **aucune requête N+1** : test vérifiant que
+  8 pages font le même nombre de requêtes avec 2 ou 12 éléments.
+- Compatible `config:cache` / `route:cache` / `view:cache` (plus d'appel à `env()` hors configuration).
+- Étiquettes de statut des devis centralisées (`Quote::STATUS_CLASSES`).
+- `GUIDE-ADMIN.md` : guide d'utilisation, mise en production et liste des informations à compléter.
+- Tests : `SecurityPerformanceTest` (6 tests). **76 tests au total.**
+
 ### Module 8 — Cookies (CNIL)
 - **Bandeau** sur toutes les pages publiques (`partials/cookie-banner.blade.php`, JavaScript léger sans dépendance) :
   « Tout accepter » et « Tout refuser » **strictement identiques**, « Personnaliser » par catégorie (nécessaires,

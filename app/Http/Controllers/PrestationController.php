@@ -60,7 +60,7 @@ class PrestationController extends Controller
 
         if ($imagePath) {
             if ($prestation->image_path) {
-                Storage::disk('public')->delete($prestation->image_path);
+                app(\App\Services\ImageOptimizer::class)->delete($prestation->image_path); // photo + version WebP
             }
 
             $data['image_path'] = $imagePath;
@@ -76,7 +76,7 @@ class PrestationController extends Controller
     public function destroy(Prestation $prestation): RedirectResponse
     {
         if ($prestation->image_path) {
-            Storage::disk('public')->delete($prestation->image_path);
+            app(\App\Services\ImageOptimizer::class)->delete($prestation->image_path); // photo + version WebP
         }
 
         $prestation->delete();
@@ -109,6 +109,7 @@ class PrestationController extends Controller
             return null;
         }
 
-        return $request->file('image')->store('prestations', 'public');
+        // Photo redimensionnee (1600 px max), recompressee et doublee d'une version WebP.
+        return app(\App\Services\ImageOptimizer::class)->optimize($request->file('image')->store('prestations', 'public'), 1600);
     }
 }

@@ -9,7 +9,7 @@
         'unit_price_ht' => $line->unit_price_ht,
         'vat_rate' => rtrim(rtrim((string) $line->vat_rate, '0'), '.'),
     ])->all());
-    $statusClass = ['draft' => 'tag-muted', 'sent' => 'tag-pending', 'accepted' => 'tag-success', 'refused' => 'tag-danger'][$quote->status];
+    $statusClass = $quote->status_class;
     $missingCompany = collect(['name' => 'raison sociale', 'siret' => 'SIRET', 'address' => 'adresse'])->filter(fn ($label, $key) => blank($company[$key] ?? null));
 @endphp
 

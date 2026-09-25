@@ -53,7 +53,7 @@
                     @foreach ($quotes as $quote)
                         <li>
                             <span><a href="{{ route('admin.quotes.edit', $quote) }}"><strong>{{ $quote->number }}</strong></a><small>{{ $quote->issued_at->format('d/m/Y') }} · {{ \App\Models\Quote::money($quote->total_ttc) }} TTC</small></span>
-                            <span class="tag {{ ['draft' => 'tag-muted', 'sent' => 'tag-pending', 'accepted' => 'tag-success', 'refused' => 'tag-danger'][$quote->status] }}">{{ $quote->status_label }}</span>
+                            <span class="tag {{ $quote->status_class }}">{{ $quote->status_label }}</span>
                         </li>
                     @endforeach
                 </ul>

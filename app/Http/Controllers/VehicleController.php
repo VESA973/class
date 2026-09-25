@@ -101,9 +101,7 @@ class VehicleController extends Controller
         $imagePath = $this->storeImage($request);
 
         if ($imagePath) {
-            if ($vehicle->image_path) {
-                Storage::disk('public')->delete($vehicle->image_path);
-            }
+            app(\App\Services\ImageOptimizer::class)->delete($vehicle->image_path);
 
             $data['image_path'] = $imagePath;
         }
@@ -131,9 +129,7 @@ class VehicleController extends Controller
 
     public function destroy(Request $request, Vehicle $vehicle): RedirectResponse|JsonResponse
     {
-        if ($vehicle->image_path) {
-            Storage::disk('public')->delete($vehicle->image_path);
-        }
+        app(\App\Services\ImageOptimizer::class)->delete($vehicle->image_path);
 
         if ($vehicle->model_path) {
             Storage::disk('public')->delete($vehicle->model_path);
@@ -213,7 +209,8 @@ class VehicleController extends Controller
             return null;
         }
 
-        return $request->file('image')->store('vehicles', 'public');
+        // Photo redimensionnee (1600 px max), recompressee et doublee d'une version WebP.
+        return app(\App\Services\ImageOptimizer::class)->optimize($request->file('image')->store('vehicles', 'public'), 1600);
     }
 
     private function storeModel(Request $request): ?string

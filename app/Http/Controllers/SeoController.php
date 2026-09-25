@@ -140,9 +140,9 @@ class SeoController extends Controller
 
         if ($request->hasFile('default_og_image')) {
             if ($old = app(Settings::class)->get('seo.default_og_image')) {
-                Storage::disk('public')->delete($old);
+                app(\App\Services\ImageOptimizer::class)->delete($old);
             }
-            $values['seo.default_og_image'] = $request->file('default_og_image')->store('seo', 'public');
+            $values['seo.default_og_image'] = app(\App\Services\ImageOptimizer::class)->optimize($request->file('default_og_image')->store('seo', 'public'), 1200);
         }
 
         $settings->set($values);
@@ -184,9 +184,11 @@ class SeoController extends Controller
 
         if ($request->boolean('remove_og_image') || $request->hasFile('og_image')) {
             if ($meta->og_image_path) {
-                Storage::disk('public')->delete($meta->og_image_path);
+                app(\App\Services\ImageOptimizer::class)->delete($meta->og_image_path);
             }
-            $meta->og_image_path = $request->hasFile('og_image') ? $request->file('og_image')->store('seo', 'public') : null;
+            $meta->og_image_path = $request->hasFile('og_image')
+                ? app(\App\Services\ImageOptimizer::class)->optimize($request->file('og_image')->store('seo', 'public'), 1200)
+                : null;
         }
 
         $meta->save();

@@ -82,6 +82,11 @@ class MailSettings
     /** Applique la configuration a Laravel (appele au demarrage de chaque requete et apres enregistrement). */
     public function apply(): void
     {
+        // Mailer d'origine (.env), memorise avant toute surcharge : affiche dans l'admin.
+        if (config('mail.env_default') === null) {
+            config(['mail.env_default' => config('mail.default')]);
+        }
+
         $fromAddress = $this->settings->get('mail.from.address');
         $fromName = $this->settings->get('mail.from.name');
 

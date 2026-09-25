@@ -43,7 +43,7 @@
                         </td>
                         <td>{{ $quote->issued_at->format('d/m/Y') }}<span>Valable jusqu’au {{ $quote->valid_until->format('d/m/Y') }}</span></td>
                         <td><strong>{{ \App\Models\Quote::money($quote->total_ttc) }}</strong></td>
-                        <td><span class="tag {{ ['draft' => 'tag-muted', 'sent' => 'tag-pending', 'accepted' => 'tag-success', 'refused' => 'tag-danger'][$quote->status] }}">{{ $quote->status_label }}</span></td>
+                        <td><span class="tag {{ $quote->status_class }}">{{ $quote->status_label }}</span></td>
                         <td class="actions"><a href="{{ route('admin.quotes.pdf', $quote) }}" target="_blank" rel="noopener">PDF</a></td>
                     </tr>
                 @empty

@@ -23,7 +23,7 @@ class EmailSettingsController extends Controller
         return view('admin.emails.settings', [
             'values' => $this->mailSettings->values(),
             'encryptions' => MailSettings::ENCRYPTIONS,
-            'envMailer' => config('mail.mailers.'.env('MAIL_MAILER', 'log')) ? env('MAIL_MAILER', 'log') : 'log',
+            'envMailer' => config('mail.env_default', config('mail.default')),
             'stats' => [
                 'sent' => EmailLog::where('status', 'sent')->where('created_at', '>=', now()->subDays(30))->count(),
                 'failed' => EmailLog::where('status', 'failed')->where('created_at', '>=', now()->subDays(30))->count(),

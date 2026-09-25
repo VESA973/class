@@ -40,7 +40,7 @@ Route::get('/vehicules', [FleetController::class, 'index'])->name('vehicles.page
 Route::get('/vehicules/{vehicle:slug}', [FleetController::class, 'show'])->name('vehicles.show');
 Route::get('/prestations', [SitePageController::class, 'prestations'])->name('prestations.page');
 Route::get('/contact', [SitePageController::class, 'contact'])->name('contact.page');
-Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store');
+Route::post('/reservations', [ReservationController::class, 'store'])->middleware('throttle:10,1')->name('reservations.store');
 Route::get('/reserver', [BookingPageController::class, 'create'])->name('booking.create');
 Route::permanentRedirect('/nouvelle-accueil', '/');
 Route::get('/site.webmanifest', WebManifestController::class)->name('webmanifest');

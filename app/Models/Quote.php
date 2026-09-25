@@ -11,6 +11,9 @@ class Quote extends Model
 {
     public const STATUS_LABELS = ['draft' => 'Brouillon', 'sent' => 'Envoyé', 'accepted' => 'Accepté', 'refused' => 'Refusé'];
 
+    /** Classe CSS de l'etiquette de statut dans l'admin. */
+    public const STATUS_CLASSES = ['draft' => 'tag-muted', 'sent' => 'tag-pending', 'accepted' => 'tag-success', 'refused' => 'tag-danger'];
+
     public const VAT_RATES = ['20' => '20 %', '10' => '10 %', '5.5' => '5,5 %', '2.1' => '2,1 %', '0' => '0 % (exonéré)'];
 
     protected $fillable = [
@@ -42,6 +45,11 @@ class Quote extends Model
     public function lines(): HasMany
     {
         return $this->hasMany(QuoteLine::class)->orderBy('position');
+    }
+
+    public function getStatusClassAttribute(): string
+    {
+        return self::STATUS_CLASSES[$this->status] ?? '';
     }
 
     public function getStatusLabelAttribute(): string

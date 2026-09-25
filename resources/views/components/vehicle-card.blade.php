@@ -3,7 +3,10 @@
 <article class="group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-card shadow-sm transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-2xl hover:shadow-black/50 focus-within:ring-2 focus-within:ring-ring" data-reveal data-category="{{ $vehicle->category }}" style="--reveal-delay: {{ $delay }}ms">
     <div class="relative aspect-[16/10] overflow-hidden bg-muted">
         <x-icon name="car-front" class="absolute left-1/2 top-1/2 size-10 -translate-x-1/2 -translate-y-1/2 text-muted-foreground/60" />
-        <img src="{{ $vehicle->display_image }}" alt="" loading="lazy" decoding="async" width="800" height="500" onerror="this.hidden = true" class="relative size-full object-cover transition duration-700 group-hover:scale-105">
+        <picture>
+            @if ($vehicle->display_image_webp)<source srcset="{{ $vehicle->display_image_webp }}" type="image/webp">@endif
+            <img src="{{ $vehicle->display_image }}" alt="" loading="lazy" decoding="async" width="800" height="500" onerror="this.hidden = true" class="relative size-full object-cover transition duration-700 group-hover:scale-105">
+        </picture>
         <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
         <span class="absolute left-3 top-3 rounded-full bg-black/60 px-2.5 py-1 text-xs font-medium text-white backdrop-blur">{{ $vehicle->category }}</span>
         @if ($vehicle->model_path || $vehicle->video_url)

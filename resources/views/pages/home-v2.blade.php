@@ -21,7 +21,10 @@
     {{-- FOND FIXE : la photo reste derriere toute la page (parallaxe + voile, voir script en bas) --}}
     <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-background" aria-hidden="true">
         @if ($heroImageUrl)
-            <img src="{{ $heroImageUrl }}" alt="" class="absolute inset-x-0 top-0 h-[115vh] w-full object-cover will-change-transform" fetchpriority="high" decoding="async" data-parallax>
+            <picture>
+                @if ($siteSettings->hero_image_webp_url)<source srcset="{{ $siteSettings->hero_image_webp_url }}" type="image/webp">@endif
+                <img src="{{ $heroImageUrl }}" alt="" class="absolute inset-x-0 top-0 h-[115vh] w-full object-cover will-change-transform" fetchpriority="high" decoding="async" data-parallax>
+            </picture>
         @else
             <img
                 src="{{ $unsplash($defaultHero, 1600) }}"

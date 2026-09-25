@@ -83,6 +83,12 @@ class Vehicle extends Model
         return $this->image_url ?: 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?auto=format&fit=crop&w=1200&q=80';
     }
 
+    /** Version WebP de la photo envoyee (null pour une image externe ou non optimisee). */
+    public function getDisplayImageWebpAttribute(): ?string
+    {
+        return \App\Services\ImageOptimizer::webpUrl($this->image_path);
+    }
+
     /** URL publique du modele 3D (.glb), ou null. */
     public function getModelUrlAttribute(): ?string
     {
