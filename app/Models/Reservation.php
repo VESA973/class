@@ -12,6 +12,16 @@ class Reservation extends Model
 
     public const STATUSES = ['pending', 'confirmed', 'cancelled', 'completed'];
 
+    /** Suivi commercial de la demande (independant du statut de reservation). */
+    public const REQUEST_STATUSES = [
+        'new' => 'Nouvelle',
+        'in_progress' => 'En cours',
+        'quote_sent' => 'Devis envoyé',
+        'accepted' => 'Accepté',
+        'refused' => 'Refusé',
+        'archived' => 'Archivée',
+    ];
+
     /** Libelles affiches dans l'admin. */
     public const STATUS_LABELS = [
         'pending' => 'En attente',
@@ -37,6 +47,7 @@ class Reservation extends Model
         'service_type',
         'estimated_total',
         'status',
+        'request_status',
         'message',
     ];
 
@@ -69,6 +80,21 @@ class Reservation extends Model
             $reservation->start_at = $reservation->start_date->copy()->startOfDay();
             $reservation->end_at = $lastDay->copy()->startOfDay()->addDay();
         });
+    }
+
+    public function getRequestStatusLabelAttribute(): string
+    {
+        return self::REQUEST_STATUSES[$this->request_status ?? 'new'] ?? (string) $this->request_status;
+    }
+
+    public function quotes(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Quote::class)->latest('id');
+    }
+
+    public function events(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ReservationEvent::class)->latest('id');
     }
 
     public function getStatusLabelAttribute(): string

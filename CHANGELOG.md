@@ -11,6 +11,31 @@ Toutes les évolutions notables du site CLASS'AFFAIRE. Format inspiré de [Keep 
   l'API de réservation, les pages admin et les changements de statut répondent comme avant.
 - Tests : la fabrique `UserFactory` crée des comptes actifs (`is_active`), `ExampleTest` utilise une base de test.
 
+### Module 5 — Demandes et devis
+- Une **demande** = une réservation faite sur le site. Nouveau champ `reservations.request_status` (suivi commercial :
+  Nouvelle, En cours, Devis envoyé, Accepté, Refusé, Archivée), **distinct** du statut de réservation qui continue
+  de piloter le planning et les disponibilités. Menu « Demandes » (ex-Réservations) avec filtre par suivi.
+- **Devis** (tables `quotes`, `quote_lines`) créés depuis une demande, pré-remplis (client, véhicule, dates, tarif
+  du véhicule × jours, TTC converti en HT) : lignes (désignation, quantité, prix HT, TVA 0 / 2,1 / 5,5 / 10 / 20 %),
+  remise en % ou en montant, date de validité, conditions, notes internes. Totaux calculés **en centimes** côté
+  serveur (remise répartie sur chaque taux de TVA) et affichés en direct pendant la saisie.
+- **Numérotation automatique** `DEV-AAAA-NNNN` (verrou anti-doublon).
+- **PDF** (barryvdh/laravel-dompdf) : bandeau noir aux couleurs du site, émetteur, client, trajet, lignes, TVA par
+  taux, total TTC, conditions, zone « Bon pour accord » ; champs d'entreprise manquants signalés « à compléter ».
+  Polices réduites aux caractères utilisés (~33 Ko). Stocké dans `storage/app/private/quotes` (non public).
+- **Envoi par email** avec le PDF joint (modèle « Envoi de devis ») ; échec signalé et tracé ; « Marquer accepté /
+  refusé » met à jour le suivi. Seuls les brouillons peuvent être supprimés.
+- **Historique par demande** (table `reservation_events`) : demande reçue, devis créé / modifié / envoyé / accepté /
+  refusé / supprimé, changements de statut (fiche, planning) et de suivi, avec l'auteur.
+- **Réglages** (Devis › Réglages) : TVA et validité par défaut, ligne par défaut, prix TTC ou HT, conditions,
+  informations de l'entreprise pour le PDF (raison sociale, forme, SIRET, TVA intracom., adresse, IBAN).
+- **Envoi automatique préparé mais DÉSACTIVÉ** : événement `ReservationCreated` → `HandleReservationCreated` →
+  `QuoteService::handleNewReservation()`, qui ne fait rien tant que l'option (avertissement + confirmation) est
+  désactivée. Activée : `QuoteService::generate()` puis `send()`.
+- Tableau de bord : carte « Devis en attente » (nombre et montant TTC).
+- Dépendance ajoutée : `barryvdh/laravel-dompdf` ^3.1.
+- Tests : `QuoteModuleTest` (11 tests, stockage fictif). 53 tests au total.
+
 ### Module 4 — Emails
 - **Configuration** (Admin › Emails) : choix entre les réglages du `.env` (par défaut, rien ne change) et un
   **serveur SMTP personnalisé** (hôte, port, chiffrement STARTTLS / SSL / aucun, identifiant, mot de passe) ;

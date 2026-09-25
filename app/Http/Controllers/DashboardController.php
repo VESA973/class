@@ -24,6 +24,8 @@ class DashboardController extends Controller
                     ->whereBetween('start_at', [$now, $now->copy()->addDays(7)])
                     ->count(),
                 'prestations' => Prestation::where('is_active', true)->count(),
+                'quotesPending' => \App\Models\Quote::where('status', 'sent')->count(),
+                'quotesPendingTotal' => \App\Models\Quote::where('status', 'sent')->sum('total_ttc'),
             ],
             // Demandes recentes (une requete pour les vehicules : pas de N+1)
             'recent' => Reservation::with('vehicle:id,name')->latest()->limit(6)->get(),

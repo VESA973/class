@@ -12,9 +12,9 @@
             ['route' => 'admin.prestations.index', 'pattern' => 'admin.prestations.*', 'label' => 'Prestations', 'icon' => 'sparkles'],
         ]],
         ['title' => 'Demandes & Devis', 'items' => [
-            ['route' => 'admin.reservations.index', 'pattern' => 'admin.reservations.*', 'label' => 'Réservations', 'icon' => 'clipboard-list', 'badge' => $pendingCount],
+            ['route' => 'admin.reservations.index', 'pattern' => 'admin.reservations.*', 'label' => 'Demandes', 'icon' => 'clipboard-list', 'badge' => $pendingCount],
             ['route' => 'admin.planning.index', 'pattern' => 'admin.planning.*', 'label' => 'Planning', 'icon' => 'calendar-days'],
-            ['label' => 'Devis', 'icon' => 'file-text', 'soon' => true],
+            ['route' => 'admin.quotes.index', 'pattern' => 'admin.quotes.*', 'label' => 'Devis', 'icon' => 'file-text'],
         ]],
         ['title' => 'Communication', 'items' => [
             ['route' => 'admin.emails.settings', 'pattern' => 'admin.emails.*', 'label' => 'Emails', 'icon' => 'mail'],

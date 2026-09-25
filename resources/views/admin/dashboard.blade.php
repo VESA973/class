@@ -22,6 +22,11 @@
             <span class="stat-value">{{ $stats['pending'] }}</span>
             <span class="stat-hint">Réservations à confirmer ou à chiffrer</span>
         </a>
+        <a class="stat-card" href="{{ route('admin.quotes.index', ['status' => 'sent']) }}">
+            <span class="stat-card-head">Devis en attente <x-icon name="file-text" /></span>
+            <span class="stat-value">{{ $stats['quotesPending'] }}</span>
+            <span class="stat-hint">{{ \App\Models\Quote::money($stats['quotesPendingTotal']) }} TTC en attente de réponse</span>
+        </a>
         <a class="stat-card" href="{{ route('admin.planning.index') }}">
             <span class="stat-card-head">Départs sous 7 jours <x-icon name="calendar-clock" /></span>
             <span class="stat-value">{{ $stats['upcoming'] }}</span>

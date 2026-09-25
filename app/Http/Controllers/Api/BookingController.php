@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Events\ReservationCreated;
 use App\Models\Reservation;
 use App\Models\Vehicle;
 use App\Services\ReservationAvailability;
@@ -129,6 +130,9 @@ class BookingController extends Controller
 
         /** @var Reservation $reservation */
         $reservation = $result['reservation'];
+
+        // Historique de la demande + envoi automatique du devis (desactive par defaut).
+        ReservationCreated::dispatch($reservation);
 
         // Envoi apres la reponse HTTP : le client n'attend pas le serveur mail,
         // et un echec d'envoi est journalise sans annuler la reservation.

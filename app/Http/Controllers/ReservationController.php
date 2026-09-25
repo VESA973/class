@@ -85,7 +85,9 @@ class ReservationController extends Controller
     {
         $reservations = Reservation::query()
             ->with(['prestation', 'vehicle'])
+            ->with('quotes:id,reservation_id,number,status')
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->input('status')))
+            ->when($request->filled('request_status'), fn ($query) => $query->where('request_status', $request->input('request_status')))
             ->latest()
             ->paginate(12)
             ->withQueryString();
@@ -110,7 +112,12 @@ class ReservationController extends Controller
             'status' => ['required', 'in:'.implode(',', Reservation::STATUSES)],
         ]);
 
+        $previous = $reservation->status;
         $reservation->update($validated);
+
+        if ($previous !== $reservation->status) {
+            \App\Models\ReservationEvent::record($reservation, 'status', 'Statut de réservation : '.(\App\Models\Reservation::STATUS_LABELS[$previous] ?? $previous).' → '.$reservation->status_label.'.');
+        }
 
         return redirect()
             ->route('admin.reservations.show', $reservation)

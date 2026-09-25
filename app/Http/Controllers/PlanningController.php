@@ -76,7 +76,12 @@ class PlanningController extends Controller
             'status' => ['required', Rule::in(['confirmed', 'cancelled'])],
         ]);
 
+        $previous = $reservation->status;
         $reservation->update(['status' => $validated['status']]);
+
+        if ($previous !== $reservation->status) {
+            \App\Models\ReservationEvent::record($reservation, 'status', 'Statut de réservation (planning) : '.(\App\Models\Reservation::STATUS_LABELS[$previous] ?? $previous).' → '.$reservation->status_label.'.');
+        }
 
         return response()->json([
             'message' => $validated['status'] === 'confirmed' ? 'Réservation confirmée.' : 'Réservation annulée.',

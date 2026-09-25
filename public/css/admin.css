@@ -375,6 +375,7 @@
 }
 
 .table-card {
+    position: relative; /* contient les elements positionnes (textes pour lecteurs d'ecran) */
     overflow-x: auto;
 }
 
@@ -683,7 +684,7 @@
 /* ------------------------------------------------------ Tableau de bord */
 .stat-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
     gap: 16px;
     margin-bottom: 24px;
 }
@@ -1142,6 +1143,13 @@ code,
     gap: 16px;
 }
 
+/* Les tableaux (lignes de devis...) defilent dans leur carte au lieu d'elargir la page. */
+.editor-grid > *,
+.settings-grid > *,
+.grid-stack > * {
+    min-width: 0;
+}
+
 .variable-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -1221,4 +1229,100 @@ code,
     .editor-grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* ---------------------------------------------------------------- Devis */
+.quote-grid {
+    grid-template-columns: minmax(0, 1.7fr) minmax(300px, 1fr);
+}
+
+.quote-lines td {
+    padding: 8px;
+    vertical-align: top;
+}
+
+.quote-lines textarea {
+    min-height: 42px;
+    resize: vertical;
+}
+
+.quote-bottom {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
+    gap: 20px;
+    align-items: start;
+}
+
+.totals {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px 16px;
+    margin: 0;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg);
+    font-size: 14px;
+}
+
+.totals dt {
+    color: var(--muted);
+}
+
+.totals dd {
+    margin: 0;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.totals .grand {
+    padding-top: 8px;
+    border-top: 1px solid var(--line);
+    color: var(--text);
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.timeline {
+    display: grid;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.timeline li {
+    display: grid;
+    grid-template-columns: 12px 1fr;
+    gap: 12px;
+}
+
+.timeline-dot {
+    width: 10px;
+    height: 10px;
+    margin-top: 6px;
+    border-radius: 999px;
+    background: var(--accent);
+}
+
+.timeline p {
+    margin: 0;
+    color: var(--text);
+    font-size: 14px;
+}
+
+.timeline small {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+@media (max-width: 1100px) {
+    .quote-grid,
+    .quote-bottom {
+        grid-template-columns: 1fr;
+    }
+}
+
+.form-card > * {
+    min-width: 0;
 }

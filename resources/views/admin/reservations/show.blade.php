@@ -5,7 +5,7 @@
 @section('content')
     <div class="page-head">
         <div>
-            <p class="eyebrow">Reservation #{{ $reservation->id }}</p>
+            <p class="eyebrow">Demande n°{{ $reservation->id }} · <span class="tag">{{ $reservation->request_status_label }}</span></p>
             <h1>{{ $reservation->customer_name }}</h1>
         </div>
         <a class="btn btn-secondary" href="{{ route('admin.reservations.index') }}">Retour</a>
@@ -33,11 +33,61 @@
         </section>
     </div>
 
+    @php($quotes = $reservation->quotes)
+    <div class="settings-grid" style="margin-top:16px">
+        <section class="form-card" aria-labelledby="quotes-title">
+            <div class="section-head">
+                <div>
+                    <h2 id="quotes-title">Devis</h2>
+                    <p class="form-hint">Pré-rempli avec le client, le véhicule, les dates et le tarif.</p>
+                </div>
+                <form method="POST" action="{{ route('admin.quotes.store', $reservation) }}">
+                    @csrf
+                    <button class="btn" type="submit">+ Créer un devis</button>
+                </form>
+            </div>
+            @if ($quotes->isEmpty())
+                <p class="empty-state" style="padding:12px 0">Aucun devis pour cette demande.</p>
+            @else
+                <ul class="panel-list" style="margin:0 -24px">
+                    @foreach ($quotes as $quote)
+                        <li>
+                            <span><a href="{{ route('admin.quotes.edit', $quote) }}"><strong>{{ $quote->number }}</strong></a><small>{{ $quote->issued_at->format('d/m/Y') }} · {{ \App\Models\Quote::money($quote->total_ttc) }} TTC</small></span>
+                            <span class="tag {{ ['draft' => 'tag-muted', 'sent' => 'tag-pending', 'accepted' => 'tag-success', 'refused' => 'tag-danger'][$quote->status] }}">{{ $quote->status_label }}</span>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+        </section>
+
+        <section class="form-card" aria-labelledby="follow-title">
+            <h2 id="follow-title">Suivi de la demande</h2>
+            <form method="POST" action="{{ route('admin.reservations.request-status', $reservation) }}" class="form-card" style="padding:0;border:0;background:none">
+                @csrf
+                @method('PATCH')
+                <label>Étape
+                    <select name="request_status">
+                        @foreach (\App\Models\Reservation::REQUEST_STATUSES as $key => $label)
+                            <option value="{{ $key }}" @selected($reservation->request_status === $key)>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <div class="form-actions"><button class="btn btn-secondary" type="submit">Mettre à jour le suivi</button></div>
+            </form>
+            @php($events = $reservation->events()->with('user:id,name')->limit(20)->get())
+            @if ($events->isNotEmpty())
+                <hr class="divider">
+                <h2>Historique</h2>
+                @include('admin.reservations._timeline', ['events' => $events])
+            @endif
+        </section>
+    </div>
+
     <form class="form-card compact" method="POST" action="{{ route('admin.reservations.update', $reservation) }}">
         @csrf
         @method('PATCH')
         <label>
-            Statut
+            Statut de la réservation (planning et disponibilités)
             <select name="status">
                 @foreach ($statuses as $status)
                     <option value="{{ $status }}" @selected($reservation->status === $status)>{{ \App\Models\Reservation::STATUS_LABELS[$status] ?? $status }}</option>
