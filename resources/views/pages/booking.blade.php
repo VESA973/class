@@ -11,7 +11,7 @@
     <section class="pb-8">
         <div data-island="BookingForm" data-props="{{ json_encode($props) }}">
             <noscript>
-                <p class="mx-auto max-w-7xl px-4">La réservation en ligne nécessite JavaScript. Vous pouvez aussi nous appeler au +33 1 80 11 44 83.</p>
+                <p class="mx-auto max-w-7xl px-4">La réservation en ligne nécessite JavaScript. Vous pouvez aussi nous appeler au {{ config('home.contact.phone') }}.</p>
             </noscript>
         </div>
     </section>

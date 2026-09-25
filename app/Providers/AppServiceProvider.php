@@ -30,6 +30,9 @@ class AppServiceProvider extends ServiceProvider
         // Serveur d'envoi des emails regle depuis l'admin (sinon : fichier .env).
         $this->app->make(\App\Services\MailSettings::class)->apply();
 
+        // Telephone, email et adresse regles depuis l'admin (sinon : config/home.php).
+        $this->app->make(\App\Services\ContactSettings::class)->apply();
+
         View::composer(['layouts.site', 'layouts.modern'], function ($view): void {
             $settings = null;
 

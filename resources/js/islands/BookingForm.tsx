@@ -55,6 +55,7 @@ type Props = {
     initialEnd?: string | null;
     initialPickup?: string | null;
     csrfToken: string;
+    contactPhone?: string | null;
     urls: { store: string; bookedPeriods: string; available: string; home: string; privacy?: string | null };
 };
 
@@ -146,7 +147,7 @@ function initialPeriod(start?: string | null, end?: string | null) {
     return { range: { from: startOfDay(from), to: startOfDay(to) }, startTime: time(from), endTime: time(to) };
 }
 
-export default function BookingForm({ vehicles, initialVehicleId, initialStart, initialEnd, initialPickup, csrfToken, urls }: Props) {
+export default function BookingForm({ vehicles, initialVehicleId, initialStart, initialEnd, initialPickup, csrfToken, contactPhone, urls }: Props) {
     const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
     const [suggestions, setSuggestions] = useState<Period[]>([]);
     const [calendarOpen, setCalendarOpen] = useState(false);
@@ -279,7 +280,7 @@ export default function BookingForm({ vehicles, initialVehicleId, initialStart, 
             return;
         }
 
-        toast.error('Une erreur est survenue. Réessayez ou appelez-nous au +33 1 80 11 44 83.');
+        toast.error(contactPhone ? `Une erreur est survenue. Réessayez ou appelez-nous au ${contactPhone}.` : 'Une erreur est survenue. Réessayez dans un instant.');
     }
 
     function startOver() {
@@ -295,7 +296,7 @@ export default function BookingForm({ vehicles, initialVehicleId, initialStart, 
                     <CardHeader>
                         <CardTitle>Aucun véhicule disponible</CardTitle>
                         <CardDescription>
-                            Notre flotte n'est pas réservable en ligne pour le moment. Appelez-nous au +33 1 80 11 44 83.
+                            Notre flotte n'est pas réservable en ligne pour le moment.{contactPhone ? ` Appelez-nous au ${contactPhone}.` : ''}
                         </CardDescription>
                     </CardHeader>
                 </Card>

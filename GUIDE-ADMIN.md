@@ -44,6 +44,9 @@ demandes récentes et prochains départs. Chaque carte est cliquable.
   politique change. Registre des choix et statistiques.
 
 ## Paramètres
+- **Coordonnées & WhatsApp** : téléphone, email et adresse affichés partout (en-tête, pied de page, Contact,
+  réservation, emails, devis, pages légales, SEO). Bouton WhatsApp : cocher « Afficher », saisir le numéro
+  (+33 6…, un 06/07 est converti), message pré-rempli ; lien « Tester » après enregistrement.
 - **Favicon & maintenance** : favicon (PNG 512×512, toutes les tailles générées) ; mode maintenance (page 503,
   message, date de retour, IP autorisées, aperçu). Vous continuez à voir le site une fois connecté.
 - **Utilisateurs** : comptes d’accès à l’administration (activer / désactiver).
@@ -80,5 +83,7 @@ php artisan config:cache && php artisan route:cache && php artisan view:cache
 3. **Devis › Réglages** : vérifier TVA, validité, conditions, IBAN.
 4. **SEO** : image de partage par défaut, réseaux sociaux, vérifier les données de l’entreprise.
 5. **Véhicules** : corriger les places si besoin, remplacer les photos cassées (Lamborghini Urus), ajouter les modèles 3D.
-6. **Favicon** : envoyer votre logo carré (PNG 512×512).
-7. Si vous ajoutez des outils de mesure d’audience ou de publicité : les coller dans **Cookies**, jamais directement dans le code.
+6. **Coordonnées & WhatsApp** : vérifier le téléphone, saisir le numéro WhatsApp et activer le bouton.
+   Politique de confidentialité : mentionner que les échanges WhatsApp passent par WhatsApp (Meta).
+7. **Favicon** : envoyer votre logo carré (PNG 512×512).
+8. Si vous ajoutez des outils de mesure d’audience ou de publicité : les coller dans **Cookies**, jamais directement dans le code.

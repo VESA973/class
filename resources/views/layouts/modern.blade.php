@@ -156,6 +156,7 @@
             reveal.forEach(function (el) { observer.observe(el); });
         })();
     </script>
+    @include('partials.whatsapp-button')
     @include('partials.cookie-banner')
     @stack('scripts')
 </body>

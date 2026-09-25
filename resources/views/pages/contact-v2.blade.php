@@ -5,6 +5,7 @@
 @section('description', \App\Services\Seo::pageDescription('contact'))
 
 @php($contact = config('home.contact'))
+@php($whatsappUrl = app(\App\Services\ContactSettings::class)->whatsappUrl())
 
 
 @section('content')
@@ -29,6 +30,16 @@
                     </span>
                     <x-icon name="arrow-right" class="ml-auto size-5 text-muted-foreground transition group-hover:translate-x-1 group-hover:text-foreground" />
                 </a>
+                @if ($whatsappUrl)
+                    <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener" class="group flex items-center gap-4 rounded-2xl border border-white/10 bg-card p-6 transition hover:-translate-y-0.5 hover:border-white/20" data-reveal style="--reveal-delay: 135ms">
+                        <span class="grid size-12 shrink-0 place-items-center rounded-xl text-white" style="background:#25d366"><x-icon name="message-circle" class="size-5" /></span>
+                        <span>
+                            <span class="block text-sm text-muted-foreground">WhatsApp · message ou appel</span>
+                            <span class="text-xl font-semibold">Écrire sur WhatsApp</span>
+                        </span>
+                        <x-icon name="arrow-right" class="ml-auto size-5 text-muted-foreground transition group-hover:translate-x-1 group-hover:text-foreground" />
+                    </a>
+                @endif
                 <div class="flex items-center gap-4 rounded-2xl border border-white/10 bg-card p-6" data-reveal style="--reveal-delay: 180ms">
                     <span class="grid size-12 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground"><x-icon name="map-pin" class="size-5" /></span>
                     <span>

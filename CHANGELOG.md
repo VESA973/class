@@ -2,7 +2,17 @@
 
 Toutes les évolutions notables du site CLASS'AFFAIRE. Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 
-## [Non publié] — branche `refonte-backend`
+## [Non publié] — Coordonnées & WhatsApp
+- **Admin › Paramètres › Coordonnées & WhatsApp** (`/admin/coordonnees`) : téléphone, email et adresse modifiables ;
+  les valeurs remplacent celles de `config/home.php` au démarrage (`ContactSettings::apply()`), donc tout le site
+  (en-tête, pied de page, Contact, emails, devis, pages légales, SEO, maintenance) suit automatiquement.
+- **Bouton WhatsApp** flottant (lien `wa.me`, sans cookie ni script tiers) sur toutes les pages publiques, activable
+  dans l'admin ; numéro normalisé (06… → 336…), message pré-rempli, nom du véhicule ajouté sur sa fiche, bouton
+  remonté au-dessus de la barre de réservation mobile ; carte WhatsApp sur la page Contact.
+- Numéro en dur retiré de la page de réservation (formulaire React et `noscript`).
+- Tests : `ContactSettingsTest` (8 tests) — 84 tests au total.
+
+## [Non publié] — refonte du back-office (branche `refonte-backend`, fusionnée dans main)
 
 ### Préparation
 - Sauvegarde de la base avant travaux : `storage/app/private/backups/class-20260925-122327.sql.gz`.

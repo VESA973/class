@@ -27,6 +27,12 @@
     @endpush
 @endif
 
+@php
+    // Bouton WhatsApp : remonte au-dessus de la barre de reservation mobile, message avec le vehicule.
+    $whatsappRaised = true;
+    $whatsappMessage = 'Bonjour, je souhaite des informations sur la location de la '.$vehicle->name.'.';
+@endphp
+
 @section('content')
     {{-- SCENE 3D + RESUME --}}
     <section class="relative isolate overflow-hidden pb-16 pt-28 sm:pt-32">

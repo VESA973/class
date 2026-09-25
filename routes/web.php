@@ -16,6 +16,7 @@ use App\Http\Controllers\HomePreviewController;
 use App\Http\Controllers\LegalPageController;
 use App\Http\Controllers\PublicLegalPageController;
 use App\Http\Controllers\ParametersController;
+use App\Http\Controllers\ContactSettingsController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\QuoteSettingsController;
 use App\Http\Controllers\RedirectController;
@@ -122,6 +123,8 @@ Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function
     Route::put('emails/modeles/{template}', [EmailTemplateController::class, 'update'])->name('emails.templates.update');
     Route::post('emails/modeles/{template}/apercu', [EmailTemplateController::class, 'preview'])->name('emails.templates.preview');
     Route::get('emails/historique', [EmailLogController::class, 'index'])->name('emails.logs');
+    Route::get('coordonnees', [ContactSettingsController::class, 'edit'])->name('contact.edit');
+    Route::put('coordonnees', [ContactSettingsController::class, 'update'])->name('contact.update');
     Route::get('parametres', [ParametersController::class, 'edit'])->name('parameters.edit');
     Route::put('parametres/maintenance', [ParametersController::class, 'updateMaintenance'])->name('parameters.maintenance');
     Route::get('parametres/maintenance/apercu', [ParametersController::class, 'previewMaintenance'])->name('parameters.maintenance.preview');

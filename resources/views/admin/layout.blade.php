@@ -27,6 +27,7 @@
         ]],
         ['title' => 'Paramètres', 'items' => [
             ['route' => 'admin.settings.edit', 'pattern' => 'admin.settings.*', 'label' => 'Logo du site', 'icon' => 'settings'],
+            ['route' => 'admin.contact.edit', 'pattern' => 'admin.contact.*', 'label' => 'Coordonnées & WhatsApp', 'icon' => 'phone'],
             ['route' => 'admin.parameters.edit', 'pattern' => 'admin.parameters.*', 'label' => 'Favicon & maintenance', 'icon' => 'wrench'],
             ['route' => 'admin.users.index', 'pattern' => 'admin.users.*', 'label' => 'Utilisateurs', 'icon' => 'users'],
         ]],
