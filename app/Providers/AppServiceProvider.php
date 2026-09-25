@@ -15,7 +15,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Une seule instance par requete : les parametres ne sont lus qu'une fois.
+        $this->app->singleton(\App\Services\Settings::class);
     }
 
     /**

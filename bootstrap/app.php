@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureAdminAuthenticated;
+use App\Http\Middleware\MaintenanceMode;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -12,6 +13,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Mode maintenance pilote depuis l'admin (apres la session : les admins connectes passent).
+        $middleware->web(append: [MaintenanceMode::class]);
+
         $middleware->alias([
             'admin.auth' => EnsureAdminAuthenticated::class,
         ]);

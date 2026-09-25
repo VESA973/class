@@ -16,6 +16,7 @@
     <title>@yield('title', 'CLASS’AFFAIRE - Location de voitures de prestige')</title>
     <meta name="color-scheme" content="dark">
     <meta name="theme-color" content="#0a0a0a">
+    @include('partials.favicon')
     {{-- Theme sombre uniquement. La classe "js" active les animations d'apparition. --}}
     <script>document.documentElement.classList.add('js');</script>
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -68,6 +69,13 @@
             </nav>
         </div>
     </header>
+
+    @isset($maintenanceBypass)
+        <div class="fixed inset-x-0 bottom-0 z-[70] flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t border-amber-400/40 bg-amber-950/95 px-4 py-2 text-center text-sm text-amber-200 backdrop-blur" role="status">
+            Mode maintenance activé : les visiteurs voient la page de maintenance.
+            <a href="{{ route('admin.parameters.edit') }}" class="font-semibold underline underline-offset-4">Paramètres</a>
+        </div>
+    @endisset
 
     <main id="contenu">
         @yield('content')

@@ -27,7 +27,7 @@
         ]],
         ['title' => 'Paramètres', 'items' => [
             ['route' => 'admin.settings.edit', 'pattern' => 'admin.settings.*', 'label' => 'Logo du site', 'icon' => 'settings'],
-            ['label' => 'Favicon & maintenance', 'icon' => 'wrench', 'soon' => true],
+            ['route' => 'admin.parameters.edit', 'pattern' => 'admin.parameters.*', 'label' => 'Favicon & maintenance', 'icon' => 'wrench'],
             ['route' => 'admin.users.index', 'pattern' => 'admin.users.*', 'label' => 'Utilisateurs', 'icon' => 'users'],
         ]],
     ];
@@ -41,6 +41,7 @@
     <meta name="robots" content="noindex, nofollow">
     <meta name="color-scheme" content="dark">
     <title>@yield('title', 'Administration') - CLASS’AFFAIRE</title>
+    @include('partials.favicon')
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link rel="stylesheet" href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v={{ filemtime(public_path('css/admin.css')) }}">
@@ -111,6 +112,13 @@
     </aside>
 
     <main class="admin-main" id="admin-content">
+        @if (app(\App\Services\Settings::class)->get('maintenance.enabled') && ! request()->routeIs('admin.parameters.*'))
+            <div class="maintenance-banner" role="status">
+                <span>Mode maintenance activé : les visiteurs voient la page de maintenance.</span>
+                <a href="{{ route('admin.parameters.edit') }}">Gérer</a>
+            </div>
+        @endif
+
         @if (session('status'))
             <div class="flash" role="status">{{ session('status') }}</div>
         @endif

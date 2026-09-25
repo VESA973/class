@@ -11,6 +11,24 @@ Toutes les évolutions notables du site CLASS'AFFAIRE. Format inspiré de [Keep 
   l'API de réservation, les pages admin et les changements de statut répondent comme avant.
 - Tests : la fabrique `UserFactory` crée des comptes actifs (`is_active`), `ExampleTest` utilise une base de test.
 
+### Module 3 — Paramètres : favicon et mode maintenance
+- **Paramètres globaux** : nouvelle table `settings` (clé → valeur JSON) et service `App\Services\Settings`,
+  lu une seule fois puis gardé en cache (vidé automatiquement à chaque modification). Servira aussi au SEO,
+  aux cookies et au SMTP.
+- **Mode maintenance** (Admin › Paramètres › Favicon & maintenance) : interrupteur, titre, message, date de
+  retour estimée, adresses IP autorisées (CIDR accepté, bouton « ajouter mon IP »), aperçu de la page.
+  - Visiteurs : page au design du site, **HTTP 503 + `Retry-After`** (secondes jusqu'au retour prévu, 1 h sinon),
+    réponse JSON 503 pour l'API de réservation.
+  - Toujours accessibles : le back-office, les administrateurs connectés (avec un bandeau de rappel) et les IP autorisées.
+  - Middleware `MaintenanceMode` ajouté au groupe `web` (`bootstrap/app.php`).
+- **Favicon** : envoi d'un PNG (192×192 minimum, 512×512 conseillé ; les images non carrées sont centrées) ou d'un
+  SVG si Imagick est installé (SVG contenant du code refusé). Génération : `favicon.ico` (16+32+48), PNG 16 et 32,
+  `apple-touch-icon` 180 (fond sombre), Android 192 et 512, `/site.webmanifest`. Balises injectées dans le `<head>`
+  de toutes les pages (`partials/favicon.blade.php`) ; retour possible à l'icône par défaut. Le fichier d'origine
+  `public/favicon.ico` n'est pas modifié.
+- Tableau de bord : la carte « Mode maintenance » reflète l'état réel.
+- Tests : `ParametersTest` (9 tests). 35 tests au total.
+
 ### Module 2 — Gestion des véhicules en deux colonnes
 - `/admin/vehicles` devient un gestionnaire (React + shadcn/ui) : **liste à gauche** (miniature, nom, catégorie,
   prix, statut « Visible / Masqué », état « Libre / En location », pictogramme 3D) avec **recherche**, **filtres**

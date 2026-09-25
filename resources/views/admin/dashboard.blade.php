@@ -27,7 +27,7 @@
             <span class="stat-value">{{ $stats['upcoming'] }}</span>
             <span class="stat-hint">En attente ou confirmés</span>
         </a>
-        <div class="stat-card">
+        <a class="stat-card" href="{{ route('admin.parameters.edit') }}">
             <span class="stat-card-head">Mode maintenance <x-icon name="wrench" /></span>
             <span class="stat-value" style="font-size:22px">
                 @if ($maintenance)
@@ -36,8 +36,8 @@
                     <span class="tag tag-success" style="font-size:14px">Site en ligne</span>
                 @endif
             </span>
-            <span class="stat-hint">Réglable au module Paramètres</span>
-        </div>
+            <span class="stat-hint">{{ $maintenance ? 'Les visiteurs voient la page de maintenance' : 'Paramètres › Favicon & maintenance' }}</span>
+        </a>
     </div>
 
     <div class="dashboard-grid">

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="@yield('description', 'Class&rsquo;Affaire, entreprise de location de voiture avec chauffeur depuis 2021.')">
     <title>@yield('title', 'CLASS&rsquo;AFFAIRE - Location de voiture avec chauffeur')</title>
+    @include('partials.favicon')
     <link rel="preconnect" href="https://images.unsplash.com">
     <link rel="stylesheet" href="{{ asset('css/rentlux.css') }}">
 </head>

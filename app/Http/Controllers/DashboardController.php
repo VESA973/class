@@ -33,8 +33,7 @@ class DashboardController extends Controller
                 ->orderBy('start_at')
                 ->limit(5)
                 ->get(),
-            // Le mode maintenance arrive au module "Parametres" : desactive tant qu'il n'existe pas.
-            'maintenance' => false,
+            'maintenance' => (bool) app(\App\Services\Settings::class)->get('maintenance.enabled', false),
         ]);
     }
 }

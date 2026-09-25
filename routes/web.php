@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FleetController;
 use App\Http\Controllers\HeroImageController;
 use App\Http\Controllers\HomePreviewController;
+use App\Http\Controllers\ParametersController;
 use App\Http\Controllers\PlanningController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PrestationController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\SitePageController;
 use App\Http\Controllers\SiteSettingController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VehicleController;
+use App\Http\Controllers\WebManifestController;
 use Illuminate\Support\Facades\Route;
 
 // Accueil : nouvelle page (validee). Pour revenir a l'ancienne : [HomeController::class, 'index'].
@@ -28,6 +30,7 @@ Route::get('/contact', [SitePageController::class, 'contact'])->name('contact.pa
 Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store');
 Route::get('/reserver', [BookingPageController::class, 'create'])->name('booking.create');
 Route::permanentRedirect('/nouvelle-accueil', '/');
+Route::get('/site.webmanifest', WebManifestController::class)->name('webmanifest');
 
 Route::prefix('api')->name('api.')->group(function (): void {
     Route::get('vehicles/available', [VehicleAvailabilityController::class, 'available'])
@@ -61,6 +64,11 @@ Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function
     Route::get('reservations/{reservation}', [ReservationController::class, 'show'])->name('reservations.show');
     Route::patch('reservations/{reservation}', [ReservationController::class, 'update'])->name('reservations.update');
     Route::resource('users', UserController::class)->except(['show']);
+    Route::get('parametres', [ParametersController::class, 'edit'])->name('parameters.edit');
+    Route::put('parametres/maintenance', [ParametersController::class, 'updateMaintenance'])->name('parameters.maintenance');
+    Route::get('parametres/maintenance/apercu', [ParametersController::class, 'previewMaintenance'])->name('parameters.maintenance.preview');
+    Route::post('parametres/favicon', [ParametersController::class, 'updateFavicon'])->name('parameters.favicon');
+    Route::delete('parametres/favicon', [ParametersController::class, 'destroyFavicon'])->name('parameters.favicon.destroy');
     Route::get('planning', [PlanningController::class, 'index'])->name('planning.index');
     Route::get('planning/events', [PlanningController::class, 'events'])->name('planning.events');
     Route::patch('planning/reservations/{reservation}/status', [PlanningController::class, 'updateStatus'])->name('planning.status');
