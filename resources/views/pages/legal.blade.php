@@ -17,7 +17,7 @@
 
 @section('content')
     <x-page-hero eyebrow="Informations légales" :title="$page->title">
-        <p class="mt-5 text-sm text-muted-foreground">Dernière mise à jour : {{ $page->updated_at->timezone('Europe/Paris')->locale('fr')->isoFormat('D MMMM YYYY') }}</p>
+        <p class="mt-5 text-sm text-muted-foreground">Dernière mise à jour : {{ $page->updated_at->timezone(config('app.local_timezone'))->locale('fr')->isoFormat('D MMMM YYYY') }}</p>
     </x-page-hero>
 
     <div class="mx-auto grid max-w-7xl gap-10 px-4 pb-24 sm:px-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:px-8">

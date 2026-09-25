@@ -24,7 +24,7 @@
                         <td><strong>{{ $page->title }}</strong></td>
                         <td><a href="{{ $page->url }}" target="_blank" rel="noopener">/{{ $page->slug }}</a></td>
                         <td><span class="tag {{ $page->is_published ? 'tag-success' : 'tag-muted' }}">{{ $page->is_published ? 'Publiée' : 'Masquée' }}</span></td>
-                        <td>{{ $page->updated_at->timezone('Europe/Paris')->format('d/m/Y H:i') }}</td>
+                        <td>{{ $page->updated_at->timezone(config('app.local_timezone'))->format('d/m/Y H:i') }}</td>
                         <td>{{ $page->versions_count }}</td>
                         <td class="actions"><a href="{{ route('admin.legal.edit', $page) }}">Modifier</a></td>
                     </tr>

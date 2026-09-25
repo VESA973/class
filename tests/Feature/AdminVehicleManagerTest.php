@@ -39,7 +39,7 @@ class AdminVehicleManagerTest extends TestCase
         $this->vehicle(['name' => 'Rolls Ghost', 'category' => 'Chauffeur', 'is_available' => false]);
         Reservation::create([
             'vehicle_id' => $rented->id, 'customer_name' => 'A', 'customer_phone' => '0600000000', 'start_date' => now()->toDateString(),
-            'start_at' => now('Europe/Paris')->subHour()->format('Y-m-d H:i'), 'end_at' => now('Europe/Paris')->addDay()->format('Y-m-d H:i'),
+            'start_at' => now(config('app.local_timezone'))->subHour()->format('Y-m-d H:i'), 'end_at' => now(config('app.local_timezone'))->addDay()->format('Y-m-d H:i'),
             'days' => 1, 'pickup_location' => 'Paris', 'estimated_total' => 1, 'status' => 'confirmed',
         ]);
 

@@ -75,7 +75,7 @@ class QuoteModuleTest extends TestCase
         $this->post("/admin/reservations/{$reservation->id}/devis")->assertRedirect();
         $this->post("/admin/reservations/{$reservation->id}/devis")->assertRedirect();
 
-        $year = now('Europe/Paris')->year;
+        $year = now(config('app.local_timezone'))->year;
         $this->assertSame(["DEV-{$year}-0001", "DEV-{$year}-0002"], Quote::orderBy('id')->pluck('number')->all());
 
         $quote = Quote::first()->load('lines');

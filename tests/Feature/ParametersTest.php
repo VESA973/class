@@ -51,7 +51,7 @@ class ParametersTest extends TestCase
 
     public function test_retry_after_follows_the_planned_return_date(): void
     {
-        $this->enableMaintenance(['return_at' => now('Europe/Paris')->addHours(2)->format('Y-m-d\TH:i')]);
+        $this->enableMaintenance(['return_at' => now(config('app.local_timezone'))->addHours(2)->format('Y-m-d\TH:i')]);
 
         $retryAfter = (int) $this->get('/')->assertStatus(503)->headers->get('Retry-After');
         $this->assertEqualsWithDelta(7200, $retryAfter, 120);

@@ -5,7 +5,7 @@
 @section('content')
     <div class="page-head">
         <div>
-            <p class="eyebrow">Version du {{ $version->created_at->timezone('Europe/Paris')->format('d/m/Y à H:i') }} · {{ $version->user?->name ?? 'Système' }}</p>
+            <p class="eyebrow">Version du {{ $version->created_at->timezone(config('app.local_timezone'))->format('d/m/Y à H:i') }} · {{ $version->user?->name ?? 'Système' }}</p>
             <h1>{{ $version->title }}</h1>
         </div>
         <div class="form-actions">

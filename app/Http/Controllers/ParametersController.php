@@ -45,7 +45,7 @@ class ParametersController extends Controller
         return view('maintenance', [
             'title' => $this->settings->get('maintenance.title') ?: 'Site en maintenance',
             'message' => $this->settings->get('maintenance.message') ?: 'Nous améliorons notre site. Merci de revenir un peu plus tard.',
-            'returnAt' => $returnAt ? \Carbon\Carbon::parse($returnAt, 'Europe/Paris') : null,
+            'returnAt' => $returnAt ? \Carbon\Carbon::parse($returnAt, config('app.local_timezone')) : null,
         ]);
     }
 

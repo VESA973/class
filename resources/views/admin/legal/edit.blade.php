@@ -43,7 +43,7 @@
                         <span class="timeline-dot" aria-hidden="true"></span>
                         <div>
                             <p>{{ $version->note ?: 'Modification' }}</p>
-                            <small>{{ $version->created_at->timezone('Europe/Paris')->format('d/m/Y à H:i') }} · {{ $version->user?->name ?? 'Système' }}
+                            <small>{{ $version->created_at->timezone(config('app.local_timezone'))->format('d/m/Y à H:i') }} · {{ $version->user?->name ?? 'Système' }}
                                 · <a href="{{ route('admin.legal.version', [$page, $version]) }}" style="text-decoration:underline">Voir</a>
                                 @unless ($loop->first)
                                     · <form method="POST" action="{{ route('admin.legal.restore', [$page, $version]) }}" style="display:inline" onsubmit="return confirm('Restaurer cette version ? Le contenu actuel sera remplacé (il reste dans l’historique).')">@csrf<button type="submit" class="link-button" style="font-size:12px">Restaurer</button></form>

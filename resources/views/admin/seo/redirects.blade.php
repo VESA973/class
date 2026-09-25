@@ -38,7 +38,7 @@
                         <td><code>{{ $redirect->from_path }}</code></td>
                         <td><code>{{ $redirect->to_url }}</code></td>
                         <td>{{ $redirect->status_code }}</td>
-                        <td>{{ $redirect->hits }}@if ($redirect->last_hit_at)<span>Dernière : {{ $redirect->last_hit_at->timezone('Europe/Paris')->format('d/m/Y H:i') }}</span>@endif</td>
+                        <td>{{ $redirect->hits }}@if ($redirect->last_hit_at)<span>Dernière : {{ $redirect->last_hit_at->timezone(config('app.local_timezone'))->format('d/m/Y H:i') }}</span>@endif</td>
                         <td class="actions">
                             <form method="POST" action="{{ route('admin.seo.redirects.destroy', $redirect) }}" onsubmit="return confirm('Supprimer cette redirection ?')">
                                 @csrf

@@ -115,7 +115,7 @@
                     <div class="form-actions"><button class="btn" type="submit">{{ $quote->sent_at ? 'Renvoyer le devis' : 'Envoyer le devis' }}</button></div>
                 </form>
                 @if ($quote->sent_at)
-                    <p class="form-hint">Dernier envoi : {{ $quote->sent_at->timezone('Europe/Paris')->format('d/m/Y à H:i') }}</p>
+                    <p class="form-hint">Dernier envoi : {{ $quote->sent_at->timezone(config('app.local_timezone'))->format('d/m/Y à H:i') }}</p>
                 @endif
             </section>
 

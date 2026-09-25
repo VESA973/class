@@ -46,7 +46,7 @@
                     <textarea name="message" rows="4" maxlength="1000" placeholder="Nous améliorons notre site. Merci de revenir un peu plus tard.">{{ old('message', $maintenance['message']) }}</textarea>
                 </label>
                 <label>
-                    Date et heure de retour estimées (facultatif, heure de Paris)
+                    Date et heure de retour estimées (facultatif, heure de Guyane)
                     <input type="datetime-local" name="return_at" value="{{ old('return_at', $maintenance['return_at']) }}">
                 </label>
                 <label>

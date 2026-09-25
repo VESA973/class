@@ -80,7 +80,7 @@ class LegalPageController extends Controller
             'user_id' => $request->user()?->id,
             'title' => $version->title,
             'content' => $version->content,
-            'note' => 'Restauration de la version du '.$version->created_at->timezone('Europe/Paris')->format('d/m/Y H:i'),
+            'note' => 'Restauration de la version du '.$version->created_at->timezone(config('app.local_timezone'))->format('d/m/Y H:i'),
         ]);
 
         return redirect()->route('admin.legal.edit', $legalPage)->with('status', 'Version restaurée.');

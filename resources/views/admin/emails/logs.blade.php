@@ -29,7 +29,7 @@
             <tbody>
                 @forelse ($logs as $log)
                     <tr>
-                        <td>{{ $log->created_at->timezone('Europe/Paris')->format('d/m/Y H:i') }}</td>
+                        <td>{{ $log->created_at->timezone(config('app.local_timezone'))->format('d/m/Y H:i') }}</td>
                         <td>{{ $log->recipient }}</td>
                         <td>
                             {{ $log->subject }}

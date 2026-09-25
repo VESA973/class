@@ -5,7 +5,7 @@
 @section('content')
     <div class="page-head">
         <div>
-            <p class="eyebrow">{{ now('Europe/Paris')->locale('fr')->isoFormat('dddd D MMMM YYYY') }}</p>
+            <p class="eyebrow">{{ now(config('app.local_timezone'))->locale('fr')->isoFormat('dddd D MMMM YYYY') }}</p>
             <h1>Bonjour {{ auth()->user()->name }}</h1>
         </div>
         <a class="btn btn-secondary" href="{{ route('admin.planning.index') }}"><x-icon name="calendar-days" style="width:18px;height:18px" /> Ouvrir le planning</a>

@@ -65,7 +65,7 @@ class EmailSettingsController extends Controller
         $data = $request->validate(['to' => ['required', 'email', 'max:255']], ['to.email' => 'Adresse de test invalide.']);
 
         $html = '<h1>Email de test</h1><p>Si vous lisez ce message, les emails du site sont correctement configurés.</p>'
-            .'<ul><li><strong>Envoyé le :</strong> '.e(now('Europe/Paris')->format('d/m/Y à H:i')).'</li>'
+            .'<ul><li><strong>Envoyé le :</strong> '.e(now(config('app.local_timezone'))->format('d/m/Y à H:i')).'</li>'
             .'<li><strong>Mode :</strong> '.e($this->mailSettings->mode() === 'smtp' ? 'serveur SMTP de l’admin' : 'réglages du fichier .env').'</li></ul>';
 
         $log = $emails->sendNow('test', $data['to'], new TemplatedMail('Email de test - CLASS’AFFAIRE', $html, "Email de test\n\nLes emails du site sont correctement configurés."));

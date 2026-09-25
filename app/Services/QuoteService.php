@@ -68,8 +68,8 @@ class QuoteService
             'customer_email' => $reservation->customer_email,
             'customer_phone' => $reservation->customer_phone,
             'subject' => 'Location '.($reservation->vehicle?->name ?? 'de véhicule'),
-            'issued_at' => now('Europe/Paris')->toDateString(),
-            'valid_until' => now('Europe/Paris')->addDays($config['validity_days'])->toDateString(),
+            'issued_at' => now(config('app.local_timezone'))->toDateString(),
+            'valid_until' => now(config('app.local_timezone'))->addDays($config['validity_days'])->toDateString(),
             'discount_type' => 'none',
             'discount_value' => 0,
             'conditions' => $config['conditions'],
@@ -98,7 +98,7 @@ class QuoteService
     public function create(array $data, array $lines): Quote
     {
         return DB::transaction(function () use ($data, $lines) {
-            $year = (int) now('Europe/Paris')->format('Y');
+            $year = (int) now(config('app.local_timezone'))->format('Y');
             $sequence = (int) Quote::query()->where('year', $year)->lockForUpdate()->max('sequence') + 1;
 
             $quote = Quote::create($data + [

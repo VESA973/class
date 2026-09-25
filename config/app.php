@@ -68,6 +68,14 @@ return [
     'timezone' => 'UTC',
 
     /*
+    | Fuseau horaire du site (Guyane : America/Cayenne, UTC-3, sans heure d'ete).
+    | Heures de reservation, dates des devis, dates affichees dans l'admin. Les dates
+    | techniques (created_at...) restent enregistrees en UTC et sont converties a l'affichage.
+    */
+
+    'local_timezone' => env('APP_LOCAL_TIMEZONE', 'America/Cayenne'),
+
+    /*
     |--------------------------------------------------------------------------
     | Application Locale Configuration
     |--------------------------------------------------------------------------

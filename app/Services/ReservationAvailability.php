@@ -10,15 +10,13 @@ use Illuminate\Support\Collection;
 /**
  * Disponibilite des vehicules.
  *
- * Les heures sont stockees en heure locale "murale" (Europe/Paris) sans
+ * Les heures sont stockees en heure locale "murale" (config app.local_timezone) sans
  * conversion. Une periode est semi-ouverte [start_at, end_at[ : deux
  * reservations se chevauchent si debut_existant < fin_demandee ET
  * fin_existante > debut_demande.
  */
 class ReservationAvailability
 {
-    public const TIMEZONE = 'Europe/Paris';
-
     /** Statuts qui immobilisent le vehicule (une reservation annulee libere le creneau). */
     public const BLOCKING_STATUSES = ['pending', 'confirmed', 'completed'];
 
@@ -31,10 +29,16 @@ class ReservationAvailability
 
     public const SLOT_MINUTES = 30;
 
-    /** Heure actuelle a Paris, exprimee dans le meme referentiel que les colonnes start_at / end_at. */
+    /** Fuseau horaire du site (Guyane par defaut). */
+    public static function timezone(): string
+    {
+        return (string) config('app.local_timezone', 'America/Cayenne');
+    }
+
+    /** Heure actuelle sur place, exprimee dans le meme referentiel que les colonnes start_at / end_at. */
     public static function now(): Carbon
     {
-        return Carbon::parse(Carbon::now(self::TIMEZONE)->format('Y-m-d H:i:s'));
+        return Carbon::parse(Carbon::now(self::timezone())->format('Y-m-d H:i:s'));
     }
 
     /** @return Collection<int, Reservation> */

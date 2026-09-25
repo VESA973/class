@@ -68,7 +68,7 @@ class MaintenanceMode
         $value = $this->settings->get('maintenance.return_at');
 
         try {
-            return $value ? Carbon::parse($value, 'Europe/Paris') : null;
+            return $value ? Carbon::parse($value, config('app.local_timezone')) : null;
         } catch (Throwable) {
             return null;
         }

@@ -39,7 +39,7 @@
             <tbody>
                 @forelse ($consents as $consent)
                     <tr>
-                        <td>{{ $consent->created_at->timezone('Europe/Paris')->format('d/m/Y H:i') }}</td>
+                        <td>{{ $consent->created_at->timezone(config('app.local_timezone'))->format('d/m/Y H:i') }}</td>
                         <td><code>{{ \Illuminate\Support\Str::limit($consent->consent_id, 13, '…') }}</code></td>
                         <td><span class="tag {{ ['accept_all' => 'tag-success', 'reject_all' => 'tag-danger', 'custom' => 'tag-pending'][$consent->action] }}">{{ \App\Models\CookieConsent::ACTIONS[$consent->action] }}</span></td>
                         <td>{{ $consent->analytics ? 'Oui' : 'Non' }}</td>
