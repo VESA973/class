@@ -58,6 +58,15 @@ class Vehicle extends Model
 
             $vehicle->slug = $slug;
         });
+
+        // Adresse publique modifiee : l'ancienne redirige automatiquement (301) vers la nouvelle.
+        static::updated(function (Vehicle $vehicle): void {
+            $old = $vehicle->getRawOriginal('slug');
+
+            if ($vehicle->wasChanged('slug') && $old) {
+                \App\Services\RedirectService::addressChanged('/vehicules/'.$old, '/vehicules/'.$vehicle->slug);
+            }
+        });
     }
 
     public function reservations(): HasMany

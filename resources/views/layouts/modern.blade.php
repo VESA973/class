@@ -12,8 +12,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="@yield('description', 'Class’Affaire, location de voitures de prestige avec ou sans chauffeur à Paris, Cannes et Roissy depuis 2021.')">
-    <title>@yield('title', 'CLASS’AFFAIRE - Location de voitures de prestige')</title>
+    @include('partials.seo-head')
     <meta name="color-scheme" content="dark">
     <meta name="theme-color" content="#0a0a0a">
     @include('partials.favicon')

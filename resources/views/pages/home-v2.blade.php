@@ -1,5 +1,9 @@
 @extends('layouts.modern')
 
+@section('seo_page', 'home')
+@section('title', \App\Services\Seo::pageTitle('home'))
+@section('description', \App\Services\Seo::pageDescription('home'))
+
 @php
     $defaultHero = 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?auto=format&fit=crop&q=80';
     $unsplash = fn (string $url, int $width) => $url.(str_contains($url, '?') ? '&' : '?').'w='.$width;

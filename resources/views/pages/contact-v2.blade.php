@@ -1,9 +1,11 @@
 @extends('layouts.modern')
 
+@section('seo_page', 'contact')
+@section('title', \App\Services\Seo::pageTitle('contact'))
+@section('description', \App\Services\Seo::pageDescription('contact'))
+
 @php($contact = config('home.contact'))
 
-@section('title', 'Contact - CLASS’AFFAIRE')
-@section('description', 'Contactez CLASS’AFFAIRE 24h/24 et 7j/7 : téléphone, email, adresse à Roissy-en-France.')
 
 @section('content')
     <x-page-hero eyebrow="Contact" title="Parlons de votre prochain trajet." text="Transferts, évènements, voyages d’affaires ou demandes sur mesure : un conseiller vous répond avec les disponibilités et les conditions." />

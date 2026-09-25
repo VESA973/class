@@ -14,12 +14,15 @@ use App\Http\Controllers\HomePreviewController;
 use App\Http\Controllers\ParametersController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\QuoteSettingsController;
+use App\Http\Controllers\RedirectController;
 use App\Http\Controllers\RequestStatusController;
+use App\Http\Controllers\SeoController;
 use App\Http\Controllers\PlanningController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PrestationController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\SitePageController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SiteSettingController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VehicleController;
@@ -37,6 +40,8 @@ Route::post('/reservations', [ReservationController::class, 'store'])->name('res
 Route::get('/reserver', [BookingPageController::class, 'create'])->name('booking.create');
 Route::permanentRedirect('/nouvelle-accueil', '/');
 Route::get('/site.webmanifest', WebManifestController::class)->name('webmanifest');
+Route::get('/sitemap.xml', [SitemapController::class, 'sitemap'])->name('sitemap');
+Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
 
 Route::prefix('api')->name('api.')->group(function (): void {
     Route::get('vehicles/available', [VehicleAvailabilityController::class, 'available'])
@@ -81,6 +86,16 @@ Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function
     Route::get('devis/{quote}/pdf', [QuoteController::class, 'pdf'])->whereNumber('quote')->name('quotes.pdf');
     Route::post('devis/{quote}/envoyer', [QuoteController::class, 'send'])->whereNumber('quote')->middleware('throttle:10,1')->name('quotes.send');
     Route::patch('devis/{quote}/statut', [QuoteController::class, 'status'])->whereNumber('quote')->name('quotes.status');
+    Route::get('seo', [SeoController::class, 'index'])->name('seo.index');
+    Route::get('seo/reglages', [SeoController::class, 'settings'])->name('seo.settings');
+    Route::put('seo/reglages', [SeoController::class, 'updateSettings'])->name('seo.settings.update');
+    Route::get('seo/pages/{page}', [SeoController::class, 'editPage'])->name('seo.pages.edit');
+    Route::put('seo/pages/{page}', [SeoController::class, 'updatePage'])->name('seo.pages.update');
+    Route::get('seo/vehicules/{vehicle}', [SeoController::class, 'editVehicle'])->name('seo.vehicles.edit');
+    Route::put('seo/vehicules/{vehicle}', [SeoController::class, 'updateVehicle'])->name('seo.vehicles.update');
+    Route::get('seo/redirections', [RedirectController::class, 'index'])->name('seo.redirects');
+    Route::post('seo/redirections', [RedirectController::class, 'store'])->name('seo.redirects.store');
+    Route::delete('seo/redirections/{redirect}', [RedirectController::class, 'destroy'])->name('seo.redirects.destroy');
     Route::get('emails', [EmailSettingsController::class, 'edit'])->name('emails.settings');
     Route::put('emails', [EmailSettingsController::class, 'update'])->name('emails.settings.update');
     Route::post('emails/test', [EmailSettingsController::class, 'test'])->middleware('throttle:10,1')->name('emails.test');

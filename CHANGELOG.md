@@ -11,6 +11,24 @@ Toutes les évolutions notables du site CLASS'AFFAIRE. Format inspiré de [Keep 
   l'API de réservation, les pages admin et les changements de statut répondent comme avant.
 - Tests : la fabrique `UserFactory` crée des comptes actifs (`is_active`), `ExampleTest` utilise une base de test.
 
+### Module 6 — SEO
+- Balises sur toutes les pages publiques (`partials/seo-head.blade.php`) : `title`, `meta description`, `robots`
+  (index / noindex), `canonical`, Open Graph et Twitter (image de partage). Valeurs par défaut automatiques :
+  titres et descriptions des pages centralisés dans `App\Services\Seo::PAGES`, fiche véhicule générée à partir
+  du véhicule, image = image de partage par défaut, sinon photo d'accueil.
+- **Admin › SEO** : personnalisation par page (Accueil, Véhicules, Prestations, Contact, Réservation) et par
+  véhicule — titre, description (compteurs de caractères), image de partage, canonical, noindex — avec **aperçu
+  Google en direct**. Adresse (slug) des véhicules modifiable : l'ancienne redirige automatiquement en 301.
+- **Données structurées schema.org** : entreprise (`AutoRental` par défaut, adresse, horaires, zones desservies,
+  réseaux sociaux) sur toutes les pages ; `Car` (offre au prix par jour) et `BreadcrumbList` sur les fiches
+  véhicules. JSON-LD protégé contre l'injection.
+- **`/sitemap.xml`** généré automatiquement (pages et véhicules indexables, date de mise à jour) ;
+  **`/robots.txt`** éditable dans l'admin (ligne `Sitemap:` ajoutée automatiquement). `public/.htaccess` : une ligne
+  ajoutée pour que `robots.txt` passe par l'application ; le fichier `public/robots.txt` d'origine est conservé.
+- **Redirections 301/302** (table `redirects`) appliquées avant le routage (middleware `HandleRedirects`,
+  lecture en cache), compteur de visites, paramètres conservés ; boucles et redirection de l'admin refusées.
+- Tables `seo_metas`, `redirects`. Tests : `SeoModuleTest` (6 tests). 59 tests au total.
+
 ### Module 5 — Demandes et devis
 - Une **demande** = une réservation faite sur le site. Nouveau champ `reservations.request_status` (suivi commercial :
   Nouvelle, En cours, Devis envoyé, Accepté, Refusé, Archivée), **distinct** du statut de réservation qui continue

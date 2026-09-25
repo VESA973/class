@@ -1,7 +1,9 @@
 @extends('layouts.modern')
 
-@section('title', 'Réserver un véhicule - CLASS’AFFAIRE')
-@section('description', 'Réservez votre véhicule de prestige en ligne : choisissez vos dates, vérifiez les disponibilités et envoyez votre demande.')
+@section('seo_page', 'booking')
+@section('title', \App\Services\Seo::pageTitle('booking'))
+@section('description', \App\Services\Seo::pageDescription('booking'))
+
 
 @section('content')
     <x-page-hero eyebrow="Réservation" title="Réserver un véhicule" text="Choisissez votre véhicule et vos dates : les créneaux déjà réservés sont indiqués dans le calendrier." />

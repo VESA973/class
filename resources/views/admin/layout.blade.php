@@ -21,7 +21,7 @@
         ]],
         ['title' => 'Site', 'items' => [
             ['route' => 'admin.hero.edit', 'pattern' => 'admin.hero.*', 'label' => "Photo d'accueil", 'icon' => 'image'],
-            ['label' => 'SEO', 'icon' => 'search', 'soon' => true],
+            ['route' => 'admin.seo.index', 'pattern' => 'admin.seo.*', 'label' => 'SEO', 'icon' => 'search'],
             ['label' => 'Pages légales', 'icon' => 'scale', 'soon' => true],
             ['label' => 'Cookies', 'icon' => 'cookie', 'soon' => true],
         ]],

@@ -1,7 +1,9 @@
 @extends('layouts.modern')
 
-@section('title', 'Nos véhicules - CLASS’AFFAIRE')
-@section('description', 'Découvrez la flotte CLASS’AFFAIRE : SUV, supercars, berlines et véhicules avec chauffeur, à découvrir en 3D.')
+@section('seo_page', 'vehicles')
+@section('title', \App\Services\Seo::pageTitle('vehicles'))
+@section('description', \App\Services\Seo::pageDescription('vehicles'))
+
 
 @section('content')
     <x-page-hero eyebrow="Notre flotte" title="Des véhicules d’exception, à découvrir en 3D." text="SUV, supercars et berlines de prestige, avec ou sans chauffeur. Ouvrez une fiche pour faire tourner le véhicule et vérifier ses disponibilités." />

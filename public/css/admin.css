@@ -1326,3 +1326,88 @@ code,
 .form-card > * {
     min-width: 0;
 }
+
+/* ------------------------------------------------------------------ SEO */
+.slug-input {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    overflow: hidden;
+}
+
+.slug-input span {
+    display: flex;
+    align-items: center;
+    padding: 0 0 0 12px;
+    color: var(--muted);
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.slug-input input {
+    border: 0;
+    border-radius: 0;
+    padding-left: 2px;
+}
+
+.google-preview {
+    padding: 18px;
+    border-radius: var(--radius);
+    background: #fff;
+    color: #202124;
+    font-family: Arial, sans-serif;
+}
+
+.gp-site {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+.gp-site small {
+    display: block;
+    color: #4d5156;
+    font-size: 12px;
+}
+
+.gp-favicon {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: #0a0a0a;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.gp-title {
+    color: #1a0dab;
+    font-size: 20px;
+    line-height: 1.3;
+}
+
+.gp-description {
+    margin-top: 4px;
+    color: #4d5156;
+    font-size: 14px;
+    line-height: 1.58;
+}
+
+.redirect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 180px auto;
+    gap: 12px;
+    align-items: end;
+}
+
+@media (max-width: 900px) {
+    .redirect-grid {
+        grid-template-columns: 1fr;
+    }
+}

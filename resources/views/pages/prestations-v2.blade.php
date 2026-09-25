@@ -1,7 +1,9 @@
 @extends('layouts.modern')
 
-@section('title', 'Prestations avec chauffeur - CLASS’AFFAIRE')
-@section('description', 'Mariages, transferts, soirées, évènements privés, voyages d’affaires : nos chauffeurs et leurs voitures à votre disposition.')
+@section('seo_page', 'prestations')
+@section('title', \App\Services\Seo::pageTitle('prestations'))
+@section('description', \App\Services\Seo::pageDescription('prestations'))
+
 
 @section('content')
     <x-page-hero eyebrow="Prestations" title="Vos évènements, nos chauffeurs." text="Mariages, transferts, soirées et bien d’autres : nos chauffeurs et leurs voitures sont à votre disposition, avec la même exigence à chaque trajet." />

@@ -1,7 +1,7 @@
 @extends('layouts.modern')
 
-@section('title', $vehicle->name.' - CLASS’AFFAIRE')
-@section('description', 'Louez la '.$vehicle->name.' ('.$vehicle->category.') avec CLASS’AFFAIRE : découvrez-la en 3D, ses caractéristiques et ses disponibilités.')
+@section('title', \App\Services\Seo::vehicleDefaults($vehicle)['title'])
+@section('description', \App\Services\Seo::vehicleDefaults($vehicle)['description'])
 
 @php
     $has3d = (bool) $vehicle->model_url;
@@ -15,6 +15,10 @@
         ['sparkles', 'Catégorie', $vehicle->category],
     ], fn ($spec) => $spec[2] !== null);
     $bookUrl = route('booking.create', ['vehicle' => $vehicle->id]);
+    // SEO : balises propres au vehicule + donnees structurees schema.org (Car, fil d'Ariane).
+    $seoModel = $vehicle;
+    $seoImage = $vehicle->display_image;
+    $seoSchemas = app(\App\Services\Seo::class)->vehicleSchemas($vehicle);
 @endphp
 
 @if ($has3d)
