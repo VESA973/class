@@ -43,6 +43,8 @@ Toutes les évolutions notables du site CLASS'AFFAIRE. Format inspiré de [Keep 
 - **TVA désactivable** (Devis › Réglages, désactivée par défaut : non applicable en Guyane, art. 294 du CGI) :
   devis sans colonnes HT / TVA / TTC, taux forcé à 0, mention « TVA non applicable… » modifiable sur le PDF ;
   mémorisé par devis (migration additive `quotes.vat_exempt`), les devis existants gardent leur TVA.
+- **Devis sans TVA par devis** : case « Devis sans TVA » dans l'éditeur (enregistrée immédiatement sur un devis
+  existant) pour retirer la TVA d'un devis créé avant le réglage ; aperçu et PDF sans HT / TVA / TTC.
 - Numéro en dur retiré de la page de réservation (formulaire React et `noscript`).
 - Tests : `ContactSettingsTest` (8 tests) — 84 tests au total.
 

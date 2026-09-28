@@ -62,6 +62,10 @@ class QuoteController extends Controller
     {
         [$data, $lines] = $this->validated($request);
 
+        if ($request->has('vat_exempt')) {
+            $data['vat_exempt'] = $request->boolean('vat_exempt');
+        }
+
         $this->quotes->update($quote, $data, $lines);
 
         return redirect()->route('admin.quotes.edit', $quote)->with('status', "Devis {$quote->number} enregistré.");
@@ -81,7 +85,7 @@ class QuoteController extends Controller
     public function storeBlank(Request $request): RedirectResponse
     {
         [$data, $lines] = $this->validated($request);
-        $data['vat_exempt'] = ! $this->quotes->config()['vat_enabled'];
+        $data['vat_exempt'] = $request->has('vat_exempt') ? $request->boolean('vat_exempt') : ! $this->quotes->config()['vat_enabled'];
         $quote = $this->quotes->create($data, $lines);
 
         return redirect()->route('admin.quotes.edit', $quote)->with('status', "Devis {$quote->number} créé (brouillon).");

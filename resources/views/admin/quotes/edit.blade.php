@@ -72,6 +72,14 @@
             </div>
 
             <h2>Devis</h2>
+            <input type="hidden" name="vat_exempt" value="0">
+            <label class="toggle-row">
+                <input type="checkbox" name="vat_exempt" value="1" @checked($exempt) data-vat-exempt>
+                <span>
+                    <strong>Devis sans TVA</strong>
+                    <small>Aucune TVA sur l’aperçu et le PDF (prix nets, mention « {{ $quoteConfig['vat_mention'] ?: 'TVA non applicable' }} »).@unless ($isNew) Le devis est enregistré dès que vous cochez ou décochez.@endunless</small>
+                </span>
+            </label>
             <div class="form-grid">
                 <label>Objet<input name="subject" value="{{ old('subject', $quote->subject) }}" maxlength="255"></label>
                 <div class="form-grid">
@@ -270,6 +278,11 @@
                     row.querySelector('[data-qty]').focus();
                 });
             });
+            // Avec / sans TVA : les colonnes changent, on enregistre et on recharge (devis existant uniquement).
+            var exemptToggle = form.querySelector('[data-vat-exempt]');
+            if (exemptToggle && {{ $isNew ? 'false' : 'true' }}) {
+                exemptToggle.addEventListener('change', function () { form.requestSubmit(); });
+            }
             form.addEventListener('input', recalc);
             form.addEventListener('change', recalc);
             recalc();

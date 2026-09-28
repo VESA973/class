@@ -303,4 +303,23 @@ class QuoteModuleTest extends TestCase
         $this->put('/admin/devis/services', ['services' => [['name' => '', 'price' => '', 'unit' => 'x']]])
             ->assertSessionHasErrors(['services.0.name', 'services.0.price', 'services.0.unit']);
     }
+
+    public function test_existing_quote_can_be_switched_to_no_vat(): void
+    {
+        $this->actingAs(User::factory()->create());
+        $quote = app(QuoteService::class)->createFromReservation($this->reservation()); // TVA activee dans setUp
+        $this->assertFalse($quote->vat_exempt);
+
+        $this->put("/admin/devis/{$quote->id}", [
+            'customer_name' => 'Jean Dupont', 'issued_at' => '2030-01-01', 'valid_until' => '2030-01-15',
+            'discount_type' => 'none', 'vat_exempt' => '1', 'lines' => $this->lines(),
+        ])->assertRedirect();
+
+        $quote->refresh();
+        $this->assertTrue($quote->vat_exempt);
+        $this->assertSame('250.00', $quote->total_ttc);
+        $this->assertSame('0.00', $quote->total_vat);
+        $this->get("/admin/devis/{$quote->id}/pdf")->assertOk();
+        $this->get("/admin/devis/{$quote->id}")->assertDontSee('Total TTC');
+    }
 }
