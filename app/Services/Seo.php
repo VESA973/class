@@ -25,7 +25,7 @@ class Seo
         'home' => ['Accueil', 'home', 'CLASS’AFFAIRE - Location de voitures de prestige avec ou sans chauffeur', 'Location de voitures de prestige avec ou sans chauffeur à Paris, Cannes et Roissy : SUV, supercars et berlines, réservation en ligne et disponibilités en temps réel.'],
         'vehicles' => ['Véhicules', 'vehicles.page', 'Nos véhicules - CLASS’AFFAIRE', 'Découvrez la flotte CLASS’AFFAIRE : SUV, supercars, berlines et véhicules avec chauffeur, à découvrir en 3D.'],
         'prestations' => ['Prestations', 'prestations.page', 'Prestations avec chauffeur - CLASS’AFFAIRE', 'Mariages, transferts, soirées, évènements privés, voyages d’affaires : nos chauffeurs et leurs voitures à votre disposition.'],
-        'contact' => ['Contact', 'contact.page', 'Contact - CLASS’AFFAIRE', 'Contactez CLASS’AFFAIRE 24h/24 et 7j/7 : téléphone, email, adresse à Roissy-en-France.'],
+        'contact' => ['Contact', 'contact.page', 'Contact - CLASS’AFFAIRE', 'Contactez CLASS’AFFAIRE 24h/24 et 7j/7 par téléphone, email ou WhatsApp.'],
         'booking' => ['Réservation', 'booking.create', 'Réserver un véhicule - CLASS’AFFAIRE', 'Réservez votre véhicule de prestige en ligne : choisissez vos dates, vérifiez les disponibilités et envoyez votre demande.'],
     ];
 
@@ -135,7 +135,7 @@ class Seo
             'email' => $business['email'],
             'priceRange' => $business['price_range'],
             'openingHours' => $business['opening_hours'] ?: null,
-            'address' => [
+            'address' => ! config('home.contact.show_address') ? null : [
                 '@type' => 'PostalAddress',
                 'streetAddress' => $business['street'],
                 'postalCode' => $business['postal_code'],

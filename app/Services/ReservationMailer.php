@@ -58,6 +58,7 @@ class ReservationMailer
             'email_client' => $reservation->customer_email ?: '—',
             'telephone_client' => $reservation->customer_phone,
             'message_client' => $reservation->message ?: '—',
+            'type_prestation' => $reservation->prestation_type ?: 'Non précisée',
             'vehicule' => $reservation->vehicle?->name ?? '—',
             'date_depart' => $format($reservation->start_at ?? $reservation->start_date),
             'date_retour' => $format($reservation->end_at ?? $reservation->end_date),

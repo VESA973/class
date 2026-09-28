@@ -27,6 +27,8 @@ import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { AddressAutocomplete } from '@/components/address-autocomplete';
+import { PassengerStepper } from '@/components/passenger-stepper';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -54,6 +56,11 @@ type Props = {
     initialStart?: string | null;
     initialEnd?: string | null;
     initialPickup?: string | null;
+    initialDestination?: string | null;
+    initialPassengers?: number | null;
+    initialPrestation?: string | null;
+    serviceTypes?: string[];
+    addressTerritory?: string | null;
     csrfToken: string;
     contactPhone?: string | null;
     phoneCountryCode?: string | null;
@@ -67,17 +74,23 @@ type Confirmation = {
     days: number;
     estimated_total: number;
     pickup_location: string;
+    destination: string | null;
+    passengers: number | null;
+    prestation_type: string | null;
     customer_email: string;
     vehicle: BookingVehicle;
 };
 
 const schema = z
     .object({
+        prestation_type: z.string(),
         vehicle_id: z.string().min(1, 'Choisissez un véhicule.'),
         range: z.custom<DateRange | undefined>().refine((range) => !!range?.from, 'Choisissez vos dates.'),
         start_time: z.string().min(1, "Choisissez l'heure de départ."),
         end_time: z.string().min(1, "Choisissez l'heure de retour."),
         pickup_location: z.string().trim().min(2, 'Indiquez le lieu de prise en charge.').max(180, 'Ce champ est trop long.'),
+        destination: z.string().trim().max(255, 'Ce champ est trop long.'),
+        passengers: z.number().int().min(1).max(9),
         customer_name: z.string().trim().min(2, 'Indiquez votre nom.').max(120, 'Ce champ est trop long.'),
         customer_email: z.string().trim().pipe(z.email('Adresse email invalide.')),
         customer_phone: z
@@ -107,10 +120,13 @@ type FormValues = z.infer<typeof schema>;
 
 /** Champs renvoyes par l'API -> champs du formulaire. */
 const SERVER_FIELD_MAP: Record<string, keyof FormValues> = {
+    prestation_type: 'prestation_type',
     vehicle_id: 'vehicle_id',
     start_at: 'start_time',
     end_at: 'end_time',
     pickup_location: 'pickup_location',
+    destination: 'destination',
+    passengers: 'passengers',
     customer_name: 'customer_name',
     customer_email: 'customer_email',
     customer_phone: 'customer_phone',
@@ -148,21 +164,53 @@ function initialPeriod(start?: string | null, end?: string | null) {
     return { range: { from: startOfDay(from), to: startOfDay(to) }, startTime: time(from), endTime: time(to) };
 }
 
-export default function BookingForm({ vehicles, initialVehicleId, initialStart, initialEnd, initialPickup, csrfToken, contactPhone, phoneCountryCode, urls }: Props) {
+export default function BookingForm({
+    vehicles,
+    initialVehicleId,
+    initialStart,
+    initialEnd,
+    initialPickup,
+    initialDestination,
+    initialPassengers,
+    initialPrestation,
+    serviceTypes = [],
+    addressTerritory,
+    csrfToken,
+    contactPhone,
+    phoneCountryCode,
+    urls,
+}: Props) {
     const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
     const [suggestions, setSuggestions] = useState<Period[]>([]);
     const [calendarOpen, setCalendarOpen] = useState(false);
     const isDesktop = useIsDesktop();
     const [initial] = useState(() => initialPeriod(initialStart, initialEnd));
 
+    const hasTypes = serviceTypes.length > 0;
+    // Type de prestation obligatoire des qu'une liste est definie dans l'admin.
+    const resolver = useMemo(
+        () =>
+            zodResolver(
+                schema.superRefine((values, ctx) => {
+                    if (hasTypes && !values.prestation_type) {
+                        ctx.addIssue({ code: 'custom', path: ['prestation_type'], message: 'Choisissez le type de prestation.' });
+                    }
+                }),
+            ),
+        [hasTypes],
+    );
+
     const form = useForm<FormValues>({
-        resolver: zodResolver(schema),
+        resolver,
         defaultValues: {
+            prestation_type: initialPrestation && serviceTypes.includes(initialPrestation) ? initialPrestation : '',
             vehicle_id: initialVehicleId ? String(initialVehicleId) : '',
             range: initial.range,
             start_time: initial.startTime,
             end_time: initial.endTime,
             pickup_location: initialPickup ?? '',
+            destination: initialDestination ?? '',
+            passengers: initialPassengers ?? 1,
             customer_name: '',
             customer_email: '',
             customer_phone: '',
@@ -191,10 +239,19 @@ export default function BookingForm({ vehicles, initialVehicleId, initialStart, 
         validPeriod ? toApiDateTime(selectedEnd) : null,
     );
 
-    // Changement de vehicule : les dates choisies ne sont plus forcement libres.
+    // Nombre de places du vehicule choisi (9 si non renseigne).
+    const maxPassengers = Math.min(9, vehicle?.seats || 9);
+
+    // Changement de vehicule : les dates choisies ne sont plus forcement libres,
+    // et le nombre de passagers est ramene aux places disponibles.
     useEffect(() => {
         setSuggestions([]);
-    }, [vehicleId]);
+
+        if (form.getValues('passengers') > maxPassengers) {
+            form.setValue('passengers', maxPassengers);
+            toast.info(`Ce véhicule accueille ${maxPassengers} passager${maxPassengers > 1 ? 's' : ''} au maximum.`);
+        }
+    }, [vehicleId, maxPassengers, form]);
 
     function applySuggestion(period: Period) {
         const start = fromApiDateTime(period.start_at);
@@ -228,6 +285,9 @@ export default function BookingForm({ vehicles, initialVehicleId, initialStart, 
                     start_at: toApiDateTime(start),
                     end_at: toApiDateTime(end),
                     pickup_location: values.pickup_location,
+                    destination: values.destination || null,
+                    passengers: values.passengers,
+                    prestation_type: values.prestation_type || null,
                     customer_name: values.customer_name,
                     customer_email: values.customer_email,
                     customer_phone: values.customer_phone,
@@ -324,10 +384,37 @@ export default function BookingForm({ vehicles, initialVehicleId, initialStart, 
                     <div className="grid gap-6">
                         <Card>
                             <CardHeader>
-                                <CardTitle className="text-lg">1. Véhicule et dates</CardTitle>
+                                <CardTitle className="text-lg">1. Prestation, véhicule et dates</CardTitle>
                                 <CardDescription>Les jours barrés sont indisponibles pour le véhicule choisi.</CardDescription>
                             </CardHeader>
                             <CardContent className="grid gap-5">
+                                {hasTypes && (
+                                    <FormField
+                                        control={form.control}
+                                        name="prestation_type"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Type de prestation</FormLabel>
+                                                <Select value={field.value} onValueChange={field.onChange}>
+                                                    <FormControl>
+                                                        <SelectTrigger className="w-full">
+                                                            <SelectValue placeholder="Choisissez une prestation" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        {serviceTypes.map((type) => (
+                                                            <SelectItem key={type} value={type}>
+                                                                {type}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                )}
+
                                 <FormField
                                     control={form.control}
                                     name="vehicle_id"
@@ -488,14 +575,44 @@ export default function BookingForm({ vehicles, initialVehicleId, initialStart, 
                                     name="pickup_location"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Lieu de prise en charge</FormLabel>
+                                            <FormLabel>Lieu de départ</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Paris, aéroport, hôtel…" autoComplete="street-address" {...field} />
+                                                <AddressAutocomplete {...field} placeholder="Adresse, gare, aéroport…" territory={addressTerritory} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
+
+                                <div className="grid gap-5 sm:grid-cols-[minmax(0,1fr)_180px]">
+                                    <FormField
+                                        control={form.control}
+                                        name="destination"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Destination (facultatif)</FormLabel>
+                                                <FormControl>
+                                                    <AddressAutocomplete {...field} placeholder="Où allez-vous ?" territory={addressTerritory} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="passengers"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Passagers</FormLabel>
+                                                <FormControl>
+                                                    <PassengerStepper value={field.value} onChange={field.onChange} max={maxPassengers} />
+                                                </FormControl>
+                                                {vehicle?.seats ? <FormDescription>{vehicle.seats} places dans ce véhicule.</FormDescription> : null}
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
                             </CardContent>
                         </Card>
 
@@ -797,7 +914,12 @@ function BookingConfirmation({
                             <p className="text-base font-semibold">{confirmation.vehicle.name}</p>
                             <SummaryRow label="Départ" value={formatDateTime(start)} />
                             <SummaryRow label="Retour" value={formatDateTime(end)} />
-                            <SummaryRow label="Lieu" value={confirmation.pickup_location} />
+                            {confirmation.prestation_type && <SummaryRow label="Prestation" value={confirmation.prestation_type} />}
+                            <SummaryRow label="Départ de" value={confirmation.pickup_location} />
+                            {confirmation.destination && <SummaryRow label="Destination" value={confirmation.destination} />}
+                            {confirmation.passengers && (
+                                <SummaryRow label="Passagers" value={`${confirmation.passengers} passager${confirmation.passengers > 1 ? 's' : ''}`} />
+                            )}
                             <SummaryRow
                                 label="Estimation"
                                 value={`${formatPrice(confirmation.estimated_total)} (${confirmation.days} j)`}

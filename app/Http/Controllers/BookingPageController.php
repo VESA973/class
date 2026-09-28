@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Api\BookingController;
 use App\Models\Vehicle;
 use App\Services\ReservationAvailability;
+use App\Services\SiteContent;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -20,13 +21,29 @@ class BookingPageController extends Controller
 
         $initialVehicleId = $request->integer('vehicle') ?: null;
 
-        // Pre-remplissage depuis le module de recherche de l'accueil (?start=&end=&pickup=).
-        $prefill = validator($request->only('start', 'end', 'pickup'), [
-            'start' => ['nullable', 'date_format:'.ReservationAvailability::DATETIME_FORMAT],
-            'end' => ['nullable', 'date_format:'.ReservationAvailability::DATETIME_FORMAT, 'after:start'],
-            'pickup' => ['nullable', 'string', 'max:180'],
-        ]);
-        $initial = $prefill->fails() ? [] : $prefill->validated();
+        $serviceTypes = app(SiteContent::class)->serviceTypes();
+
+        // Pre-remplissage depuis le module de recherche de l'accueil (memes champs).
+        // Chaque valeur est verifiee separement : une valeur invalide est simplement ignoree.
+        $rules = [
+            'start' => ['date_format:'.ReservationAvailability::DATETIME_FORMAT],
+            'end' => ['date_format:'.ReservationAvailability::DATETIME_FORMAT],
+            'pickup' => ['string', 'max:180'],
+            'destination' => ['string', 'max:255'],
+            'passengers' => ['integer', 'min:1', 'max:9'],
+            'prestation' => ['string', \Illuminate\Validation\Rule::in($serviceTypes)],
+        ];
+        $initial = [];
+
+        foreach ($rules as $key => $rule) {
+            if ($request->filled($key) && validator([$key => $request->query($key)], [$key => $rule])->passes()) {
+                $initial[$key] = $request->query($key);
+            }
+        }
+
+        if (isset($initial['start'], $initial['end']) && $initial['end'] <= $initial['start']) {
+            unset($initial['end']);
+        }
 
         return view('pages.booking', [
             'props' => [
@@ -35,6 +52,11 @@ class BookingPageController extends Controller
                 'initialStart' => $initial['start'] ?? null,
                 'initialEnd' => isset($initial['start']) ? ($initial['end'] ?? null) : null,
                 'initialPickup' => $initial['pickup'] ?? null,
+                'initialDestination' => $initial['destination'] ?? null,
+                'initialPassengers' => isset($initial['passengers']) ? (int) $initial['passengers'] : null,
+                'initialPrestation' => $initial['prestation'] ?? null,
+                'serviceTypes' => $serviceTypes,
+                'addressTerritory' => config('home.contact.address_territory'),
                 'csrfToken' => csrf_token(),
                 'contactPhone' => config('home.contact.phone'),
                 'phoneCountryCode' => config('home.contact.country_code'),

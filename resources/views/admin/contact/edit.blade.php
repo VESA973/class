@@ -18,7 +18,7 @@
             <div class="section-head">
                 <div>
                     <h2 id="contact-title">Coordonnées</h2>
-                    <p class="form-hint">Affichées dans l’en-tête, le pied de page, la page Contact, la page de réservation, les emails, les devis, les pages légales et les données SEO.</p>
+                    <p class="form-hint">Affichées dans l’en-tête, le pied de page, la page Contact, la page de réservation, les emails, les devis et les données SEO.</p>
                 </div>
             </div>
 
@@ -43,6 +43,13 @@
             <label>
                 Adresse
                 <input name="address" maxlength="255" required value="{{ old('address', $values['address']) }}">
+            </label>
+            <label class="toggle-row">
+                <input type="checkbox" name="show_address" value="1" @checked(old('show_address', $values['show_address']))>
+                <span>
+                    <strong>Afficher l’adresse sur le site</strong>
+                    <small>Pied de page, page Contact, bas des emails et données Google. Décoché : l’adresse sert uniquement aux devis.</small>
+                </span>
             </label>
         </section>
 

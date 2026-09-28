@@ -101,6 +101,7 @@
 
         @if ($quote->reservation)
             <p style="margin:0 0 14px;color:#3f3f46;font-size:9pt">
+                @if ($quote->reservation->prestation_type)<strong>Prestation :</strong> {{ $quote->reservation->prestation_type }} · @endif
                 <strong>Trajet :</strong> {{ $quote->reservation->pickup_location }}{{ $quote->reservation->destination ? ' → '.$quote->reservation->destination : '' }}
                 · <strong>Départ :</strong> {{ ($quote->reservation->start_at ?? $quote->reservation->start_date)?->format('d/m/Y H:i') }}
                 · <strong>Retour :</strong> {{ ($quote->reservation->end_at ?? $quote->reservation->end_date)?->format('d/m/Y H:i') }}

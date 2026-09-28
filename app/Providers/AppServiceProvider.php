@@ -33,6 +33,9 @@ class AppServiceProvider extends ServiceProvider
         // Telephone, email et adresse regles depuis l'admin (sinon : config/home.php).
         $this->app->make(\App\Services\ContactSettings::class)->apply();
 
+        // Atouts de la page d'accueil modifies dans l'admin (sinon : config/home.php).
+        $this->app->make(\App\Services\SiteContent::class)->apply();
+
         View::composer(['layouts.site', 'layouts.modern'], function ($view): void {
             $settings = null;
 

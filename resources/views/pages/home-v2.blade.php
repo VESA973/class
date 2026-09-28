@@ -44,8 +44,19 @@
 
         <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
             {{-- Module de recherche : formulaire HTML simple, remplace par le composant React --}}
-            <div data-island="HeroSearch" data-props="{{ json_encode(['action' => route('booking.create')]) }}">
+            @php($serviceTypes = app(\App\Services\SiteContent::class)->serviceTypes())
+            <div data-island="HeroSearch" data-props="{{ json_encode(['action' => route('booking.create'), 'serviceTypes' => $serviceTypes, 'addressTerritory' => config('home.contact.address_territory')]) }}">
                 <form action="{{ route('booking.create') }}" method="GET" class="grid gap-3 rounded-2xl border border-white/15 bg-black/45 p-4 text-white shadow-2xl backdrop-blur-xl sm:p-5 md:grid-cols-2 lg:grid-cols-12 lg:items-end">
+                    @if (count($serviceTypes))
+                        <label class="grid gap-1.5 text-sm font-medium md:col-span-2 lg:col-span-12">Type de prestation
+                            <select name="prestation" class="h-11 rounded-md border border-white/25 bg-black/40 px-3 text-white">
+                                <option value="">Choisir…</option>
+                                @foreach ($serviceTypes as $type)
+                                    <option value="{{ $type }}">{{ $type }}</option>
+                                @endforeach
+                            </select>
+                        </label>
+                    @endif
                     <label class="grid gap-1.5 text-sm font-medium lg:col-span-5">Lieu de départ
                         <input name="pickup" class="h-11 rounded-md border border-white/25 bg-white/10 px-3 text-white placeholder:text-white/65" placeholder="Adresse, gare, aéroport…">
                     </label>
@@ -69,7 +80,8 @@
         </div>
     </section>
 
-    {{-- AVANTAGES ------------------------------------------------------- --}}
+    {{-- AVANTAGES (Admin > Atouts de l'accueil) ---------------------------- --}}
+    @if (count($content['advantages']))
     <section class="py-20 sm:py-28" aria-labelledby="avantages-titre">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="max-w-2xl" data-reveal>
@@ -89,6 +101,8 @@
             </div>
         </div>
     </section>
+
+    @endif
 
     {{-- COMMENT CA MARCHE ----------------------------------------------- --}}
     <section class="py-20 sm:py-28" aria-labelledby="etapes-titre">

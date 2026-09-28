@@ -74,9 +74,9 @@ class CookieModuleTest extends TestCase
         $this->assertSame(1, CookieConsent::count());
     }
 
-    public function test_contact_map_is_loaded_only_on_demand(): void
+    public function test_contact_page_has_no_map_anymore(): void
     {
-        $html = $this->get('/contact')->assertOk()->assertSee('Afficher la carte')->getContent();
-        $this->assertMatchesRegularExpression('/<template data-map-template>\s*<iframe/', $html);
+        // Plan d'acces retire a la demande du client : aucun service de carte tiers sur le site.
+        $this->get('/contact')->assertOk()->assertDontSee('openstreetmap', false)->assertDontSee('<iframe', false);
     }
 }

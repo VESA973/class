@@ -15,12 +15,14 @@
             ['route' => 'admin.reservations.index', 'pattern' => 'admin.reservations.*', 'label' => 'Demandes', 'icon' => 'clipboard-list', 'badge' => $pendingCount],
             ['route' => 'admin.planning.index', 'pattern' => 'admin.planning.*', 'label' => 'Planning', 'icon' => 'calendar-days'],
             ['route' => 'admin.quotes.index', 'pattern' => 'admin.quotes.*', 'label' => 'Devis', 'icon' => 'file-text'],
+            ['route' => 'admin.content.service-types', 'pattern' => 'admin.content.service-types*', 'label' => 'Types de prestation', 'icon' => 'settings-2'],
         ]],
         ['title' => 'Communication', 'items' => [
             ['route' => 'admin.emails.settings', 'pattern' => 'admin.emails.*', 'label' => 'Emails', 'icon' => 'mail'],
         ]],
         ['title' => 'Site', 'items' => [
             ['route' => 'admin.hero.edit', 'pattern' => 'admin.hero.*', 'label' => "Photo d'accueil", 'icon' => 'image'],
+            ['route' => 'admin.content.advantages', 'pattern' => 'admin.content.advantages*', 'label' => 'Atouts de l’accueil', 'icon' => 'star'],
             ['route' => 'admin.seo.index', 'pattern' => 'admin.seo.*', 'label' => 'SEO', 'icon' => 'search'],
             ['route' => 'admin.legal.index', 'pattern' => 'admin.legal.*', 'label' => 'Pages légales', 'icon' => 'scale'],
             ['route' => 'admin.cookies.edit', 'pattern' => 'admin.cookies.*', 'label' => 'Cookies', 'icon' => 'cookie'],

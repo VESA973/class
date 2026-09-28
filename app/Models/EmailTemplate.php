@@ -20,6 +20,7 @@ class EmailTemplate extends Model
         'telephone_client' => 'Téléphone du client',
         'message_client' => 'Message laissé par le client',
         'numero_reservation' => 'Numéro de la réservation',
+        'type_prestation' => 'Type de prestation choisi',
         'vehicule' => 'Véhicule réservé',
         'date_depart' => 'Date et heure de départ',
         'date_retour' => 'Date et heure de retour',
@@ -58,7 +59,7 @@ class EmailTemplate extends Model
             'nom_client' => 'Jean Dupont', 'email_client' => 'jean.dupont@exemple.fr', 'telephone_client' => '+594 694 12 34 56',
             'message_client' => 'Siège enfant, s’il vous plaît.', 'numero_reservation' => '128', 'vehicule' => 'Rolls Royce Ghost',
             'date_depart' => '12/10/2026 à 09:30', 'date_retour' => '12/10/2026 à 18:00', 'lieu_depart' => 'Gare de Lyon, 75012 Paris',
-            'destination' => 'Aéroport Charles de Gaulle, 95700 Roissy-en-France', 'passagers' => '3', 'montant_estime' => '1 200 €',
+            'type_prestation' => 'Transfert aéroport', 'destination' => 'Aéroport Cayenne-Félix Éboué, 97351 Matoury', 'passagers' => '3', 'montant_estime' => '1 200 €',
             'lien_admin' => url('/admin/reservations'), 'numero_devis' => 'DEV-2026-0001', 'montant_devis' => '1 440,00 € TTC',
             'date_validite' => '26/10/2026',
         ];

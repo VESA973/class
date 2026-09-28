@@ -16,6 +16,7 @@
             <h2>Client</h2>
             <p><strong>Telephone:</strong> {{ $reservation->customer_phone }}</p>
             <p><strong>Email:</strong> {{ $reservation->customer_email ?: '-' }}</p>
+            <p><strong>Prestation :</strong> {{ $reservation->prestation_type ?: '-' }}</p>
             <p><strong>Départ :</strong> {{ $reservation->pickup_location }}</p>
             <p><strong>Destination :</strong> {{ $reservation->destination ?: '-' }}</p>
             <p><strong>Passagers :</strong> {{ $reservation->passengers ?: '-' }}</p>

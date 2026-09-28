@@ -13,6 +13,7 @@ export type BookingVehicle = {
     transmission: string;
     horsepower: number | null;
     with_chauffeur: boolean;
+    seats?: number | null;
 };
 
 export const DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm";

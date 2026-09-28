@@ -18,6 +18,17 @@ Toutes les évolutions notables du site CLASS'AFFAIRE. Format inspiré de [Keep 
   de maintenance. Réglable par `APP_LOCAL_TIMEZONE` dans `.env` ; les dates techniques restent stockées en UTC.
 - **Menu du haut** : le logo s'affiche seul (le nom « CLASS’AFFAIRE » n'apparaît plus que s'il n'y a pas de logo),
   zone agrandie (menu 80 px, logo jusqu'à 220 × 64 px, limité à 55 % de l'écran sur mobile).
+- **Atouts de l'accueil** modifiables (Admin › Site › Atouts de l'accueil) : icône, titre, texte, ordre, ajout /
+  suppression (12 max), retour aux atouts d'origine ; section masquée si la liste est vide.
+- **Type de prestation** : liste gérée dans Admin › Demandes & devis › Types de prestation (6 types par défaut) ;
+  champ ajouté au module de l'accueil et à la page Réserver (obligatoire tant que la liste n'est pas vide), enregistré
+  dans la demande (`reservations.prestation_type`, migration additive), affiché dans la demande, le planning, le devis
+  PDF et les 2 emails de réservation (variable `{type_prestation}`, ajoutée aux modèles par migration).
+- **Page Réserver** : mêmes champs que le module de l'accueil (type de prestation, lieu de départ et destination avec
+  suggestions d'adresses, passagers limités aux places du véhicule) et pré-remplissage depuis l'accueil.
+- **Suggestions d'adresses** limitées au territoire du pays choisi dans Coordonnées (Guyane : 973).
+- **Adresse et plan d'accès** retirés du site : carte OpenStreetMap supprimée de la page Contact ; l'adresse
+  (pied de page, Contact, emails, données Google) ne s'affiche que si « Afficher l'adresse sur le site » est coché.
 - Numéro en dur retiré de la page de réservation (formulaire React et `noscript`).
 - Tests : `ContactSettingsTest` (8 tests) — 84 tests au total.
 

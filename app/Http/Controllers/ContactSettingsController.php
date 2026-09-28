@@ -44,6 +44,7 @@ class ContactSettingsController extends Controller
             'contact.phone' => trim($data['phone']),
             'contact.email' => $data['email'],
             'contact.address' => $data['address'],
+            'contact.show_address' => $request->boolean('show_address'),
             'contact.country_code' => $data['country_code'],
             'contact.footer_title' => trim((string) ($data['footer_title'] ?? '')),
             'contact.footer_text' => trim((string) ($data['footer_text'] ?? '')),

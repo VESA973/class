@@ -43,6 +43,10 @@ demandes récentes et prochains départs. Chaque carte est cliquable.
   correspondante : ils ne se chargent qu’après accord du visiteur. « Redemander le consentement à tous » si votre
   politique change. Registre des choix et statistiques.
 
+## Contenus
+- **Site › Atouts de l’accueil** : les cartes « Pourquoi nous choisir » (icône, titre, texte, ordre avec les flèches).
+- **Demandes & devis › Types de prestation** : la liste proposée aux clients dans la réservation (vide = champ masqué).
+
 ## Paramètres
 - **Coordonnées & WhatsApp** : pays / indicatif (Guyane +594 par défaut), téléphone, email et adresse affichés partout (en-tête, pied de page, Contact,
   réservation, emails, devis, pages légales, SEO). Bouton WhatsApp : cocher « Afficher », saisir le numéro

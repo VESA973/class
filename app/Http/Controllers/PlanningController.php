@@ -107,6 +107,7 @@ class PlanningController extends Controller
                 'destination' => $reservation->destination,
                 'passengers' => $reservation->passengers,
                 'serviceType' => $reservation->service_type,
+                'prestationType' => $reservation->prestation_type,
                 'days' => $reservation->days,
                 'estimatedTotal' => $reservation->estimated_total,
                 'message' => $reservation->message,

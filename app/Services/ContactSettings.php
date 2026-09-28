@@ -11,13 +11,13 @@ namespace App\Services;
  */
 class ContactSettings
 {
-    /** Indicatif => [libelle, code pays ISO (schema.org)]. Sert a convertir les numeros nationaux (06…, 0694…). */
+    /** Indicatif => [libelle, code pays ISO (schema.org), territoire des suggestions d'adresse (API IGN)]. Sert a convertir les numeros nationaux (06…, 0694…). */
     public const COUNTRIES = [
-        '594' => ['Guyane française', 'GF'],
-        '33' => ['France métropolitaine', 'FR'],
-        '590' => ['Guadeloupe, Saint-Martin, Saint-Barthélemy', 'GP'],
-        '596' => ['Martinique', 'MQ'],
-        '262' => ['La Réunion, Mayotte', 'RE'],
+        '594' => ['Guyane française', 'GF', '973'],
+        '33' => ['France métropolitaine', 'FR', 'METROPOLE'],
+        '590' => ['Guadeloupe, Saint-Martin, Saint-Barthélemy', 'GP', '971'],
+        '596' => ['Martinique', 'MQ', '972'],
+        '262' => ['La Réunion, Mayotte', 'RE', '974,976'],
     ];
 
     public const DEFAULT_FOOTER_TITLE = 'CLASS’AFFAIRE';
@@ -31,7 +31,7 @@ class ContactSettings
     {
     }
 
-    /** @return array{phone: string, phone_href: string, email: string, address: string, country_code: string, country_iso: string, footer_title: string, footer_text: string, whatsapp_enabled: bool, whatsapp_number: string, whatsapp_message: string} */
+    /** @return array{phone: string, phone_href: string, email: string, address: string, show_address: bool, country_code: string, country_iso: string, address_territory: string, footer_title: string, footer_text: string, whatsapp_enabled: bool, whatsapp_number: string, whatsapp_message: string} */
     public function values(): array
     {
         // Valeurs d'origine (config/home.php), memorisees avant toute surcharge.
@@ -49,8 +49,11 @@ class ContactSettings
             'phone_href' => self::telHref($phone, $countryCode),
             'email' => $this->settings->get('contact.email') ?: $defaults['email'],
             'address' => $this->settings->get('contact.address') ?: $defaults['address'],
+            // Adresse masquee sur le site par defaut (elle reste utilisee pour les devis et les pages legales).
+            'show_address' => (bool) $this->settings->get('contact.show_address', false),
             'country_code' => $countryCode,
             'country_iso' => self::COUNTRIES[$countryCode][1],
+            'address_territory' => self::COUNTRIES[$countryCode][2],
             'footer_title' => $this->settings->get('contact.footer_title') ?: self::DEFAULT_FOOTER_TITLE,
             'footer_text' => $this->settings->get('contact.footer_text') ?: self::DEFAULT_FOOTER_TEXT,
             'whatsapp_enabled' => (bool) $this->settings->get('contact.whatsapp_enabled', false),
@@ -70,8 +73,10 @@ class ContactSettings
                 'phone_href' => $values['phone_href'],
                 'email' => $values['email'],
                 'address' => $values['address'],
+                'show_address' => $values['show_address'],
                 'country_code' => $values['country_code'],
                 'country_iso' => $values['country_iso'],
+                'address_territory' => $values['address_territory'],
                 'footer_title' => $values['footer_title'],
                 'footer_text' => $values['footer_text'],
             ],

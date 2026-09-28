@@ -15,9 +15,11 @@ type Props = Omit<ComponentProps<typeof Input>, 'onChange' | 'value'> & {
     value: string;
     onChange: (value: string) => void;
     listClassName?: string;
+    /** Territoire des suggestions (API IGN "terr") : 973 = Guyane, METROPOLE, 971... */
+    territory?: string | null;
 };
 
-export function AddressAutocomplete({ value, onChange, className, listClassName, onBlur, ...props }: Props) {
+export function AddressAutocomplete({ value, onChange, className, listClassName, territory, onBlur, ...props }: Props) {
     const listId = useId();
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [open, setOpen] = useState(false);
@@ -42,6 +44,9 @@ export function AddressAutocomplete({ value, onChange, className, listClassName,
         const timer = window.setTimeout(() => {
             setLoading(true);
             const params = new URLSearchParams({ text: query, maximumResponses: '6' });
+            if (territory) {
+                params.set('terr', territory);
+            }
 
             fetch(`${ENDPOINT}?${params.toString()}`, { signal: controller.signal })
                 .then((response) => (response.ok ? response.json() : Promise.reject(new Error(`HTTP ${response.status}`))))
@@ -59,7 +64,7 @@ export function AddressAutocomplete({ value, onChange, className, listClassName,
             window.clearTimeout(timer);
             controller.abort();
         };
-    }, [value]);
+    }, [value, territory]);
 
     function choose(suggestion: string) {
         skipNextFetch.current = true;

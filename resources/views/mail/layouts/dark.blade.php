@@ -36,8 +36,8 @@
                 <div class="content">{!! $content !!}</div>
             </div>
             <div class="footer">
-                {{ config('app.name') }} · <a href="tel:{{ $contact['phone_href'] }}">{{ $contact['phone'] }}</a> · <a href="mailto:{{ $contact['email'] }}">{{ $contact['email'] }}</a><br>
-                {{ $contact['address'] }}
+                {{ config('app.name') }} · <a href="tel:{{ $contact['phone_href'] }}">{{ $contact['phone'] }}</a> · <a href="mailto:{{ $contact['email'] }}">{{ $contact['email'] }}</a>
+                @if ($contact['show_address'] ?? false)<br>{{ $contact['address'] }}@endif
             </div>
         </div>
     </div>

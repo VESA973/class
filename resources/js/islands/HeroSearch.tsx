@@ -17,10 +17,11 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TIME_SLOTS, combine, toApiDateTime } from '@/lib/booking';
 
-type Props = { action: string };
+type Props = { action: string; serviceTypes?: string[]; addressTerritory?: string | null };
 
 const schema = z
     .object({
+        prestation: z.string(),
         pickup: z.string().trim().max(180, 'Ce champ est trop long.'),
         destination: z.string().trim().max(255, 'Ce champ est trop long.'),
         passengers: z.number().int().min(1).max(9),
@@ -51,14 +52,15 @@ const glassField =
 /* Le module est pose en bas du hero : les suggestions s'ouvrent vers le haut. */
 const openUpward = 'top-auto bottom-full mt-0 mb-1';
 
-export default function HeroSearch({ action }: Props) {
+export default function HeroSearch({ action, serviceTypes = [], addressTerritory }: Props) {
     const [submitting, setSubmitting] = useState(false);
     const form = useForm<Values>({
         resolver: zodResolver(schema),
-        defaultValues: { pickup: '', destination: '', passengers: 1, startTime: '10:00', endTime: '10:00' },
+        defaultValues: { prestation: '', pickup: '', destination: '', passengers: 1, startTime: '10:00', endTime: '10:00' },
     });
     const startDate = useWatch({ control: form.control, name: 'startDate' });
     const today = startOfDay(new Date());
+    const hasTypes = serviceTypes.length > 0;
 
     function onSubmit(values: Values) {
         setSubmitting(true);
@@ -67,6 +69,10 @@ export default function HeroSearch({ action }: Props) {
             end: toApiDateTime(combine(values.endDate, values.endTime)),
             passengers: String(values.passengers),
         });
+
+        if (values.prestation) {
+            params.set('prestation', values.prestation);
+        }
 
         if (values.pickup) {
             params.set('pickup', values.pickup);
@@ -94,11 +100,37 @@ export default function HeroSearch({ action }: Props) {
                     aria-label="Rechercher un véhicule"
                     className="grid gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-12 lg:items-start"
                 >
+                    {hasTypes && (
+                        <FormField
+                            control={form.control}
+                            name="prestation"
+                            render={({ field }) => (
+                                <FormItem className="md:col-span-2 lg:col-span-3">
+                                    <FormLabel className="text-white">Type de prestation</FormLabel>
+                                    <Select value={field.value} onValueChange={field.onChange}>
+                                        <FormControl>
+                                            <SelectTrigger className={cn(glassField, 'w-full')}>
+                                                <SelectValue placeholder="Choisir…" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {serviceTypes.map((type) => (
+                                                <SelectItem key={type} value={type}>
+                                                    {type}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </FormItem>
+                            )}
+                        />
+                    )}
+
                     <FormField
                         control={form.control}
                         name="pickup"
                         render={({ field }) => (
-                            <FormItem className="lg:col-span-5">
+                            <FormItem className={hasTypes ? 'lg:col-span-4' : 'lg:col-span-5'}>
                                 <FormLabel className="text-white data-[error=true]:text-red-200">Lieu de départ</FormLabel>
                                 <FormControl>
                                     <AddressAutocomplete
@@ -106,6 +138,7 @@ export default function HeroSearch({ action }: Props) {
                                         placeholder="Adresse, gare, aéroport…"
                                         className={glassField}
                                         listClassName={openUpward}
+                                        territory={addressTerritory}
                                     />
                                 </FormControl>
                                 <FormMessage className="text-red-200" />
@@ -117,10 +150,10 @@ export default function HeroSearch({ action }: Props) {
                         control={form.control}
                         name="destination"
                         render={({ field }) => (
-                            <FormItem className="lg:col-span-5">
+                            <FormItem className={hasTypes ? 'lg:col-span-3' : 'lg:col-span-5'}>
                                 <FormLabel className="text-white data-[error=true]:text-red-200">Destination</FormLabel>
                                 <FormControl>
-                                    <AddressAutocomplete {...field} placeholder="Où allez-vous ?" className={glassField} listClassName={openUpward} />
+                                    <AddressAutocomplete {...field} placeholder="Où allez-vous ?" className={glassField} listClassName={openUpward} territory={addressTerritory} />
                                 </FormControl>
                                 <FormMessage className="text-red-200" />
                             </FormItem>

@@ -43,6 +43,7 @@ class Reservation extends Model
         'days',
         'pickup_location',
         'destination',
+        'prestation_type',
         'passengers',
         'service_type',
         'estimated_total',

@@ -102,7 +102,9 @@
                 <ul class="mt-3 grid gap-2.5 text-sm text-muted-foreground">
                     <li><a class="inline-flex items-center gap-2 hover:text-foreground" href="tel:{{ $contact['phone_href'] }}"><x-icon name="phone" class="size-4" /> {{ $contact['phone'] }}</a></li>
                     <li><a class="inline-flex items-center gap-2 hover:text-foreground" href="mailto:{{ $contact['email'] }}"><x-icon name="mail" class="size-4" /> {{ $contact['email'] }}</a></li>
-                    <li class="flex gap-2"><x-icon name="map-pin" class="mt-0.5 size-4" /> {{ $contact['address'] }}</li>
+                    @if ($contact['show_address'] ?? false)
+                        <li class="flex gap-2"><x-icon name="map-pin" class="mt-0.5 size-4" /> {{ $contact['address'] }}</li>
+                    @endif
                 </ul>
             </div>
         </div>

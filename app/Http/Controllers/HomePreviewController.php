@@ -18,7 +18,8 @@ class HomePreviewController extends Controller
         return view('pages.home-v2', [
             'siteSettings' => $settings,
             'heroImageUrl' => $settings->hero_image_url,
-            'content' => config('home'),
+            // Atouts : ceux de l'admin s'ils ont ete modifies (Admin > Atouts de l'accueil).
+            'content' => ['advantages' => app(\App\Services\SiteContent::class)->advantages()] + config('home'),
         ]);
     }
 }

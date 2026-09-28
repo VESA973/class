@@ -1470,3 +1470,63 @@ code,
     padding: 4px;
     cursor: pointer;
 }
+
+/* ------------------------------------------------ Listes modifiables (atouts, types de prestation) */
+.repeater-list {
+    display: grid;
+    gap: 12px;
+}
+
+.repeater-row {
+    margin: 0;
+}
+
+.repeater-row-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.repeater-tools {
+    display: inline-flex;
+    flex-shrink: 0;
+    gap: 6px;
+}
+
+.btn-icon {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+}
+
+.repeater-fields {
+    display: grid;
+    grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
+    gap: 12px;
+}
+
+.repeater-fields > * {
+    min-width: 0;
+}
+
+.repeater-wide {
+    grid-column: 1 / -1;
+}
+
+.repeater-inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.repeater-inline input {
+    flex: 1;
+    min-width: 0;
+}
+
+@media (max-width: 640px) {
+    .repeater-fields {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

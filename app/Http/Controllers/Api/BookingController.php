@@ -35,6 +35,9 @@ class BookingController extends Controller
             'start_at' => ['required', 'date_format:'.$format],
             'end_at' => ['required', 'date_format:'.$format, 'after:start_at'],
             'pickup_location' => ['required', 'string', 'max:180'],
+            'destination' => ['nullable', 'string', 'max:255'],
+            'passengers' => ['nullable', 'integer', 'min:1', 'max:9'],
+            'prestation_type' => $this->prestationRules(),
             'customer_name' => ['required', 'string', 'max:120'],
             'customer_email' => ['required', 'email', 'max:160'],
             'customer_phone' => ['required', 'string', 'regex:/^[+0-9 ().-]{6,40}$/'],
@@ -48,6 +51,10 @@ class BookingController extends Controller
             'end_at.date_format' => 'Date de retour invalide.',
             'end_at.after' => 'Le retour doit être après le départ.',
             'pickup_location.required' => 'Indiquez le lieu de prise en charge.',
+            'passengers.min' => 'Au moins 1 passager.',
+            'passengers.max' => '9 passagers au maximum.',
+            'prestation_type.required' => 'Choisissez le type de prestation.',
+            'prestation_type.in' => 'Ce type de prestation n\'est plus proposé.',
             'customer_name.required' => 'Indiquez votre nom.',
             'customer_email.required' => 'Indiquez votre adresse email.',
             'customer_email.email' => 'Adresse email invalide.',
@@ -81,6 +88,10 @@ class BookingController extends Controller
                 return ['unavailable' => true];
             }
 
+            if (! empty($validated['passengers']) && $vehicle->seats && $validated['passengers'] > $vehicle->seats) {
+                return ['too_many_passengers' => $vehicle->seats];
+            }
+
             $conflicts = $this->availability->conflicts($vehicle->id, $start, $end);
 
             if ($conflicts->isNotEmpty()) {
@@ -98,6 +109,9 @@ class BookingController extends Controller
                 'end_at' => $end,
                 'days' => $days,
                 'pickup_location' => $validated['pickup_location'],
+                'destination' => $validated['destination'] ?? null,
+                'passengers' => $validated['passengers'] ?? null,
+                'prestation_type' => $validated['prestation_type'] ?? null,
                 'service_type' => $vehicle->with_chauffeur ? 'Avec chauffeur' : 'Sans chauffeur',
                 'estimated_total' => $vehicle->daily_price * $days,
                 'status' => 'pending',
@@ -106,6 +120,10 @@ class BookingController extends Controller
 
             return ['vehicle' => $vehicle, 'reservation' => $reservation];
         });
+
+        if (isset($result['too_many_passengers'])) {
+            throw ValidationException::withMessages(['passengers' => 'Ce véhicule accueille '.$result['too_many_passengers'].' passagers au maximum.']);
+        }
 
         if (isset($result['unavailable'])) {
             throw ValidationException::withMessages(['vehicle_id' => 'Ce véhicule n\'est plus proposé à la location.']);
@@ -146,6 +164,9 @@ class BookingController extends Controller
                 'days' => $reservation->days,
                 'estimated_total' => $reservation->estimated_total,
                 'pickup_location' => $reservation->pickup_location,
+                'destination' => $reservation->destination,
+                'passengers' => $reservation->passengers,
+                'prestation_type' => $reservation->prestation_type,
                 'customer_name' => $reservation->customer_name,
                 'customer_email' => $reservation->customer_email,
                 ...ReservationAvailability::toArray($reservation->start_at, $reservation->end_at),
@@ -167,6 +188,17 @@ class BookingController extends Controller
             'transmission' => $vehicle->transmission,
             'horsepower' => $vehicle->horsepower,
             'with_chauffeur' => $vehicle->with_chauffeur,
+            'seats' => $vehicle->seats,
         ];
+    }
+
+    /** Type de prestation : obligatoire des qu'une liste est definie dans l'admin. @return list<mixed> */
+    private function prestationRules(): array
+    {
+        $types = app(\App\Services\SiteContent::class)->serviceTypes();
+
+        return $types === []
+            ? ['nullable', 'string', 'max:120']
+            : ['required', 'string', \Illuminate\Validation\Rule::in($types)];
     }
 }

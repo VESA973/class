@@ -60,6 +60,7 @@ type ReservationEvent = {
         destination: string | null;
         passengers: number | null;
         serviceType: string;
+        prestationType: string | null;
         days: number;
         estimatedTotal: number;
         message: string | null;
@@ -433,7 +434,7 @@ function ReservationSheet({
                                 <span className="text-xs text-muted-foreground">Réf. #{reservation.id}</span>
                             </div>
                             <SheetTitle className="text-lg">{details.vehicleName ?? 'Véhicule supprimé'}</SheetTitle>
-                            <SheetDescription>{details.serviceType}</SheetDescription>
+                            <SheetDescription>{details.prestationType ? `${details.prestationType} · ${details.serviceType}` : details.serviceType}</SheetDescription>
                         </SheetHeader>
 
                         <div className="grid gap-5 px-4 text-sm">
