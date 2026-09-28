@@ -15,6 +15,7 @@
             ['route' => 'admin.reservations.index', 'pattern' => 'admin.reservations.*', 'label' => 'Demandes', 'icon' => 'clipboard-list', 'badge' => $pendingCount],
             ['route' => 'admin.planning.index', 'pattern' => 'admin.planning.*', 'label' => 'Planning', 'icon' => 'calendar-days'],
             ['route' => 'admin.quotes.index', 'pattern' => 'admin.quotes.*', 'label' => 'Devis', 'icon' => 'file-text'],
+            ['route' => 'admin.customers.index', 'pattern' => 'admin.customers.*', 'label' => 'Clients', 'icon' => 'user-round'],
             ['route' => 'admin.content.service-types', 'pattern' => 'admin.content.service-types*', 'label' => 'Types de prestation', 'icon' => 'settings-2'],
         ]],
         ['title' => 'Communication', 'items' => [

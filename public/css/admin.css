@@ -1550,3 +1550,61 @@ code,
         grid-column: 1 / -1;
     }
 }
+
+/* ------------------------------------------------ Base clients dans l'editeur de devis */
+.customer-picker {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.customer-search {
+    position: relative;
+}
+
+.customer-results {
+    position: absolute;
+    z-index: 20;
+    top: 100%;
+    right: 0;
+    left: 0;
+    max-height: 280px;
+    margin: 4px 0 0;
+    padding: 4px;
+    overflow-y: auto;
+    list-style: none;
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    background: var(--panel);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+}
+
+.customer-results li {
+    display: grid;
+    gap: 2px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.customer-results li:hover,
+.customer-results li:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.customer-results small {
+    color: var(--muted);
+}
+
+.customer-results .customer-results-empty {
+    cursor: default;
+    color: var(--muted);
+}
+
+.checkbox-inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 400;
+}

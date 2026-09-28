@@ -147,7 +147,7 @@ class QuoteService
     /** Brouillon pre-rempli (client, vehicule, dates, tarif) a partir d'une demande. */
     public function createFromReservation(Reservation $reservation): Quote
     {
-        $reservation->loadMissing('vehicle');
+        $reservation->loadMissing('vehicle', 'customer');
         $config = $this->config();
         $variables = ReservationMailer::variables($reservation);
         $vatRate = $this->defaultVatRate($config);
@@ -155,9 +155,13 @@ class QuoteService
 
         $description = preg_replace_callback('/\{([a-z_]+)\}/', fn ($m) => $variables[$m[1]] ?? $m[0], $config['line_template']);
 
+        $customer = $reservation->customer;
+
         $quote = $this->create([
             'reservation_id' => $reservation->id,
-            'customer_name' => $reservation->customer_name,
+            'customer_id' => $reservation->customer_id,
+            'customer_address' => $customer?->full_address ?: null,
+            'customer_name' => $customer?->company_name ? $customer->company_name.' - '.$reservation->customer_name : $reservation->customer_name,
             'customer_email' => $reservation->customer_email,
             'customer_phone' => $reservation->customer_phone,
             'subject' => 'Location '.($reservation->vehicle?->name ?? 'de véhicule'),

@@ -43,6 +43,13 @@ demandes récentes et prochains départs. Chaque carte est cliquable.
   correspondante : ils ne se chargent qu’après accord du visiteur. « Redemander le consentement à tous » si votre
   politique change. Registre des choix et statistiques.
 
+## Clients
+- **Demandes & devis › Clients** : toutes les fiches (créées automatiquement par les demandes du site, par les devis
+  ou à la main). Un client qui revient avec le même email est rattaché à sa fiche.
+- **Onglet Doublons** : fiches qui partagent un email, un téléphone, un nom ou une raison sociale ; choisissez la
+  fiche à conserver et cochez celles à fusionner. Rien n’est jamais bloqué côté client.
+- Dans un devis : « Rechercher dans la base clients » remplit les coordonnées ; sinon le client est ajouté à la base.
+
 ## Devis libres et prix
 - **Devis › + Nouveau devis** : devis sans demande (client, lignes, remise…) ; « + Ajouter un véhicule » pré-remplit une ligne.
 - **Devis › Services & forfaits** : vos prestations tarifées ; avec un seuil d’heures, elles s’ajoutent seules aux devis
@@ -73,6 +80,7 @@ composer install --no-dev --optimize-autoloader
 npm ci && npm run build
 php artisan migrate --force
 php artisan storage:link
+php artisan customers:sync   # une seule fois : fiches clients des anciennes demandes
 php artisan config:cache && php artisan route:cache && php artisan view:cache
 ```
 

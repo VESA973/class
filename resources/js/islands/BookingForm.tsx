@@ -91,7 +91,9 @@ const schema = z
         pickup_location: z.string().trim().min(2, 'Indiquez le lieu de prise en charge.').max(180, 'Ce champ est trop long.'),
         destination: z.string().trim().min(2, 'Indiquez la destination.').max(255, 'Ce champ est trop long.'),
         passengers: z.number().int().min(1).max(9),
-        customer_name: z.string().trim().min(2, 'Indiquez votre nom.').max(120, 'Ce champ est trop long.'),
+        customer_first_name: z.string().trim().min(1, 'Indiquez votre prénom.').max(100, 'Ce champ est trop long.'),
+        customer_last_name: z.string().trim().min(1, 'Indiquez votre nom.').max(100, 'Ce champ est trop long.'),
+        customer_company: z.string().trim().max(150, 'Ce champ est trop long.'),
         customer_email: z.string().trim().pipe(z.email('Adresse email invalide.')),
         customer_phone: z
             .string()
@@ -127,7 +129,10 @@ const SERVER_FIELD_MAP: Record<string, keyof FormValues> = {
     pickup_location: 'pickup_location',
     destination: 'destination',
     passengers: 'passengers',
-    customer_name: 'customer_name',
+    customer_first_name: 'customer_first_name',
+    customer_last_name: 'customer_last_name',
+    customer_name: 'customer_last_name',
+    customer_company: 'customer_company',
     customer_email: 'customer_email',
     customer_phone: 'customer_phone',
     message: 'message',
@@ -211,7 +216,9 @@ export default function BookingForm({
             pickup_location: initialPickup ?? '',
             destination: initialDestination ?? '',
             passengers: initialPassengers ?? 1,
-            customer_name: '',
+            customer_first_name: '',
+            customer_last_name: '',
+            customer_company: '',
             customer_email: '',
             customer_phone: '',
             message: '',
@@ -289,7 +296,9 @@ export default function BookingForm({
                     destination: values.destination,
                     passengers: values.passengers,
                     prestation_type: values.prestation_type || null,
-                    customer_name: values.customer_name,
+                    customer_first_name: values.customer_first_name,
+                    customer_last_name: values.customer_last_name,
+                    customer_company: values.customer_company || null,
                     customer_email: values.customer_email,
                     customer_phone: values.customer_phone,
                     message: values.message || null,
@@ -631,12 +640,38 @@ export default function BookingForm({
                             <CardContent className="grid gap-5 sm:grid-cols-2">
                                 <FormField
                                     control={form.control}
-                                    name="customer_name"
+                                    name="customer_first_name"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Prénom</FormLabel>
+                                            <FormControl>
+                                                <Input autoComplete="given-name" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="customer_last_name"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Nom</FormLabel>
+                                            <FormControl>
+                                                <Input autoComplete="family-name" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="customer_company"
                                     render={({ field }) => (
                                         <FormItem className="sm:col-span-2">
-                                            <FormLabel>Nom complet</FormLabel>
+                                            <FormLabel>Société (facultatif)</FormLabel>
                                             <FormControl>
-                                                <Input autoComplete="name" {...field} />
+                                                <Input autoComplete="organization" placeholder="Pour une demande professionnelle" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>

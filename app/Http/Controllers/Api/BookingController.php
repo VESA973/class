@@ -38,7 +38,11 @@ class BookingController extends Controller
             'destination' => ['required', 'string', 'max:255'],
             'passengers' => ['nullable', 'integer', 'min:1', 'max:9'],
             'prestation_type' => $this->prestationRules(),
-            'customer_name' => ['required', 'string', 'max:120'],
+            // Prenom + nom (formulaire actuel) ou nom complet (ancien formulaire, toujours accepte).
+            'customer_first_name' => ['nullable', 'string', 'max:100'],
+            'customer_last_name' => ['required_without:customer_name', 'nullable', 'string', 'max:100'],
+            'customer_company' => ['nullable', 'string', 'max:150'],
+            'customer_name' => ['required_without:customer_last_name', 'nullable', 'string', 'max:120'],
             'customer_email' => ['required', 'email', 'max:160'],
             'customer_phone' => ['required', 'string', 'regex:/^[+0-9 ().-]{6,40}$/'],
             'message' => ['nullable', 'string', 'max:2000'],
@@ -56,13 +60,18 @@ class BookingController extends Controller
             'passengers.max' => '9 passagers au maximum.',
             'prestation_type.required' => 'Choisissez le type de prestation.',
             'prestation_type.in' => 'Ce type de prestation n\'est plus proposé.',
-            'customer_name.required' => 'Indiquez votre nom.',
+            'customer_name.required_without' => 'Indiquez votre nom.',
+            'customer_last_name.required_without' => 'Indiquez votre nom.',
             'customer_email.required' => 'Indiquez votre adresse email.',
             'customer_email.email' => 'Adresse email invalide.',
             'customer_phone.required' => 'Indiquez votre numéro de téléphone.',
             'customer_phone.regex' => 'Numéro de téléphone invalide.',
             '*.max' => 'Ce champ est trop long.',
         ]);
+
+        if (filled($validated['customer_last_name'] ?? null)) {
+            $validated['customer_name'] = trim(($validated['customer_first_name'] ?? '').' '.$validated['customer_last_name']);
+        }
 
         $start = Carbon::parse($validated['start_at']);
         $end = Carbon::parse($validated['end_at']);
@@ -149,6 +158,18 @@ class BookingController extends Controller
 
         /** @var Reservation $reservation */
         $reservation = $result['reservation'];
+
+        // Base clients : rattachement a la fiche existante (meme email) ou creation. Ne bloque jamais la
+        // demande : en cas de souci, la demande est gardee et l'erreur journalisee (doublons geres dans l'admin).
+        try {
+            app(\App\Services\CustomerDirectory::class)->attachReservation($reservation, [
+                'first_name' => $validated['customer_first_name'] ?? null,
+                'last_name' => $validated['customer_last_name'] ?? null,
+                'company_name' => $validated['customer_company'] ?? null,
+            ]);
+        } catch (\Throwable $exception) {
+            report($exception);
+        }
 
         // Historique de la demande + envoi automatique du devis (desactive par defaut).
         ReservationCreated::dispatch($reservation);

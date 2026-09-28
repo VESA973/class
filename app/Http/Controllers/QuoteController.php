@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customer;
 use App\Models\Quote;
+use App\Services\CustomerDirectory;
 use App\Models\Reservation;
 use App\Models\ReservationEvent;
 use App\Services\QuoteService;
@@ -48,7 +50,7 @@ class QuoteController extends Controller
 
     public function edit(Quote $quote): View
     {
-        $quote->load('lines', 'reservation.vehicle');
+        $quote->load('lines', 'reservation.vehicle', 'customer');
 
         return view('admin.quotes.edit', [
             'quote' => $quote,
@@ -66,16 +68,30 @@ class QuoteController extends Controller
             $data['vat_exempt'] = $request->boolean('vat_exempt');
         }
 
+        $data['customer_id'] = $this->customerIdFor($request, $data, $quote->customer_id);
         $this->quotes->update($quote, $data, $lines);
 
         return redirect()->route('admin.quotes.edit', $quote)->with('status', "Devis {$quote->number} enregistré.");
     }
 
-    /** Formulaire de creation libre (sans demande de reservation). */
-    public function create(): View
+    /** Formulaire de creation libre (sans demande de reservation), eventuellement pour un client de la base (?client=). */
+    public function create(Request $request): View
     {
+        $quote = $this->quotes->blank();
+
+        if ($customer = Customer::find($request->integer('client'))) {
+            $quote->fill([
+                'customer_id' => $customer->id,
+                'customer_name' => $customer->company_name ?: $customer->full_name,
+                'customer_email' => $customer->email,
+                'customer_phone' => $customer->phone,
+                'customer_address' => $customer->full_address ?: null,
+            ]);
+            $quote->setRelation('customer', $customer);
+        }
+
         return view('admin.quotes.edit', [
-            'quote' => $this->quotes->blank(),
+            'quote' => $quote,
             'vatRates' => Quote::VAT_RATES,
             'events' => collect(),
             'company' => $this->quotes->config()['company'],
@@ -86,9 +102,36 @@ class QuoteController extends Controller
     {
         [$data, $lines] = $this->validated($request);
         $data['vat_exempt'] = $request->has('vat_exempt') ? $request->boolean('vat_exempt') : ! $this->quotes->config()['vat_enabled'];
+        $data['customer_id'] = $this->customerIdFor($request, $data);
         $quote = $this->quotes->create($data, $lines);
 
         return redirect()->route('admin.quotes.edit', $quote)->with('status', "Devis {$quote->number} créé (brouillon).");
+    }
+
+    /**
+     * Client de la base : celui choisi dans la recherche, sinon (case cochee) fiche retrouvee par email ou creee.
+     * Jamais bloquant : les doublons eventuels se reglent dans Admin > Clients > Doublons.
+     */
+    private function customerIdFor(Request $request, array $data, ?int $current = null): ?int
+    {
+        if ($request->filled('customer_id')) {
+            return Customer::whereKey($request->integer('customer_id'))->exists() ? $request->integer('customer_id') : $current;
+        }
+
+        if ($request->has('customer_id') && ! $request->boolean('save_customer')) {
+            return null; // client detache volontairement
+        }
+
+        if (! $request->boolean('save_customer') || (blank($data['customer_email'] ?? null) && blank($data['customer_phone'] ?? null))) {
+            return $current;
+        }
+
+        [$first, $last] = CustomerDirectory::splitName((string) $data['customer_name']);
+
+        return app(CustomerDirectory::class)->resolve([
+            'first_name' => $first, 'last_name' => $last, 'email' => $data['customer_email'] ?? null,
+            'phone' => $data['customer_phone'] ?? null, 'address' => $data['customer_address'] ?? null,
+        ], 'devis')->id;
     }
 
     /** @return array{0: array<string, mixed>, 1: list<array<string, mixed>>} */

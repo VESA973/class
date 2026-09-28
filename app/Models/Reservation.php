@@ -32,6 +32,7 @@ class Reservation extends Model
 
     protected $fillable = [
         'vehicle_id',
+        'customer_id',
         'prestation_id',
         'customer_name',
         'customer_email',
@@ -101,6 +102,11 @@ class Reservation extends Model
     public function getStatusLabelAttribute(): string
     {
         return self::STATUS_LABELS[$this->status] ?? ucfirst((string) $this->status);
+    }
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class)->withTrashed();
     }
 
     public function vehicle(): BelongsTo

@@ -17,7 +17,7 @@ class Quote extends Model
     public const VAT_RATES = ['20' => '20 %', '10' => '10 %', '5.5' => '5,5 %', '2.1' => '2,1 %', '0' => '0 % (exonéré)'];
 
     protected $fillable = [
-        'reservation_id', 'number', 'year', 'sequence', 'status', 'customer_name', 'customer_email', 'customer_phone',
+        'reservation_id', 'customer_id', 'number', 'year', 'sequence', 'status', 'customer_name', 'customer_email', 'customer_phone',
         'customer_address', 'subject', 'issued_at', 'valid_until', 'discount_type', 'discount_value', 'vat_exempt', 'subtotal_ht',
         'discount_ht', 'total_ht', 'total_vat', 'total_ttc', 'conditions', 'notes', 'pdf_path', 'sent_at',
     ];
@@ -36,6 +36,11 @@ class Quote extends Model
             'total_vat' => 'decimal:2',
             'total_ttc' => 'decimal:2',
         ];
+    }
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class)->withTrashed();
     }
 
     public function reservation(): BelongsTo

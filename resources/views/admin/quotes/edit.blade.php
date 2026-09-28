@@ -64,6 +64,23 @@
             @endunless
 
             <h2>Client</h2>
+            @php($linkedCustomer = $quote->customer_id ? $quote->customer : null)
+            <div class="customer-picker" data-customer-picker data-lookup="{{ route('admin.customers.lookup') }}" data-edit-url="{{ route('admin.customers.edit', '__ID__') }}">
+                <input type="hidden" name="customer_id" value="{{ old('customer_id', $quote->customer_id) }}" data-customer-id>
+                <p class="form-hint" data-customer-linked @unless ($linkedCustomer) hidden @endunless>
+                    Fiche client : <a href="{{ $linkedCustomer ? route('admin.customers.edit', $linkedCustomer) : '#' }}" data-customer-link>{{ $linkedCustomer?->display_name }}</a>
+                    · <button type="button" class="link-button" data-customer-unlink>Détacher</button>
+                </p>
+                <label class="customer-search" data-customer-search-wrap @if ($linkedCustomer) hidden @endif>
+                    Rechercher dans la base clients
+                    <input type="search" autocomplete="off" placeholder="Nom, société, email ou téléphone…" data-customer-search aria-controls="customer-results">
+                    <ul id="customer-results" class="customer-results" role="listbox" hidden data-customer-results></ul>
+                </label>
+                <label class="checkbox-inline" data-customer-save @if ($linkedCustomer) hidden @endif>
+                    <input type="checkbox" name="save_customer" value="1" @checked(old('save_customer', true))>
+                    Enregistrer ce client dans la base (fiche retrouvée par son email, sinon créée)
+                </label>
+            </div>
             <div class="form-grid">
                 <label>Nom<input name="customer_name" value="{{ old('customer_name', $quote->customer_name) }}" required maxlength="255"></label>
                 <label>Email<input type="email" name="customer_email" value="{{ old('customer_email', $quote->customer_email) }}" maxlength="255"></label>
@@ -283,6 +300,71 @@
             if (exemptToggle && {{ $isNew ? 'false' : 'true' }}) {
                 exemptToggle.addEventListener('change', function () { form.requestSubmit(); });
             }
+            // Base clients : recherche, choix d'une fiche (remplit les champs), detachement.
+            (function () {
+                var picker = form.querySelector('[data-customer-picker]');
+                if (!picker) return;
+                var input = picker.querySelector('[data-customer-search]');
+                var list = picker.querySelector('[data-customer-results]');
+                var idField = picker.querySelector('[data-customer-id]');
+                var timer, controller;
+
+                function setLinked(customer) {
+                    idField.value = customer ? customer.id : '';
+                    picker.querySelector('[data-customer-linked]').hidden = !customer;
+                    picker.querySelector('[data-customer-search-wrap]').hidden = !!customer;
+                    picker.querySelector('[data-customer-save]').hidden = !!customer;
+                    if (customer) {
+                        var link = picker.querySelector('[data-customer-link]');
+                        link.textContent = customer.label;
+                        link.href = picker.dataset.editUrl.replace('__ID__', customer.id);
+                        [['customer_name', customer.name], ['customer_email', customer.email], ['customer_phone', customer.phone], ['customer_address', customer.address]].forEach(function (pair) {
+                            var field = form.querySelector('[name="' + pair[0] + '"]');
+                            if (field && pair[1]) field.value = pair[1];
+                        });
+                    }
+                }
+
+                input.addEventListener('input', function () {
+                    clearTimeout(timer);
+                    if (controller) controller.abort();
+                    var query = input.value.trim();
+                    if (query.length < 2) { list.hidden = true; return; }
+                    timer = setTimeout(function () {
+                        controller = new AbortController();
+                        fetch(picker.dataset.lookup + '?q=' + encodeURIComponent(query), { headers: { Accept: 'application/json' }, signal: controller.signal })
+                            .then(function (response) { return response.json(); })
+                            .then(function (data) {
+                                list.innerHTML = '';
+                                (data.customers || []).forEach(function (customer) {
+                                    var item = document.createElement('li');
+                                    item.setAttribute('role', 'option');
+                                    item.tabIndex = 0;
+                                    var strong = document.createElement('strong');
+                                    strong.textContent = customer.label;
+                                    var small = document.createElement('small');
+                                    small.textContent = customer.detail;
+                                    item.append(strong, small);
+                                    var pick = function () { setLinked(customer); list.hidden = true; input.value = ''; };
+                                    item.addEventListener('click', pick);
+                                    item.addEventListener('keydown', function (event) { if (event.key === 'Enter') { event.preventDefault(); pick(); } });
+                                    list.appendChild(item);
+                                });
+                                if (!list.children.length) {
+                                    var empty = document.createElement('li');
+                                    empty.className = 'customer-results-empty';
+                                    empty.textContent = 'Aucun client trouvé : remplissez les champs, il sera ajouté à la base.';
+                                    list.appendChild(empty);
+                                }
+                                list.hidden = false;
+                            })
+                            .catch(function () {});
+                    }, 250);
+                });
+                picker.querySelector('[data-customer-unlink]').addEventListener('click', function () { setLinked(null); input.focus(); });
+                document.addEventListener('click', function (event) { if (!picker.contains(event.target)) list.hidden = true; });
+            })();
+
             form.addEventListener('input', recalc);
             form.addEventListener('change', recalc);
             recalc();

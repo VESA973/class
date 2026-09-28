@@ -14,6 +14,9 @@
     <div class="detail-grid">
         <section class="detail-card">
             <h2>Client</h2>
+            @if ($reservation->customer)
+                <p><strong>Fiche client :</strong> <a href="{{ route('admin.customers.edit', $reservation->customer) }}">{{ $reservation->customer->display_name }}</a>@if ($reservation->customer->trashed()) (supprimée)@endif</p>
+            @endif
             <p><strong>Telephone:</strong> {{ $reservation->customer_phone }}</p>
             <p><strong>Email:</strong> {{ $reservation->customer_email ?: '-' }}</p>
             <p><strong>Prestation :</strong> {{ $reservation->prestation_type ?: '-' }}</p>

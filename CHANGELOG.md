@@ -45,6 +45,17 @@ Toutes les évolutions notables du site CLASS'AFFAIRE. Format inspiré de [Keep 
   mémorisé par devis (migration additive `quotes.vat_exempt`), les devis existants gardent leur TVA.
 - **Devis sans TVA par devis** : case « Devis sans TVA » dans l'éditeur (enregistrée immédiatement sur un devis
   existant) pour retirer la TVA d'un devis créé avant le réglage ; aperçu et PDF sans HT / TVA / TTC.
+- **Base clients** (Admin › Demandes & devis › Clients ; migration additive : table `customers`, colonnes
+  `customer_id` sur les demandes et les devis) : particulier / professionnel, prénom, nom, raison sociale, SIRET,
+  email, portable, fixe, adresse, date de naissance, permis (n°, date), notes ; historique des demandes et devis ;
+  recherche (nom, société, email, téléphone sous tous formats) ; « + Créer un devis » depuis la fiche.
+- **Site** : prénom / nom / société (facultatif) dans la réservation ; chaque demande crée la fiche ou la rattache
+  à la fiche existante (même email, champs vides complétés, rien d'écrasé) ; jamais bloquant pour le client.
+- **Doublons** : détection (même email, même téléphone quel que soit le format, même prénom + nom, même raison
+  sociale), fusion (demandes et devis rattachés, doublons archivés) ; avertissement non bloquant à la saisie.
+- **Devis** : recherche d'un client de la base dans l'éditeur (remplit les champs), ou enregistrement automatique
+  du nouveau client ; devis créés depuis une demande rattachés à sa fiche avec son adresse.
+- Commande `php artisan customers:sync` : crée les fiches des anciennes demandes et devis (relançable).
 - Numéro en dur retiré de la page de réservation (formulaire React et `noscript`).
 - Tests : `ContactSettingsTest` (8 tests) — 84 tests au total.
 
