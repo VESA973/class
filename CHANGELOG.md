@@ -37,6 +37,12 @@ Toutes les évolutions notables du site CLASS'AFFAIRE. Format inspiré de [Keep 
   devient « Sur devis » (formulaire, confirmation, emails, admin, planning).
 - **Page Réserver** : destination obligatoire (formulaire et serveur) ; calendrier des dates avec un bandeau
   « Départ / Retour » (étape en cours mise en avant) et la mention « Départ » / « Retour » sous les jours choisis.
+- **Devis › Services & forfaits** : catalogue (nom, prix, unité forfait / heure / jour) ; « + Ajouter un service »
+  dans l'éditeur ; seuil « automatique au-delà de X heures » : ajouté aux devis créés depuis une demande dont la
+  location dépasse le seuil (par heure : heures au-delà du seuil ; ex. 9 h avec seuil 7 h -> 2 h).
+- **TVA désactivable** (Devis › Réglages, désactivée par défaut : non applicable en Guyane, art. 294 du CGI) :
+  devis sans colonnes HT / TVA / TTC, taux forcé à 0, mention « TVA non applicable… » modifiable sur le PDF ;
+  mémorisé par devis (migration additive `quotes.vat_exempt`), les devis existants gardent leur TVA.
 - Numéro en dur retiré de la page de réservation (formulaire React et `noscript`).
 - Tests : `ContactSettingsTest` (8 tests) — 84 tests au total.
 

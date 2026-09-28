@@ -23,6 +23,8 @@ class QuoteModuleTest extends TestCase
         parent::setUp();
         // Les PDF generes pendant les tests ne doivent pas atterrir dans le vrai dossier des devis.
         Storage::fake('local');
+        // Ces tests portent sur les calculs avec TVA (desactivee par defaut : Guyane).
+        app(Settings::class)->set(['quotes.vat_enabled' => true]);
     }
 
     private function reservation(array $overrides = []): Reservation
@@ -237,5 +239,68 @@ class QuoteModuleTest extends TestCase
         $this->assertSame('10', $config['vat_rate']);
         $this->assertFalse($config['auto_send']);
         $this->assertSame('CLASS AFFAIRE SAS', $config['company']['name']);
+    }
+
+    public function test_quotes_without_vat_by_default(): void
+    {
+        app(Settings::class)->forget('quotes.vat_enabled');
+        $this->actingAs(User::factory()->create());
+        $reservation = $this->reservation();
+
+        $this->post("/admin/reservations/{$reservation->id}/devis")->assertRedirect();
+        $quote = Quote::firstOrFail()->load('lines');
+
+        $this->assertTrue($quote->vat_exempt);
+        $this->assertSame('1200.00', $quote->lines[0]->unit_price_ht); // prix du site repris tel quel
+        $this->assertSame('0.00', $quote->lines[0]->vat_rate);
+        $this->assertSame('2400.00', $quote->total_ttc);
+
+        // Meme si un taux est envoye, il est force a 0 sur un devis sans TVA.
+        $this->put("/admin/devis/{$quote->id}", [
+            'customer_name' => 'Jean Dupont', 'issued_at' => '2030-01-01', 'valid_until' => '2030-01-15',
+            'discount_type' => 'none', 'lines' => $this->lines(),
+        ])->assertRedirect();
+        $this->assertSame('250.00', $quote->fresh()->total_ttc);
+
+        $this->get("/admin/devis/{$quote->id}")->assertOk()->assertDontSee('Total TTC')->assertSee('TVA non applicable, article 294 du CGI.');
+        $html = view('pdf.quote', ['quote' => $quote->fresh()->load('lines'), 'totals' => QuoteService::compute($this->lines()), 'company' => app(QuoteService::class)->config()['company'], 'vatMention' => 'TVA non applicable, article 294 du CGI.'])->render();
+        $this->assertStringNotContainsString('Total TTC', $html);
+        $this->assertStringNotContainsString('Prix unit. HT', $html);
+        $this->assertStringContainsString('TVA non applicable, article 294 du CGI.', $html);
+    }
+
+    public function test_services_catalog_and_automatic_overtime(): void
+    {
+        app(Settings::class)->forget('quotes.vat_enabled');
+        $this->actingAs(User::factory()->create());
+
+        $this->get('/admin/devis/services')->assertOk()->assertSee('Services & forfaits');
+        $this->put('/admin/devis/services', ['services' => [
+            ['name' => 'Heures supplémentaires', 'price' => 80, 'unit' => 'heure', 'auto_after_hours' => 7],
+            ['name' => 'Forfait longue journée', 'price' => 150, 'unit' => 'forfait', 'auto_after_hours' => 7],
+            ['name' => 'Livraison', 'price' => 50, 'unit' => 'forfait', 'auto_after_hours' => ''],
+        ]])->assertSessionHasNoErrors();
+
+        // 9 h de location : 2 h supplementaires + le forfait ; la livraison (manuelle) n'est pas ajoutee.
+        $reservation = $this->reservation(['start_at' => '2030-03-10 08:00', 'end_at' => '2030-03-10 17:00', 'days' => 1]);
+        $this->post("/admin/reservations/{$reservation->id}/devis")->assertRedirect();
+        $lines = Quote::firstOrFail()->lines()->orderBy('position')->get();
+
+        $this->assertCount(3, $lines);
+        $this->assertSame('Heures supplémentaires (2 h au-delà de 7 h)', $lines[1]->description);
+        $this->assertSame('2.00', $lines[1]->quantity);
+        $this->assertSame('80.00', $lines[1]->unit_price_ht);
+        $this->assertSame('Forfait longue journée (location de 9 h)', $lines[2]->description);
+
+        // 6 h : aucun service automatique.
+        $short = $this->reservation(['start_at' => '2030-04-10 08:00', 'end_at' => '2030-04-10 14:00', 'days' => 1]);
+        $this->post("/admin/reservations/{$short->id}/devis")->assertRedirect();
+        $this->assertCount(1, Quote::where('reservation_id', $short->id)->firstOrFail()->lines);
+
+        // Le service est propose dans l'editeur.
+        $this->get('/admin/devis/nouveau')->assertOk()->assertSee('Livraison · Forfait');
+
+        $this->put('/admin/devis/services', ['services' => [['name' => '', 'price' => '', 'unit' => 'x']]])
+            ->assertSessionHasErrors(['services.0.name', 'services.0.price', 'services.0.unit']);
     }
 }

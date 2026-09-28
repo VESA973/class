@@ -21,7 +21,17 @@
                 <h2 id="default-title">Modèle de devis par défaut</h2>
                 <p class="form-hint">Utilisé pour pré-remplir chaque nouveau devis créé depuis une demande.</p>
             </div>
-            <div class="form-grid">
+            <label class="toggle-row">
+                <input type="checkbox" name="vat_enabled" value="1" @checked(old('vat_enabled', $config['vat_enabled'])) data-vat-toggle>
+                <span>
+                    <strong>Appliquer la TVA sur les devis</strong>
+                    <small>Décoché : devis sans TVA (prix nets, sans colonnes HT / TVA / TTC), avec la mention ci-dessous. En Guyane, la TVA n’est pas applicable (article 294 du CGI).</small>
+                </span>
+            </label>
+            <label data-vat-off>Mention affichée sur les devis sans TVA
+                <input name="vat_mention" maxlength="255" value="{{ old('vat_mention', $config['vat_mention']) }}" placeholder="{{ \App\Services\QuoteService::DEFAULT_VAT_MENTION }}">
+            </label>
+            <div class="form-grid" data-vat-on>
                 <label>TVA par défaut
                     <select name="vat_rate">
                         @foreach ($vatRates as $rate => $label)
@@ -37,7 +47,7 @@
                 <input name="line_template" maxlength="500" value="{{ old('line_template', $config['line_template']) }}" required>
                 <span class="form-hint">Variables : {vehicule}, {date_depart}, {date_retour}, {lieu_depart}, {destination}, {passagers}</span>
             </label>
-            <div class="checkboxes">
+            <div class="checkboxes" data-vat-on>
                 <label><input type="checkbox" name="prices_include_vat" value="1" @checked(old('prices_include_vat', $config['prices_include_vat']))> Les prix par jour des véhicules sont TTC (convertis en HT sur le devis)</label>
             </div>
             <label>Conditions par défaut
@@ -79,6 +89,16 @@
 
 @push('scripts')
     <script>
+        // Champs TVA affiches seulement si la TVA est activee (et la mention seulement si elle ne l'est pas).
+        (function () {
+            var toggle = document.querySelector('[data-vat-toggle]');
+            function sync() {
+                document.querySelectorAll('[data-vat-on]').forEach(function (el) { el.hidden = !toggle.checked; });
+                document.querySelectorAll('[data-vat-off]').forEach(function (el) { el.hidden = toggle.checked; });
+            }
+            toggle.addEventListener('change', sync);
+            sync();
+        })();
         (function () {
             var box = document.querySelector('[data-auto-send]');
             var initial = box.checked;

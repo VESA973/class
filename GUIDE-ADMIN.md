@@ -45,6 +45,9 @@ demandes récentes et prochains départs. Chaque carte est cliquable.
 
 ## Devis libres et prix
 - **Devis › + Nouveau devis** : devis sans demande (client, lignes, remise…) ; « + Ajouter un véhicule » pré-remplit une ligne.
+- **Devis › Services & forfaits** : vos prestations tarifées ; avec un seuil d’heures, elles s’ajoutent seules aux devis
+  des locations plus longues (ex. heures supplémentaires au-delà de 7 h).
+- **Devis › Réglages › TVA** : décochée = devis sans TVA avec la mention légale (Guyane : art. 294 du CGI).
 - **Véhicules** : laissez le prix vide pour n’afficher aucun tarif sur le site (« Sur devis » dans les demandes).
 
 ## Contenus

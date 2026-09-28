@@ -1530,3 +1530,23 @@ code,
         grid-template-columns: minmax(0, 1fr);
     }
 }
+
+.service-fields {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.service-fields > * {
+    min-width: 0;
+}
+
+@media (max-width: 900px) {
+    .service-fields {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .service-name {
+        grid-column: 1 / -1;
+    }
+}

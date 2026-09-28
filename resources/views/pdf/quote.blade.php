@@ -2,6 +2,8 @@
     $missing = fn (?string $value, string $label) => filled($value) ? e($value) : '<span class="todo">['.e($label).' à compléter]</span>';
     $rate = fn ($value) => rtrim(rtrim(number_format((float) $value, 2, ',', ''), '0'), ',').' %';
     $money = fn ($value) => number_format((float) $value, 2, ',', ' ').' €';
+    $exempt = (bool) $quote->vat_exempt; // devis sans TVA : ni colonnes HT / TVA, ni TTC
+    $ht = $exempt ? '' : ' HT';
 @endphp
 <!DOCTYPE html>
 <html lang="fr">
@@ -70,7 +72,9 @@
                         @if (filled($company['legal_form']))<div>{{ $company['legal_form'] }}</div>@endif
                         <div>{!! nl2br($missing($company['address'], 'Adresse du siège')) !!}</div>
                         <div>SIRET : {!! $missing($company['siret'], 'SIRET') !!}</div>
-                        <div>TVA : {!! $missing($company['vat_number'], 'N° de TVA intracommunautaire') !!}</div>
+                        @unless ($exempt && blank($company['vat_number']))
+                            <div>TVA : {!! $missing($company['vat_number'], 'N° de TVA intracommunautaire') !!}</div>
+                        @endunless
                         <div>{{ $company['phone'] }} · {{ $company['email'] }}</div>
                     </div>
                 </td>
@@ -111,7 +115,7 @@
 
         <table class="lines">
             <thead>
-                <tr><th style="width:48%">Désignation</th><th class="num">Qté</th><th class="num">Prix unit. HT</th><th class="num">TVA</th><th class="num">Total HT</th></tr>
+                <tr><th style="width:48%">Désignation</th><th class="num">Qté</th><th class="num">Prix unit.{{ $ht }}</th>@unless ($exempt)<th class="num">TVA</th>@endunless<th class="num">Total{{ $ht }}</th></tr>
             </thead>
             <tbody>
                 @foreach ($totals['lines'] as $line)
@@ -119,7 +123,7 @@
                         <td>{!! nl2br(e($line['description'])) !!}</td>
                         <td class="num">{{ rtrim(rtrim(number_format($line['quantity'], 2, ',', ' '), '0'), ',') }}</td>
                         <td class="num">{{ $money($line['unit_price_ht']) }}</td>
-                        <td class="num">{{ $rate($line['vat_rate']) }}</td>
+                        @unless ($exempt)<td class="num">{{ $rate($line['vat_rate']) }}</td>@endunless
                         <td class="num">{{ $money($line['total_ht']) }}</td>
                     </tr>
                 @endforeach
@@ -127,16 +131,23 @@
         </table>
 
         <table class="totals">
-            <tr><td>Sous-total HT</td><td class="num">{{ $money($totals['subtotal_ht']) }}</td></tr>
+            <tr><td>Sous-total{{ $ht }}</td><td class="num">{{ $money($totals['subtotal_ht']) }}</td></tr>
             @if ($totals['discount_ht'] > 0)
                 <tr><td>Remise{{ $quote->discount_type === 'percent' ? ' ('.$rate($quote->discount_value).')' : '' }}</td><td class="num">− {{ $money($totals['discount_ht']) }}</td></tr>
-                <tr><td>Total HT après remise</td><td class="num">{{ $money($totals['total_ht']) }}</td></tr>
+                @unless ($exempt)
+                    <tr><td>Total HT après remise</td><td class="num">{{ $money($totals['total_ht']) }}</td></tr>
+                @endunless
             @endif
-            @foreach ($totals['vat_breakdown'] as $vatRate => $vatAmount)
-                <tr><td>TVA {{ $rate($vatRate) }}</td><td class="num">{{ $money($vatAmount) }}</td></tr>
-            @endforeach
-            <tr class="grand"><td>Total TTC</td><td class="num">{{ $money($totals['total_ttc']) }}</td></tr>
+            @unless ($exempt)
+                @foreach ($totals['vat_breakdown'] as $vatRate => $vatAmount)
+                    <tr><td>TVA {{ $rate($vatRate) }}</td><td class="num">{{ $money($vatAmount) }}</td></tr>
+                @endforeach
+            @endunless
+            <tr class="grand"><td>{{ $exempt ? 'Total' : 'Total TTC' }}</td><td class="num">{{ $money($totals['total_ttc']) }}</td></tr>
         </table>
+        @if ($exempt && filled($vatMention ?? ''))
+            <p style="margin:8px 0 0;text-align:right;color:#3f3f46;font-size:8.5pt">{{ $vatMention }}</p>
+        @endif
 
         @if ($quote->conditions)
             <div class="section">
@@ -161,7 +172,7 @@
     </div>
 
     <div class="footer">
-        {!! $missing($company['name'], 'Raison sociale') !!} · SIRET {!! $missing($company['siret'], 'SIRET') !!} · TVA {!! $missing($company['vat_number'], 'N° TVA') !!} · {{ $company['email'] }} · {{ $company['phone'] }}
+        {!! $missing($company['name'], 'Raison sociale') !!} · SIRET {!! $missing($company['siret'], 'SIRET') !!}@unless ($exempt && blank($company['vat_number'])) · TVA {!! $missing($company['vat_number'], 'N° TVA') !!}@endunless · {{ $company['email'] }} · {{ $company['phone'] }}
     </div>
 </body>
 </html>

@@ -11,14 +11,21 @@
     ])->all());
     $statusClass = $quote->status_class;
     $isNew = ! $quote->exists;
-    // Aide a la saisie : vehicules avec leur prix HT (le prix du site est TTC si c'est le reglage choisi).
-    $quoteConfig = app(\App\Services\QuoteService::class)->config();
-    $defaultVat = (float) $quoteConfig['vat_rate'];
+    $exempt = (bool) $quote->vat_exempt; // devis sans TVA : pas de colonnes HT / TVA / TTC
+    $ht = $exempt ? '' : ' HT';
+    // Aide a la saisie : vehicules et services avec leur prix de ligne (HT si la TVA s'applique aux prix TTC).
+    $quoteService = app(\App\Services\QuoteService::class);
+    $quoteConfig = $quoteService->config();
+    $defaultVat = $exempt ? 0.0 : (float) $quoteConfig['vat_rate'];
     $vehicleOptions = \App\Models\Vehicle::query()->orderBy('name')->get(['id', 'name', 'daily_price'])->map(fn ($vehicle) => [
-        'name' => $vehicle->name,
-        'price' => $vehicle->daily_price
-            ? ($quoteConfig['prices_include_vat'] && $defaultVat > 0 ? round($vehicle->daily_price / (1 + $defaultVat / 100), 2) : (float) $vehicle->daily_price)
-            : 0,
+        'name' => 'Location '.$vehicle->name,
+        'label' => $vehicle->name,
+        'price' => $vehicle->daily_price ? $quoteService->linePrice((float) $vehicle->daily_price, $quoteConfig) : 0,
+    ]);
+    $serviceOptions = collect($quoteConfig['services'])->map(fn ($service) => [
+        'name' => $service['name'],
+        'label' => $service['name'].' · '.\App\Services\QuoteService::SERVICE_UNITS[$service['unit']],
+        'price' => $quoteService->linePrice((float) $service['price'], $quoteConfig),
     ]);
     $missingCompany = collect(['name' => 'raison sociale', 'siret' => 'SIRET', 'address' => 'adresse'])->filter(fn ($label, $key) => blank($company[$key] ?? null));
 @endphp
@@ -76,28 +83,35 @@
             <div class="table-card quote-lines">
                 <table>
                     <thead>
-                        <tr><th style="width:44%">Désignation</th><th>Qté</th><th>Prix unit. HT</th><th>TVA</th><th>Total HT</th><th><span class="sr-only">Supprimer</span></th></tr>
+                        <tr><th style="width:44%">Désignation</th><th>Qté</th><th>Prix unit.{{ $ht }}</th>@unless ($exempt)<th>TVA</th>@endunless<th>Total{{ $ht }}</th><th><span class="sr-only">Supprimer</span></th></tr>
                     </thead>
                     <tbody data-lines>
                         @foreach ($lines as $index => $line)
-                            @include('admin.quotes._line', ['index' => $index, 'line' => $line])
+                            @include('admin.quotes._line', ['index' => $index, 'line' => $line, 'exempt' => $exempt])
                         @endforeach
                     </tbody>
                 </table>
             </div>
             <template data-line-template>
-                @include('admin.quotes._line', ['index' => '__INDEX__', 'line' => ['description' => '', 'quantity' => 1, 'unit_price_ht' => 0, 'vat_rate' => rtrim(rtrim((string) $defaultVat, '0'), '.')]])
+                @include('admin.quotes._line', ['index' => '__INDEX__', 'line' => ['description' => '', 'quantity' => 1, 'unit_price_ht' => 0, 'vat_rate' => rtrim(rtrim((string) $defaultVat, '0'), '.') ?: '0'], 'exempt' => $exempt])
             </template>
             <div class="form-actions" style="justify-content:flex-start">
                 <button type="button" class="btn btn-secondary" data-add-line>+ Ajouter une ligne</button>
                 @if ($vehicleOptions->isNotEmpty())
-                    <select data-add-vehicle aria-label="Ajouter un véhicule au devis" style="max-width:280px">
+                    <select data-add-item aria-label="Ajouter un véhicule au devis" style="max-width:260px">
                         <option value="">+ Ajouter un véhicule…</option>
                         @foreach ($vehicleOptions as $option)
-                            <option value="{{ $option['name'] }}" data-price="{{ $option['price'] }}">{{ $option['name'] }}{{ $option['price'] ? '' : ' (sans prix)' }}</option>
+                            <option value="{{ $option['name'] }}" data-price="{{ $option['price'] }}">{{ $option['label'] }}{{ $option['price'] ? '' : ' (sans prix)' }}</option>
                         @endforeach
                     </select>
                 @endif
+                <select data-add-item aria-label="Ajouter un service au devis" style="max-width:260px">
+                    <option value="">+ Ajouter un service…</option>
+                    @foreach ($serviceOptions as $option)
+                        <option value="{{ $option['name'] }}" data-price="{{ $option['price'] }}">{{ $option['label'] }}</option>
+                    @endforeach
+                </select>
+                <a class="link-button" href="{{ route('admin.quotes.services') }}">Gérer les services</a>
             </div>
 
             <div class="quote-bottom">
@@ -106,19 +120,25 @@
                         <select name="discount_type" data-discount-type>
                             <option value="none" @selected(old('discount_type', $quote->discount_type) === 'none')>Aucune</option>
                             <option value="percent" @selected(old('discount_type', $quote->discount_type) === 'percent')>Pourcentage (%)</option>
-                            <option value="amount" @selected(old('discount_type', $quote->discount_type) === 'amount')>Montant HT (€)</option>
+                            <option value="amount" @selected(old('discount_type', $quote->discount_type) === 'amount')>Montant{{ $ht }} (€)</option>
                         </select>
                     </label>
                     <label>Valeur<input type="number" step="0.01" min="0" name="discount_value" value="{{ old('discount_value', (float) $quote->discount_value) }}" data-discount-value></label>
                 </div>
                 <dl class="totals" aria-live="polite">
-                    <dt>Sous-total HT</dt><dd data-total="subtotal">—</dd>
+                    <dt>Sous-total{{ $ht }}</dt><dd data-total="subtotal">—</dd>
                     <dt>Remise</dt><dd data-total="discount">—</dd>
-                    <dt>Total HT</dt><dd data-total="ht">—</dd>
-                    <dt>TVA</dt><dd data-total="vat">—</dd>
-                    <dt class="grand">Total TTC</dt><dd class="grand" data-total="ttc">—</dd>
+                    @unless ($exempt)
+                        <dt>Total HT</dt><dd data-total="ht">—</dd>
+                        <dt>TVA</dt><dd data-total="vat">—</dd>
+                    @endunless
+                    <dt class="grand">Total{{ $exempt ? '' : ' TTC' }}</dt><dd class="grand" data-total="ttc">—</dd>
                 </dl>
             </div>
+
+            @if ($exempt && $quoteConfig['vat_mention'])
+                <p class="form-hint">Mention sur le PDF : « {{ $quoteConfig['vat_mention'] }} »</p>
+            @endif
 
             <label>Conditions (affichées sur le PDF)<textarea name="conditions" rows="4" maxlength="5000">{{ old('conditions', $quote->conditions) }}</textarea></label>
             <label>Notes internes (non affichées au client)<textarea name="notes" rows="2" maxlength="5000">{{ old('notes', $quote->notes) }}</textarea></label>
@@ -216,7 +236,7 @@
                 var ratio = subtotal ? (subtotal - discount) / subtotal : 0;
                 var vat = 0;
                 Object.keys(byRate).forEach(function (rate) { vat += Math.round(byRate[rate] * ratio * parseFloat(rate) / 100); });
-                var set = function (key, amount) { form.querySelector('[data-total="' + key + '"]').textContent = money.format(amount / 100); };
+                var set = function (key, amount) { var el = form.querySelector('[data-total="' + key + '"]'); if (el) el.textContent = money.format(amount / 100); };
                 set('subtotal', subtotal); set('discount', -discount); set('ht', subtotal - discount); set('vat', vat); set('ttc', subtotal - discount + vat);
             }
 
@@ -232,11 +252,10 @@
                 button.closest('tr').remove();
                 recalc();
             });
-            // Ajout d'un vehicule : ligne « Location <vehicule> » au prix HT du site (a ajuster).
-            var vehicleSelect = form.querySelector('[data-add-vehicle]');
-            if (vehicleSelect) {
-                vehicleSelect.addEventListener('change', function () {
-                    var option = vehicleSelect.selectedOptions[0];
+            // Ajout d'un vehicule ou d'un service : nouvelle ligne pre-remplie (prix a ajuster).
+            form.querySelectorAll('[data-add-item]').forEach(function (select) {
+                select.addEventListener('change', function () {
+                    var option = select.selectedOptions[0];
                     if (!option.value) return;
                     var row = body.lastElementChild;
                     var description = row && row.querySelector('textarea');
@@ -244,13 +263,13 @@
                         body.insertAdjacentHTML('beforeend', template.innerHTML.replace(/__INDEX__/g, next++));
                         row = body.lastElementChild;
                     }
-                    row.querySelector('textarea').value = 'Location ' + option.value;
+                    row.querySelector('textarea').value = option.value;
                     row.querySelector('[data-price]').value = option.dataset.price || 0;
-                    vehicleSelect.value = '';
+                    select.value = '';
                     recalc();
                     row.querySelector('[data-qty]').focus();
                 });
-            }
+            });
             form.addEventListener('input', recalc);
             form.addEventListener('change', recalc);
             recalc();

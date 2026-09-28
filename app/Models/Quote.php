@@ -18,7 +18,7 @@ class Quote extends Model
 
     protected $fillable = [
         'reservation_id', 'number', 'year', 'sequence', 'status', 'customer_name', 'customer_email', 'customer_phone',
-        'customer_address', 'subject', 'issued_at', 'valid_until', 'discount_type', 'discount_value', 'subtotal_ht',
+        'customer_address', 'subject', 'issued_at', 'valid_until', 'discount_type', 'discount_value', 'vat_exempt', 'subtotal_ht',
         'discount_ht', 'total_ht', 'total_vat', 'total_ttc', 'conditions', 'notes', 'pdf_path', 'sent_at',
     ];
 
@@ -29,6 +29,7 @@ class Quote extends Model
             'valid_until' => 'date',
             'sent_at' => 'datetime',
             'discount_value' => 'decimal:2',
+            'vat_exempt' => 'boolean',
             'subtotal_ht' => 'decimal:2',
             'discount_ht' => 'decimal:2',
             'total_ht' => 'decimal:2',

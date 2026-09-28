@@ -89,6 +89,8 @@ Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function
     Route::post('devis', [QuoteController::class, 'storeBlank'])->name('quotes.store-blank');
     Route::get('devis/reglages', [QuoteSettingsController::class, 'edit'])->name('quotes.settings');
     Route::put('devis/reglages', [QuoteSettingsController::class, 'update'])->name('quotes.settings.update');
+    Route::get('devis/services', [QuoteSettingsController::class, 'editServices'])->name('quotes.services');
+    Route::put('devis/services', [QuoteSettingsController::class, 'updateServices'])->name('quotes.services.update');
     Route::get('devis/{quote}', [QuoteController::class, 'edit'])->whereNumber('quote')->name('quotes.edit');
     Route::put('devis/{quote}', [QuoteController::class, 'update'])->whereNumber('quote')->name('quotes.update');
     Route::delete('devis/{quote}', [QuoteController::class, 'destroy'])->whereNumber('quote')->name('quotes.destroy');

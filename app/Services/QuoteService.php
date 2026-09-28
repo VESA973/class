@@ -25,6 +25,11 @@ class QuoteService
 {
     public const PDF_DIRECTORY = 'quotes';
 
+    /** Unites des services : cle => libelle. */
+    public const SERVICE_UNITS = ['forfait' => 'Forfait', 'heure' => 'Par heure', 'jour' => 'Par jour'];
+
+    public const DEFAULT_VAT_MENTION = 'TVA non applicable, article 294 du CGI.';
+
     public function __construct(
         private readonly Settings $settings,
         private readonly EmailService $emails,
@@ -41,11 +46,75 @@ class QuoteService
             'line_template' => $this->settings->get('quotes.line_template') ?: 'Location {vehicule} du {date_depart} au {date_retour}',
             'conditions' => $this->settings->get('quotes.conditions') ?: "Devis valable jusqu'à la date indiquée. La réservation est confirmée à réception du devis signé ou de votre accord écrit.",
             'auto_send' => (bool) $this->settings->get('quotes.auto_send', false),
+            // TVA desactivee par defaut : non applicable en Guyane (art. 294 du CGI).
+            'vat_enabled' => (bool) $this->settings->get('quotes.vat_enabled', false),
+            'vat_mention' => (string) ($this->settings->get('quotes.vat_mention') ?? self::DEFAULT_VAT_MENTION),
+            'services' => array_values((array) $this->settings->get('quotes.services', [])),
             'company' => array_merge([
                 'name' => '', 'legal_form' => '', 'siret' => '', 'vat_number' => '', 'address' => '',
                 'email' => config('home.contact.email'), 'phone' => config('home.contact.phone'), 'iban' => '',
             ], (array) $this->settings->get('quotes.company', [])),
         ];
+    }
+
+    /** Prix du site (vehicule, service) -> prix unitaire du devis : converti en HT seulement si la TVA s'applique aux prix TTC. */
+    public function linePrice(float $price, ?array $config = null): float
+    {
+        $config ??= $this->config();
+        $rate = (float) $config['vat_rate'];
+
+        return $config['vat_enabled'] && $config['prices_include_vat'] && $rate > 0 ? round($price / (1 + $rate / 100), 2) : $price;
+    }
+
+    /** Taux de TVA des nouvelles lignes (0 si la TVA est desactivee). */
+    public function defaultVatRate(?array $config = null): float
+    {
+        $config ??= $this->config();
+
+        return $config['vat_enabled'] ? (float) $config['vat_rate'] : 0.0;
+    }
+
+    /**
+     * Services ajoutes automatiquement quand la location depasse leur seuil d'heures
+     * (ex. « Heures supplementaires » au-dela de 7 h : 9 h de location -> 2 h facturees).
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function automaticServiceLines(Reservation $reservation, ?array $config = null): array
+    {
+        $config ??= $this->config();
+        $start = $reservation->start_at;
+        $end = $reservation->end_at;
+
+        if (! $start || ! $end) {
+            return [];
+        }
+
+        $hours = (int) ceil($start->diffInMinutes($end) / 60);
+        $lines = [];
+
+        foreach ($config['services'] as $service) {
+            $threshold = $service['auto_after_hours'] ?? null;
+
+            if (! $threshold || $hours <= $threshold) {
+                continue;
+            }
+
+            [$quantity, $detail] = match ($service['unit'] ?? 'forfait') {
+                'heure' => [$hours - $threshold, ($hours - $threshold).' h au-delà de '.$threshold.' h'],
+                'jour' => [max(1, (int) $reservation->days), 'location de '.$hours.' h'],
+                default => [1, 'location de '.$hours.' h'],
+            };
+
+            $lines[] = [
+                'description' => $service['name'].' ('.$detail.')',
+                'quantity' => $quantity,
+                'unit_price_ht' => $this->linePrice((float) $service['price'], $config),
+                'vat_rate' => $this->defaultVatRate($config),
+            ];
+        }
+
+        return $lines;
     }
 
     /** Devis vierge (non enregistre) pour une creation libre, sans demande : une ligne vide au taux de TVA par defaut. */
@@ -59,6 +128,7 @@ class QuoteService
             'valid_until' => $today->copy()->addDays($config['validity_days'])->toDateString(),
             'discount_type' => 'none',
             'discount_value' => 0,
+            'vat_exempt' => ! $config['vat_enabled'],
             'conditions' => $config['conditions'],
         ]);
         $quote->status = 'draft';
@@ -68,7 +138,7 @@ class QuoteService
             'description' => '',
             'quantity' => 1,
             'unit_price_ht' => 0,
-            'vat_rate' => (float) $config['vat_rate'],
+            'vat_rate' => $this->defaultVatRate($config),
         ])]));
 
         return $quote;
@@ -80,12 +150,8 @@ class QuoteService
         $reservation->loadMissing('vehicle');
         $config = $this->config();
         $variables = ReservationMailer::variables($reservation);
-        $vatRate = (float) $config['vat_rate'];
-        $unitPrice = (float) ($reservation->vehicle?->daily_price ?? 0);
-
-        if ($config['prices_include_vat'] && $vatRate > 0) {
-            $unitPrice = round($unitPrice / (1 + $vatRate / 100), 2);
-        }
+        $vatRate = $this->defaultVatRate($config);
+        $unitPrice = $this->linePrice((float) ($reservation->vehicle?->daily_price ?? 0), $config);
 
         $description = preg_replace_callback('/\{([a-z_]+)\}/', fn ($m) => $variables[$m[1]] ?? $m[0], $config['line_template']);
 
@@ -99,13 +165,14 @@ class QuoteService
             'valid_until' => now(config('app.local_timezone'))->addDays($config['validity_days'])->toDateString(),
             'discount_type' => 'none',
             'discount_value' => 0,
+            'vat_exempt' => ! $config['vat_enabled'],
             'conditions' => $config['conditions'],
         ], [[
             'description' => $description,
             'quantity' => max(1, (int) $reservation->days),
             'unit_price_ht' => $unitPrice,
             'vat_rate' => $vatRate,
-        ]]);
+        ], ...$this->automaticServiceLines($reservation, $config)]);
 
         if (in_array($reservation->request_status, ['new', null], true)) {
             $reservation->update(['request_status' => 'in_progress']);
@@ -229,6 +296,7 @@ class QuoteService
             'quote' => $quote,
             'totals' => $totals,
             'company' => $this->config()['company'],
+            'vatMention' => $quote->vat_exempt ? $this->config()['vat_mention'] : '',
         ])->setPaper('a4')->setOption([
             'isRemoteEnabled' => false,       // aucune ressource externe chargee
             'defaultFont' => 'DejaVu Sans',   // accents et symbole euro
@@ -260,7 +328,7 @@ class QuoteService
         $variables = ($reservation ? ReservationMailer::variables($reservation) : ['nom_client' => $quote->customer_name]) + [
             'nom_client' => $quote->customer_name,
             'numero_devis' => $quote->number,
-            'montant_devis' => Quote::money($quote->total_ttc).' TTC',
+            'montant_devis' => Quote::money($quote->total_ttc).($quote->vat_exempt ? '' : ' TTC'),
             'date_validite' => $quote->valid_until->format('d/m/Y'),
         ];
 
@@ -324,6 +392,10 @@ class QuoteService
     /** @param list<array<string, mixed>> $lines */
     private function saveLines(Quote $quote, array $lines): void
     {
+        if ($quote->vat_exempt) {
+            $lines = array_map(fn (array $line) => ['vat_rate' => 0] + $line, array_map(fn (array $line) => array_diff_key($line, ['vat_rate' => true]), $lines));
+        }
+
         $totals = self::compute($lines, $quote->discount_type ?? 'none', (float) $quote->discount_value);
 
         foreach ($totals['lines'] as $line) {

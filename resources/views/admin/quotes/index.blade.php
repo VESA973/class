@@ -29,7 +29,7 @@
     <div class="table-card">
         <table>
             <thead>
-                <tr><th>Numéro</th><th>Client</th><th>Demande</th><th>Date</th><th>Total TTC</th><th>Statut</th><th></th></tr>
+                <tr><th>Numéro</th><th>Client</th><th>Demande</th><th>Date</th><th>Total</th><th>Statut</th><th></th></tr>
             </thead>
             <tbody>
                 @forelse ($quotes as $quote)
