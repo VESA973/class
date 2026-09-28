@@ -202,7 +202,7 @@ class QuoteModuleTest extends TestCase
     {
         Mail::fake();
         $vehicle = Vehicle::create(['name' => 'Ferrari', 'category' => 'Supercar', 'fuel_type' => 'Essence', 'transmission' => 'Auto', 'daily_price' => 1500, 'is_available' => true]);
-        $payload = ['vehicle_id' => $vehicle->id, 'start_at' => '2030-05-10T09:00', 'end_at' => '2030-05-10T18:00', 'pickup_location' => 'Paris', 'prestation_type' => 'Mariage',
+        $payload = ['vehicle_id' => $vehicle->id, 'start_at' => '2030-05-10T09:00', 'end_at' => '2030-05-10T18:00', 'pickup_location' => 'Paris', 'prestation_type' => 'Mariage', 'destination' => 'Orly',
             'customer_name' => 'Client', 'customer_email' => 'client@example.com', 'customer_phone' => '0600000000'];
 
         $id = $this->withoutDefer()->postJson('/api/reservations', $payload)->assertCreated()->json('reservation.id');

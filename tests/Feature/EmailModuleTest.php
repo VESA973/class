@@ -26,7 +26,7 @@ class EmailModuleTest extends TestCase
 
         return $this->withoutDefer()->postJson('/api/reservations', [
             'vehicle_id' => $vehicle->id, 'start_at' => '2030-03-10T09:00', 'end_at' => '2030-03-10T18:00',
-            'pickup_location' => 'Gare de Lyon', 'prestation_type' => 'Transfert aéroport', 'customer_name' => 'Jean <b>Dupont</b>', 'customer_email' => 'jean@example.com',
+            'pickup_location' => 'Gare de Lyon', 'prestation_type' => 'Transfert aéroport', 'destination' => 'Orly', 'customer_name' => 'Jean <b>Dupont</b>', 'customer_email' => 'jean@example.com',
             'customer_phone' => '+33 6 12 34 56 78',
         ]);
     }

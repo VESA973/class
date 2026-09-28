@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ComponentProps } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -23,7 +23,7 @@ import { cn } from 'cn';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
+import { Calendar, CalendarDayButton } from '@/components/ui/calendar';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -89,7 +89,7 @@ const schema = z
         start_time: z.string().min(1, "Choisissez l'heure de départ."),
         end_time: z.string().min(1, "Choisissez l'heure de retour."),
         pickup_location: z.string().trim().min(2, 'Indiquez le lieu de prise en charge.').max(180, 'Ce champ est trop long.'),
-        destination: z.string().trim().max(255, 'Ce champ est trop long.'),
+        destination: z.string().trim().min(2, 'Indiquez la destination.').max(255, 'Ce champ est trop long.'),
         passengers: z.number().int().min(1).max(9),
         customer_name: z.string().trim().min(2, 'Indiquez votre nom.').max(120, 'Ce champ est trop long.'),
         customer_email: z.string().trim().pipe(z.email('Adresse email invalide.')),
@@ -286,7 +286,7 @@ export default function BookingForm({
                     start_at: toApiDateTime(start),
                     end_at: toApiDateTime(end),
                     pickup_location: values.pickup_location,
-                    destination: values.destination || null,
+                    destination: values.destination,
                     passengers: values.passengers,
                     prestation_type: values.prestation_type || null,
                     customer_name: values.customer_name,
@@ -483,9 +483,13 @@ export default function BookingForm({
                                                     ) : booked.status === 'error' ? (
                                                         <LoadError onRetry={booked.reload} />
                                                     ) : (
+                                                        <>
+                                                        <RangeHeader range={field.value} />
                                                         <Calendar
                                                             mode="range"
                                                             locale={fr}
+                                                            className="[--cell-size:--spacing(10)]"
+                                                            components={{ DayButton: LabelledDayButton }}
                                                             numberOfMonths={isDesktop ? 2 : 1}
                                                             selected={field.value}
                                                             onSelect={field.onChange}
@@ -504,6 +508,7 @@ export default function BookingForm({
                                                                     'relative after:pointer-events-none after:absolute after:bottom-1 after:left-1/2 after:size-1 after:-translate-x-1/2 after:rounded-full after:bg-amber-400',
                                                             }}
                                                         />
+                                                        </>
                                                     )}
                                                     <CalendarLegend />
                                                 </PopoverContent>
@@ -592,7 +597,7 @@ export default function BookingForm({
                                         name="destination"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Destination (facultatif)</FormLabel>
+                                                <FormLabel>Destination</FormLabel>
                                                 <FormControl>
                                                     <AddressAutocomplete {...field} placeholder="Où allez-vous ?" territory={addressTerritory} />
                                                 </FormControl>
@@ -705,14 +710,52 @@ function Container({ children }: { children: React.ReactNode }) {
 
 function rangeLabel(range: DateRange | undefined, vehicleId: string): string {
     if (!range?.from) {
-        return vehicleId ? 'Sélectionnez le départ puis le retour' : "Choisissez d'abord un véhicule";
+        return vehicleId ? 'Choisissez le départ puis le retour' : "Choisissez d'abord un véhicule";
     }
 
     const format = (date: Date) => date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
 
-    return range.to && dayKey(range.to) !== dayKey(range.from)
-        ? `Du ${format(range.from)} au ${format(range.to)}`
-        : `Le ${format(range.from)}`;
+    return `Départ ${format(range.from)} · Retour ${format(range.to ?? range.from)}`;
+}
+
+/** Bandeau au-dessus du calendrier : date de depart et de retour choisies, etape en cours mise en avant. */
+function RangeHeader({ range }: { range: DateRange | undefined }) {
+    const format = (date?: Date) => (date ? date.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' }) : 'À choisir');
+    const step = !range?.from ? 'start' : !range.to ? 'end' : null;
+
+    return (
+        <div className="grid grid-cols-2 gap-2 border-b border-border p-3 text-sm" aria-live="polite">
+            {[
+                ['Départ', range?.from, step === 'start'],
+                ['Retour', range?.to, step === 'end'],
+            ].map(([label, date, active]) => (
+                <div
+                    key={label as string}
+                    className={cn('rounded-md border px-3 py-2', active ? 'border-primary bg-primary/10' : 'border-border')}
+                >
+                    <span className="block text-xs text-muted-foreground">{label as string}</span>
+                    <span className="font-medium">{format(date as Date | undefined)}</span>
+                </div>
+            ))}
+        </div>
+    );
+}
+
+/** Jour du calendrier avec la mention « Départ » / « Retour » sous le numero. */
+function LabelledDayButton(props: ComponentProps<typeof CalendarDayButton>) {
+    const { modifiers, children } = props;
+    const label = modifiers.range_start || (modifiers.selected && !modifiers.range_middle && !modifiers.range_end)
+        ? 'Départ'
+        : modifiers.range_end
+          ? 'Retour'
+          : null;
+
+    return (
+        <CalendarDayButton {...props}>
+            {children}
+            {label && <span className="!text-[9px] leading-none font-medium !opacity-100">{label}</span>}
+        </CalendarDayButton>
+    );
 }
 
 function TimeField({

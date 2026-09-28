@@ -53,6 +53,11 @@ class BookingFieldsTest extends TestCase
         $this->book(['prestation_type' => 'Inconnu'])->assertStatus(422)->assertJsonValidationErrors('prestation_type');
     }
 
+    public function test_destination_is_required(): void
+    {
+        $this->book(['destination' => ''])->assertStatus(422)->assertJsonValidationErrors(['destination' => 'Indiquez la destination.']);
+    }
+
     public function test_prestation_type_is_optional_when_the_list_is_empty(): void
     {
         $this->actingAs(User::factory()->create())->put('/admin/types-de-prestation', ['types' => ['']])->assertSessionHasNoErrors();

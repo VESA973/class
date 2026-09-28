@@ -35,6 +35,8 @@ Toutes les évolutions notables du site CLASS'AFFAIRE. Format inspiré de [Keep 
 - **Prix des véhicules facultatif** (migration : colonne `daily_price` rendue nullable, aucune donnée modifiée) :
   sans prix, rien ne s'affiche (cartes, fiche, barre mobile, liste de réservation, données Google), l'estimation
   devient « Sur devis » (formulaire, confirmation, emails, admin, planning).
+- **Page Réserver** : destination obligatoire (formulaire et serveur) ; calendrier des dates avec un bandeau
+  « Départ / Retour » (étape en cours mise en avant) et la mention « Départ » / « Retour » sous les jours choisis.
 - Numéro en dur retiré de la page de réservation (formulaire React et `noscript`).
 - Tests : `ContactSettingsTest` (8 tests) — 84 tests au total.
 

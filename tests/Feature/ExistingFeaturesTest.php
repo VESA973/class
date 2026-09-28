@@ -52,7 +52,7 @@ class ExistingFeaturesTest extends TestCase
     {
         $payload = [
             'vehicle_id' => $this->vehicle->id, 'start_at' => '2030-01-10T10:00', 'end_at' => '2030-01-11T10:00',
-            'pickup_location' => 'Paris', 'prestation_type' => 'Transfert aéroport', 'customer_name' => 'Jean Test', 'customer_email' => 'jean@example.com',
+            'pickup_location' => 'Paris', 'prestation_type' => 'Transfert aéroport', 'destination' => 'Orly', 'customer_name' => 'Jean Test', 'customer_email' => 'jean@example.com',
             'customer_phone' => '+33 6 12 34 56 78',
         ];
 
