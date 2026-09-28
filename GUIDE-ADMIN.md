@@ -43,6 +43,10 @@ demandes récentes et prochains départs. Chaque carte est cliquable.
   correspondante : ils ne se chargent qu’après accord du visiteur. « Redemander le consentement à tous » si votre
   politique change. Registre des choix et statistiques.
 
+## Devis libres et prix
+- **Devis › + Nouveau devis** : devis sans demande (client, lignes, remise…) ; « + Ajouter un véhicule » pré-remplit une ligne.
+- **Véhicules** : laissez le prix vide pour n’afficher aucun tarif sur le site (« Sur devis » dans les demandes).
+
 ## Contenus
 - **Site › Atouts de l’accueil** : les cartes « Pourquoi nous choisir » (icône, titre, texte, ordre avec les flèches).
 - **Demandes & devis › Types de prestation** : la liste proposée aux clients dans la réservation (vide = champ masqué).

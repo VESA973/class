@@ -166,7 +166,8 @@ class Seo
                 'vehicleTransmission' => $vehicle->transmission,
                 'vehicleSeatingCapacity' => $vehicle->seats,
                 'vehicleEngine' => $vehicle->horsepower ? ['@type' => 'EngineSpecification', 'enginePower' => ['@type' => 'QuantitativeValue', 'value' => $vehicle->horsepower, 'unitCode' => 'BHP']] : null,
-                'offers' => [
+                // Pas de prix renseigne : pas d'offre chiffree dans les donnees Google.
+                'offers' => ! $vehicle->daily_price ? null : [
                     '@type' => 'Offer',
                     'price' => $vehicle->daily_price,
                     'priceCurrency' => 'EUR',

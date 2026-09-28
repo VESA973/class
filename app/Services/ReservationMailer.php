@@ -65,7 +65,7 @@ class ReservationMailer
             'lieu_depart' => $reservation->pickup_location,
             'destination' => $reservation->destination ?: 'Non précisée',
             'passagers' => $reservation->passengers ? (string) $reservation->passengers : 'Non précisé',
-            'montant_estime' => number_format((int) $reservation->estimated_total, 0, ',', ' ').' €',
+            'montant_estime' => $reservation->estimated_total ? number_format((int) $reservation->estimated_total, 0, ',', ' ').' €' : 'Sur devis',
             'lien_admin' => route('admin.reservations.show', $reservation),
         ];
     }

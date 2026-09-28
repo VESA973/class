@@ -8,6 +8,8 @@
             <p class="eyebrow">Demandes & Devis</p>
             <h1>Devis</h1>
         </div>
+        <div class="form-actions">
+        <a class="btn" href="{{ route('admin.quotes.create') }}">+ Nouveau devis</a>
         <form class="inline-filter filter-bar" method="GET">
             <input type="search" name="q" value="{{ request('q') }}" placeholder="N° de devis ou client…" aria-label="Rechercher un devis">
             <select name="status" aria-label="Filtrer par statut" onchange="this.form.submit()">
@@ -17,11 +19,12 @@
                 @endforeach
             </select>
         </form>
+        </div>
     </div>
 
     @include('admin.quotes._tabs')
 
-    <p class="form-hint" style="margin-bottom:14px">Un devis se crée depuis une demande : ouvrez la demande dans <a href="{{ route('admin.reservations.index') }}" style="text-decoration:underline">Demandes</a> puis cliquez sur « Créer un devis ». En attente de réponse : <strong>{{ \App\Models\Quote::money($pendingTotal) }} TTC</strong>.</p>
+    <p class="form-hint" style="margin-bottom:14px">Créez un devis libre avec « Nouveau devis », ou depuis une demande : ouvrez-la dans <a href="{{ route('admin.reservations.index') }}" style="text-decoration:underline">Demandes</a> puis cliquez sur « Créer un devis ». En attente de réponse : <strong>{{ \App\Models\Quote::money($pendingTotal) }} TTC</strong>.</p>
 
     <div class="table-card">
         <table>

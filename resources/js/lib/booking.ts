@@ -7,7 +7,7 @@ export type BookingVehicle = {
     id: number;
     name: string;
     category: string;
-    daily_price: number;
+    daily_price: number | null;
     image: string;
     fuel_type: string;
     transmission: string;

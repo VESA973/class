@@ -42,7 +42,7 @@ type Vehicle = {
     fuel_type: string;
     transmission: string;
     seats: number | null;
-    daily_price: number;
+    daily_price: number | null;
     image_url: string | null;
     has_uploaded_image: boolean;
     display_image: string;
@@ -67,8 +67,8 @@ type Selection = number | 'new' | null;
 
 const SORTS = {
     name: { label: 'Nom (A → Z)', compare: (a: Vehicle, b: Vehicle) => a.name.localeCompare(b.name, 'fr') },
-    price_asc: { label: 'Prix croissant', compare: (a: Vehicle, b: Vehicle) => a.daily_price - b.daily_price },
-    price_desc: { label: 'Prix décroissant', compare: (a: Vehicle, b: Vehicle) => b.daily_price - a.daily_price },
+    price_asc: { label: 'Prix croissant', compare: (a: Vehicle, b: Vehicle) => (a.daily_price ?? 0) - (b.daily_price ?? 0) },
+    price_desc: { label: 'Prix décroissant', compare: (a: Vehicle, b: Vehicle) => (b.daily_price ?? 0) - (a.daily_price ?? 0) },
     category: {
         label: 'Catégorie',
         compare: (a: Vehicle, b: Vehicle) => a.category.localeCompare(b.category, 'fr') || a.name.localeCompare(b.name, 'fr'),
@@ -85,7 +85,8 @@ const optionalUrl = z.string().trim().max(500, 'Adresse trop longue.').refine((v
 const schema = z.object({
     name: z.string().trim().min(1, 'Indiquez le nom du modèle.').max(140, 'Nom trop long.'),
     category: z.string().trim().min(1, 'Indiquez une catégorie.').max(80, 'Catégorie trop longue.'),
-    daily_price: z.string().trim().refine((value) => /^\d+$/.test(value) && +value >= 1 && +value <= 100000, 'Prix entre 1 et 100 000 €.'),
+    // Vide = aucun prix affiche sur le site.
+    daily_price: z.string().trim().refine((value) => value === '' || (/^\d+$/.test(value) && +value >= 1 && +value <= 100000), 'Prix entre 1 et 100 000 €, ou laissez vide.'),
     seats: optionalInt(1, 9, 'Entre 1 et 9 places.'),
     horsepower: optionalInt(1, 3000, 'Puissance entre 1 et 3 000 ch.'),
     fuel_type: z.string().trim().min(1, 'Indiquez le carburant.').max(60, 'Trop long.'),
@@ -104,7 +105,7 @@ function toValues(vehicle: Vehicle | null): Values {
     return {
         name: vehicle?.name ?? '',
         category: vehicle?.category ?? '',
-        daily_price: vehicle ? String(vehicle.daily_price) : '',
+        daily_price: vehicle?.daily_price ? String(vehicle.daily_price) : '',
         seats: vehicle?.seats ? String(vehicle.seats) : '',
         horsepower: vehicle?.horsepower ? String(vehicle.horsepower) : '',
         fuel_type: vehicle?.fuel_type ?? 'Essence',
@@ -413,7 +414,7 @@ function VehicleRow({ vehicle, active, onSelect }: { vehicle: Vehicle; active: b
                     {(vehicle.model_url || vehicle.video_url) && <Rotate3d aria-label="Vue 3D disponible" className="size-3.5 shrink-0 text-muted-foreground" />}
                 </span>
                 <span className="block truncate text-xs text-muted-foreground">
-                    {vehicle.category} · {formatPrice(vehicle.daily_price)}/jour
+                    {vehicle.category} · {vehicle.daily_price ? `${formatPrice(vehicle.daily_price)}/jour` : 'sans prix'}
                 </span>
                 <span className="mt-1 flex flex-wrap gap-1">
                     {vehicle.is_available ? (
@@ -608,7 +609,7 @@ function VehicleEditor({
                                         <option key={item} value={item} />
                                     ))}
                                 </datalist>
-                                <TextField form={form} name="daily_price" label="Prix par jour (€)" inputMode="numeric" />
+                                <TextField form={form} name="daily_price" label="Prix par jour (€, facultatif)" inputMode="numeric" />
                                 <TextField form={form} name="seats" label="Nombre de places" inputMode="numeric" placeholder="5" />
                                 <TextField form={form} name="horsepower" label="Puissance (ch)" inputMode="numeric" placeholder="641" />
                                 <TextField form={form} name="fuel_type" label="Carburant" />

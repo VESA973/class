@@ -60,6 +60,35 @@ class QuoteController extends Controller
 
     public function update(Request $request, Quote $quote): RedirectResponse
     {
+        [$data, $lines] = $this->validated($request);
+
+        $this->quotes->update($quote, $data, $lines);
+
+        return redirect()->route('admin.quotes.edit', $quote)->with('status', "Devis {$quote->number} enregistré.");
+    }
+
+    /** Formulaire de creation libre (sans demande de reservation). */
+    public function create(): View
+    {
+        return view('admin.quotes.edit', [
+            'quote' => $this->quotes->blank(),
+            'vatRates' => Quote::VAT_RATES,
+            'events' => collect(),
+            'company' => $this->quotes->config()['company'],
+        ]);
+    }
+
+    public function storeBlank(Request $request): RedirectResponse
+    {
+        [$data, $lines] = $this->validated($request);
+        $quote = $this->quotes->create($data, $lines);
+
+        return redirect()->route('admin.quotes.edit', $quote)->with('status', "Devis {$quote->number} créé (brouillon).");
+    }
+
+    /** @return array{0: array<string, mixed>, 1: list<array<string, mixed>>} */
+    private function validated(Request $request): array
+    {
         $data = $request->validate([
             'customer_name' => ['required', 'string', 'max:255'],
             'customer_email' => ['nullable', 'email', 'max:255'],
@@ -89,9 +118,7 @@ class QuoteController extends Controller
         unset($data['lines']);
         $data['discount_value'] = (float) ($data['discount_value'] ?? 0);
 
-        $this->quotes->update($quote, $data, $lines);
-
-        return redirect()->route('admin.quotes.edit', $quote)->with('status', "Devis {$quote->number} enregistré.");
+        return [$data, $lines];
     }
 
     public function pdf(Quote $quote): Response

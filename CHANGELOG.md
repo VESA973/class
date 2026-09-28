@@ -29,6 +29,12 @@ Toutes les évolutions notables du site CLASS'AFFAIRE. Format inspiré de [Keep 
 - **Suggestions d'adresses** limitées au territoire du pays choisi dans Coordonnées (Guyane : 973).
 - **Adresse et plan d'accès** retirés du site : carte OpenStreetMap supprimée de la page Contact ; l'adresse
   (pied de page, Contact, emails, données Google) ne s'affiche que si « Afficher l'adresse sur le site » est coché.
+- **Devis libre** : bouton « + Nouveau devis » (Admin › Devis) pour créer un devis sans demande de réservation ;
+  rien n'est enregistré avant « Créer le devis » (numéro attribué à ce moment) ; aide « + Ajouter un véhicule »
+  qui ajoute une ligne « Location <véhicule> » au prix HT du site.
+- **Prix des véhicules facultatif** (migration : colonne `daily_price` rendue nullable, aucune donnée modifiée) :
+  sans prix, rien ne s'affiche (cartes, fiche, barre mobile, liste de réservation, données Google), l'estimation
+  devient « Sur devis » (formulaire, confirmation, emails, admin, planning).
 - Numéro en dur retiré de la page de réservation (formulaire React et `noscript`).
 - Tests : `ContactSettingsTest` (8 tests) — 84 tests au total.
 

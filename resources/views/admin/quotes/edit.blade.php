@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('title', 'Devis '.$quote->number)
+@section('title', $quote->exists ? 'Devis '.$quote->number : 'Nouveau devis')
 
 @php
     $lines = old('lines', $quote->lines->map(fn ($line) => [
@@ -10,6 +10,16 @@
         'vat_rate' => rtrim(rtrim((string) $line->vat_rate, '0'), '.'),
     ])->all());
     $statusClass = $quote->status_class;
+    $isNew = ! $quote->exists;
+    // Aide a la saisie : vehicules avec leur prix HT (le prix du site est TTC si c'est le reglage choisi).
+    $quoteConfig = app(\App\Services\QuoteService::class)->config();
+    $defaultVat = (float) $quoteConfig['vat_rate'];
+    $vehicleOptions = \App\Models\Vehicle::query()->orderBy('name')->get(['id', 'name', 'daily_price'])->map(fn ($vehicle) => [
+        'name' => $vehicle->name,
+        'price' => $vehicle->daily_price
+            ? ($quoteConfig['prices_include_vat'] && $defaultVat > 0 ? round($vehicle->daily_price / (1 + $defaultVat / 100), 2) : (float) $vehicle->daily_price)
+            : 0,
+    ]);
     $missingCompany = collect(['name' => 'raison sociale', 'siret' => 'SIRET', 'address' => 'adresse'])->filter(fn ($label, $key) => blank($company[$key] ?? null));
 @endphp
 
@@ -18,12 +28,17 @@
         <div>
             <p class="eyebrow">Devis <span class="tag {{ $statusClass }}">{{ $quote->status_label }}</span></p>
             <h1>{{ $quote->number }}</h1>
+            @if ($isNew)
+                <p class="form-hint">Devis libre, sans demande de réservation. Le numéro est attribué à l’enregistrement.</p>
+            @endif
         </div>
         <div class="form-actions">
             @if ($quote->reservation)
                 <a class="btn btn-secondary" href="{{ route('admin.reservations.show', $quote->reservation) }}">Demande n°{{ $quote->reservation->id }}</a>
             @endif
-            <a class="btn btn-secondary" href="{{ route('admin.quotes.pdf', $quote) }}" target="_blank" rel="noopener"><x-icon name="file-text" style="width:18px;height:18px" /> Aperçu PDF</a>
+            @unless ($isNew)
+                <a class="btn btn-secondary" href="{{ route('admin.quotes.pdf', $quote) }}" target="_blank" rel="noopener"><x-icon name="file-text" style="width:18px;height:18px" /> Aperçu PDF</a>
+            @endunless
         </div>
     </div>
 
@@ -35,9 +50,11 @@
     @endif
 
     <div class="editor-grid quote-grid">
-        <form class="form-card" method="POST" action="{{ route('admin.quotes.update', $quote) }}" data-quote-form>
+        <form class="form-card" method="POST" action="{{ $isNew ? route('admin.quotes.store-blank') : route('admin.quotes.update', $quote) }}" data-quote-form>
             @csrf
-            @method('PUT')
+            @unless ($isNew)
+                @method('PUT')
+            @endunless
 
             <h2>Client</h2>
             <div class="form-grid">
@@ -69,9 +86,19 @@
                 </table>
             </div>
             <template data-line-template>
-                @include('admin.quotes._line', ['index' => '__INDEX__', 'line' => ['description' => '', 'quantity' => 1, 'unit_price_ht' => 0, 'vat_rate' => '20']])
+                @include('admin.quotes._line', ['index' => '__INDEX__', 'line' => ['description' => '', 'quantity' => 1, 'unit_price_ht' => 0, 'vat_rate' => rtrim(rtrim((string) $defaultVat, '0'), '.')]])
             </template>
-            <div><button type="button" class="btn btn-secondary" data-add-line>+ Ajouter une ligne</button></div>
+            <div class="form-actions" style="justify-content:flex-start">
+                <button type="button" class="btn btn-secondary" data-add-line>+ Ajouter une ligne</button>
+                @if ($vehicleOptions->isNotEmpty())
+                    <select data-add-vehicle aria-label="Ajouter un véhicule au devis" style="max-width:280px">
+                        <option value="">+ Ajouter un véhicule…</option>
+                        @foreach ($vehicleOptions as $option)
+                            <option value="{{ $option['name'] }}" data-price="{{ $option['price'] }}">{{ $option['name'] }}{{ $option['price'] ? '' : ' (sans prix)' }}</option>
+                        @endforeach
+                    </select>
+                @endif
+            </div>
 
             <div class="quote-bottom">
                 <div class="form-grid" style="align-content:start">
@@ -97,13 +124,23 @@
             <label>Notes internes (non affichées au client)<textarea name="notes" rows="2" maxlength="5000">{{ old('notes', $quote->notes) }}</textarea></label>
 
             <div class="form-actions">
-                @if ($quote->status === 'draft')
+                @if ($isNew)
+                    <a class="btn btn-secondary" href="{{ route('admin.quotes.index') }}">Annuler</a>
+                @elseif ($quote->status === 'draft')
                     <button class="btn btn-danger" type="submit" form="delete-quote">Supprimer le brouillon</button>
                 @endif
-                <button class="btn" type="submit">Enregistrer</button>
+                <button class="btn" type="submit">{{ $isNew ? 'Créer le devis' : 'Enregistrer' }}</button>
             </div>
         </form>
 
+        @if ($isNew)
+            <div class="grid-stack">
+                <section class="form-card">
+                    <h2>Après la création</h2>
+                    <p class="form-hint">Une fois le devis créé, vous pourrez voir l’aperçu PDF, l’envoyer au client par email et noter sa réponse.</p>
+                </section>
+            </div>
+        @else
         <div class="grid-stack">
             <section class="form-card" aria-labelledby="send-title">
                 <h2 id="send-title">Envoyer au client</h2>
@@ -141,12 +178,15 @@
                 </section>
             @endif
         </div>
+        @endif
     </div>
 
-    <form id="delete-quote" method="POST" action="{{ route('admin.quotes.destroy', $quote) }}" onsubmit="return confirm('Supprimer définitivement ce brouillon ?')">
-        @csrf
-        @method('DELETE')
-    </form>
+    @unless ($isNew)
+        <form id="delete-quote" method="POST" action="{{ route('admin.quotes.destroy', $quote) }}" onsubmit="return confirm('Supprimer définitivement ce brouillon ?')">
+            @csrf
+            @method('DELETE')
+        </form>
+    @endunless
 @endsection
 
 @push('scripts')
@@ -192,6 +232,25 @@
                 button.closest('tr').remove();
                 recalc();
             });
+            // Ajout d'un vehicule : ligne « Location <vehicule> » au prix HT du site (a ajuster).
+            var vehicleSelect = form.querySelector('[data-add-vehicle]');
+            if (vehicleSelect) {
+                vehicleSelect.addEventListener('change', function () {
+                    var option = vehicleSelect.selectedOptions[0];
+                    if (!option.value) return;
+                    var row = body.lastElementChild;
+                    var description = row && row.querySelector('textarea');
+                    if (!description || description.value.trim() !== '') {
+                        body.insertAdjacentHTML('beforeend', template.innerHTML.replace(/__INDEX__/g, next++));
+                        row = body.lastElementChild;
+                    }
+                    row.querySelector('textarea').value = 'Location ' + option.value;
+                    row.querySelector('[data-price]').value = option.dataset.price || 0;
+                    vehicleSelect.value = '';
+                    recalc();
+                    row.querySelector('[data-qty]').focus();
+                });
+            }
             form.addEventListener('input', recalc);
             form.addEventListener('change', recalc);
             recalc();

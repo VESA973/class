@@ -43,7 +43,7 @@ class ReservationController extends Controller
             $validated['service_type'] = $validated['service_type'] ?? 'Sans chauffeur';
         }
 
-        $validated['estimated_total'] = $vehicle->daily_price * (int) $validated['days'];
+        $validated['estimated_total'] = (int) $vehicle->daily_price * (int) $validated['days'];
         $validated['end_date'] = Carbon::parse($validated['start_date'])
             ->addDays((int) $validated['days'] - 1)
             ->toDateString();

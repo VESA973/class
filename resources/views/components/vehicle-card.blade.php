@@ -30,10 +30,15 @@
             @endif
         </ul>
         <div class="mt-auto flex items-end justify-between gap-4 pt-6">
+            {{-- Aucun prix renseigne : rien n'est affiche --}}
+            @if ($vehicle->daily_price)
             <p class="text-sm text-muted-foreground">
                 À partir de<br>
                 <span class="text-2xl font-semibold text-foreground">{{ number_format($vehicle->daily_price, 0, ',', ' ') }} €</span> / jour
             </p>
+            @else
+                <span></span>
+            @endif
             <span aria-hidden="true" class="inline-flex h-10 items-center gap-1.5 rounded-md border border-white/15 px-4 text-sm font-semibold transition group-hover:bg-primary group-hover:text-primary-foreground">
                 Découvrir <x-icon name="arrow-right" class="size-4" />
             </span>

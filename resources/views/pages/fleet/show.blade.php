@@ -110,9 +110,11 @@
                 <aside class="rounded-3xl border border-white/10 bg-card/80 p-6 backdrop-blur-md lg:sticky lg:top-24">
                     <p class="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">{{ $vehicle->category }}</p>
                     <h1 class="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">{{ $vehicle->name }}</h1>
-                    <p class="mt-4 text-muted-foreground">
-                        À partir de <span class="text-3xl font-semibold text-foreground">{{ number_format($vehicle->daily_price, 0, ',', ' ') }} €</span> / jour
-                    </p>
+                    @if ($vehicle->daily_price)
+                        <p class="mt-4 text-muted-foreground">
+                            À partir de <span class="text-3xl font-semibold text-foreground">{{ number_format($vehicle->daily_price, 0, ',', ' ') }} €</span> / jour
+                        </p>
+                    @endif
                     <ul class="mt-6 grid grid-cols-2 gap-3 text-sm">
                         @foreach (array_slice($specs, 0, 4) as [$icon, $label, $value])
                             <li class="rounded-xl bg-secondary/70 p-3">
@@ -180,7 +182,11 @@
     <div aria-hidden="true" class="h-20 lg:hidden"></div>
     <div class="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-background/90 p-3 backdrop-blur-lg lg:hidden">
         <div class="mx-auto flex max-w-7xl items-center justify-between gap-3">
-            <p class="text-sm text-muted-foreground"><span class="text-lg font-semibold text-foreground">{{ number_format($vehicle->daily_price, 0, ',', ' ') }} €</span> / jour</p>
+            @if ($vehicle->daily_price)
+                <p class="text-sm text-muted-foreground"><span class="text-lg font-semibold text-foreground">{{ number_format($vehicle->daily_price, 0, ',', ' ') }} €</span> / jour</p>
+            @else
+                <p class="truncate text-sm font-semibold">{{ $vehicle->name }}</p>
+            @endif
             <a href="{{ $bookUrl }}" class="inline-flex h-11 items-center gap-2 rounded-md bg-primary px-5 font-semibold text-primary-foreground">Réserver <x-icon name="arrow-right" class="size-4" /></a>
         </div>
     </div>

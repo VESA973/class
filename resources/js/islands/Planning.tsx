@@ -441,7 +441,7 @@ function ReservationSheet({
                             <DetailBlock icon={CalendarClock} title="Période">
                                 <p className="first-letter:uppercase">{describePeriod(reservation)}</p>
                                 <p className="text-muted-foreground">
-                                    {details.days} jour(s) · estimation {formatPrice(details.estimatedTotal)}
+                                    {details.days} jour(s) · {details.estimatedTotal ? `estimation ${formatPrice(details.estimatedTotal)}` : 'tarif sur devis'}
                                 </p>
                             </DetailBlock>
 

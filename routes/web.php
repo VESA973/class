@@ -85,6 +85,8 @@ Route::prefix('admin')->name('admin.')->middleware('admin.auth')->group(function
     Route::patch('reservations/{reservation}/suivi', RequestStatusController::class)->name('reservations.request-status');
     Route::post('reservations/{reservation}/devis', [QuoteController::class, 'store'])->name('quotes.store');
     Route::get('devis', [QuoteController::class, 'index'])->name('quotes.index');
+    Route::get('devis/nouveau', [QuoteController::class, 'create'])->name('quotes.create');
+    Route::post('devis', [QuoteController::class, 'storeBlank'])->name('quotes.store-blank');
     Route::get('devis/reglages', [QuoteSettingsController::class, 'edit'])->name('quotes.settings');
     Route::put('devis/reglages', [QuoteSettingsController::class, 'update'])->name('quotes.settings.update');
     Route::get('devis/{quote}', [QuoteController::class, 'edit'])->whereNumber('quote')->name('quotes.edit');

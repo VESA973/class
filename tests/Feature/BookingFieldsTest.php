@@ -140,4 +140,22 @@ class BookingFieldsTest extends TestCase
 
         return $match[1] ?? '{}';
     }
+
+    public function test_vehicle_without_price_shows_no_price(): void
+    {
+        $this->vehicle->update(['daily_price' => null]);
+
+        $this->get(route('vehicles.show', $this->vehicle))->assertOk()->assertDontSee('/ jour')->assertDontSee('"offers"', false);
+        $this->get(route('vehicles.page'))->assertOk()->assertDontSee('À partir de');
+
+        $this->book()->assertCreated()->assertJsonPath('reservation.estimated_total', 0);
+
+        $this->actingAs(User::factory()->create())->get(route('admin.reservations.show', Reservation::first()))->assertSee('Sur devis');
+
+        // Admin : le prix peut etre vide
+        $this->put(route('admin.vehicles.update', $this->vehicle), [
+            'name' => 'Porsche Panamera', 'category' => 'Berline', 'fuel_type' => 'Essence', 'transmission' => 'Auto', 'seats' => 4, 'daily_price' => '', 'is_available' => '1',
+        ], ['Accept' => 'application/json'])->assertSuccessful();
+        $this->assertNull($this->vehicle->fresh()->daily_price);
+    }
 }

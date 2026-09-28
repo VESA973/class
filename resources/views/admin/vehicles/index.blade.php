@@ -40,7 +40,7 @@
                             </td>
                             <td>{{ $vehicle->category }}</td>
                             <td>{{ $vehicle->horsepower ? $vehicle->horsepower.' ch' : '-' }}</td>
-                            <td>{{ number_format($vehicle->daily_price, 0, ',', ' ') }} EUR</td>
+                            <td>{{ $vehicle->daily_price ? number_format($vehicle->daily_price, 0, ',', ' ').' EUR' : 'Sans prix' }}</td>
                             <td>{{ $vehicle->is_available ? 'Disponible' : 'Indisponible' }}</td>
                             <td class="actions">
                                 <a href="{{ route('admin.vehicles.edit', $vehicle) }}">Modifier</a>

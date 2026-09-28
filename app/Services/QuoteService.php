@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Quote;
+use App\Models\QuoteLine;
 use App\Models\Reservation;
 use App\Models\ReservationEvent;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -45,6 +46,32 @@ class QuoteService
                 'email' => config('home.contact.email'), 'phone' => config('home.contact.phone'), 'iban' => '',
             ], (array) $this->settings->get('quotes.company', [])),
         ];
+    }
+
+    /** Devis vierge (non enregistre) pour une creation libre, sans demande : une ligne vide au taux de TVA par defaut. */
+    public function blank(): Quote
+    {
+        $config = $this->config();
+        $today = now(config('app.local_timezone'));
+
+        $quote = new Quote([
+            'issued_at' => $today->toDateString(),
+            'valid_until' => $today->copy()->addDays($config['validity_days'])->toDateString(),
+            'discount_type' => 'none',
+            'discount_value' => 0,
+            'conditions' => $config['conditions'],
+        ]);
+        $quote->status = 'draft';
+        $quote->number = 'Nouveau devis';
+        $quote->setRelation('reservation', null);
+        $quote->setRelation('lines', collect([new QuoteLine([
+            'description' => '',
+            'quantity' => 1,
+            'unit_price_ht' => 0,
+            'vat_rate' => (float) $config['vat_rate'],
+        ])]));
+
+        return $quote;
     }
 
     /** Brouillon pre-rempli (client, vehicule, dates, tarif) a partir d'une demande. */

@@ -183,7 +183,7 @@ class VehicleController extends Controller
             'fuel_type' => ['required', 'string', 'max:60'],
             'transmission' => ['required', 'string', 'max:60'],
             'seats' => ['nullable', 'integer', 'min:1', 'max:9'],
-            'daily_price' => ['required', 'integer', 'min:1', 'max:100000'],
+            'daily_price' => ['nullable', 'integer', 'min:1', 'max:100000'],
             'image' => ['nullable', 'image', 'max:4096'],
             'image_url' => ['nullable', 'url', 'max:500'],
             'description' => ['nullable', 'string', 'max:2000'],

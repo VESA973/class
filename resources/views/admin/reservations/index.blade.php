@@ -48,7 +48,7 @@
                         <td>{{ $reservation->vehicle->name }}</td>
                         <td>{{ $reservation->prestation?->name ?: $reservation->service_type }}</td>
                         <td>{{ $reservation->start_at?->format('d/m/Y H:i') ?? $reservation->start_date->format('d/m/Y') }}<span>{{ $reservation->days }} jour(s)</span></td>
-                        <td>{{ number_format($reservation->estimated_total, 0, ',', ' ') }} EUR</td>
+                        <td>{{ $reservation->estimated_total ? number_format($reservation->estimated_total, 0, ',', ' ').' EUR' : 'Sur devis' }}</td>
                         <td>
                             <span class="tag">{{ $reservation->request_status_label }}</span>
                             @if ($reservation->quotes->isNotEmpty())

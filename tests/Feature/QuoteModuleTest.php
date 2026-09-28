@@ -89,6 +89,36 @@ class QuoteModuleTest extends TestCase
         $this->assertDatabaseHas('reservation_events', ['reservation_id' => $reservation->id, 'type' => 'quote_created']);
     }
 
+    public function test_admin_creates_a_free_quote_without_request(): void
+    {
+        Vehicle::create(['name' => 'Porsche Cayenne', 'category' => 'SUV', 'fuel_type' => 'Essence', 'transmission' => 'Auto', 'daily_price' => 600, 'is_available' => true]);
+        $this->actingAs(User::factory()->create());
+
+        $this->get('/admin/devis')->assertOk()->assertSee('Nouveau devis');
+        $this->get('/admin/devis/nouveau')->assertOk()
+            ->assertSee('Créer le devis')->assertSee('Porsche Cayenne')
+            ->assertSee('data-price="500"', false) // 600 TTC -> 500 HT (TVA 20 %)
+            ->assertDontSee('Envoyer le devis');
+        $this->assertSame(0, Quote::count()); // rien n'est enregistre avant validation
+
+        $this->post('/admin/devis', [
+            'customer_name' => 'Client direct', 'customer_email' => 'client@example.com', 'issued_at' => '2030-01-01', 'valid_until' => '2030-01-15',
+            'discount_type' => 'none', 'lines' => $this->lines(),
+        ])->assertRedirect();
+
+        $quote = Quote::firstOrFail();
+        $this->assertNull($quote->reservation_id);
+        $this->assertSame('draft', $quote->status);
+        $this->assertSame(sprintf('DEV-%d-0001', now(config('app.local_timezone'))->year), $quote->number);
+        $this->assertSame(295.0, (float) $quote->total_ttc); // 200 HT a 20 % (240) + 50 HT a 10 % (55)
+        $this->get("/admin/devis/{$quote->id}")->assertOk()->assertSee('Envoyer le devis');
+        $this->get("/admin/devis/{$quote->id}/pdf")->assertOk();
+
+        $this->post('/admin/devis', ['customer_name' => '', 'issued_at' => '2030-01-01', 'valid_until' => '2030-01-15', 'discount_type' => 'none', 'lines' => []])
+            ->assertSessionHasErrors(['customer_name', 'lines']);
+        $this->assertSame(1, Quote::count());
+    }
+
     public function test_update_recomputes_totals_server_side_and_validates(): void
     {
         $this->actingAs(User::factory()->create());

@@ -30,7 +30,7 @@
             <p><strong>Prestation:</strong> {{ $reservation->prestation?->name ?: $reservation->service_type }}</p>
             <p><strong>Dates :</strong> {{ $reservation->start_at?->format('d/m/Y H:i') ?? $reservation->start_date->format('d/m/Y') }} au {{ $reservation->end_at?->format('d/m/Y H:i') ?? optional($reservation->end_date)->format('d/m/Y') }}</p>
             <p><strong>Statut :</strong> <span class="tag tag-{{ $reservation->status }}">{{ $reservation->status_label }}</span></p>
-            <p><strong>Total estimatif:</strong> {{ number_format($reservation->estimated_total, 0, ',', ' ') }} EUR</p>
+            <p><strong>Total estimatif:</strong> {{ $reservation->estimated_total ? number_format($reservation->estimated_total, 0, ',', ' ').' EUR' : 'Sur devis' }}</p>
         </section>
     </div>
 

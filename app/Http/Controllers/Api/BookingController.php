@@ -113,7 +113,7 @@ class BookingController extends Controller
                 'passengers' => $validated['passengers'] ?? null,
                 'prestation_type' => $validated['prestation_type'] ?? null,
                 'service_type' => $vehicle->with_chauffeur ? 'Avec chauffeur' : 'Sans chauffeur',
-                'estimated_total' => $vehicle->daily_price * $days,
+                'estimated_total' => (int) $vehicle->daily_price * $days, // 0 = vehicule sans prix (sur devis)
                 'status' => 'pending',
                 'message' => $validated['message'] ?? null,
             ]);

@@ -38,7 +38,7 @@
             </label>
             <label>
                 Prix estimatif par jour
-                <input type="number" min="1" name="daily_price" value="{{ old('daily_price', $vehicle->daily_price) }}" required>
+                <input type="number" min="1" name="daily_price" value="{{ old('daily_price', $vehicle->daily_price) }}" placeholder="Vide = aucun prix affiché">
             </label>
             <label>
                 Carburant

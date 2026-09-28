@@ -231,7 +231,8 @@ export default function BookingForm({
     const selectedStart = range?.from && startTime ? combine(range.from, startTime) : null;
     const selectedEnd = range?.from && endTime ? combine(range.to ?? range.from, endTime) : null;
     const validPeriod = selectedStart && selectedEnd && selectedEnd > selectedStart;
-    const estimate = vehicle && validPeriod ? vehicle.daily_price * rentalDays(selectedStart, selectedEnd) : null;
+    // Vehicule sans prix : aucune estimation affichee (tarif sur devis).
+    const estimate = vehicle?.daily_price && validPeriod ? vehicle.daily_price * rentalDays(selectedStart, selectedEnd) : null;
     const nearbyBookings = range?.from ? periodsTouchingDays(booked.periods, range.from, range.to ?? range.from) : [];
     const availableIds = useAvailableVehicles(
         urls.available,
@@ -433,7 +434,8 @@ export default function BookingForm({
 
                                                         return (
                                                             <SelectItem key={item.id} value={String(item.id)} disabled={unavailable}>
-                                                                {item.name} · {formatPrice(item.daily_price)}/jour
+                                                                {item.name}
+                                                                {item.daily_price ? ` · ${formatPrice(item.daily_price)}/jour` : ''}
                                                                 {unavailable && ' · indisponible sur ces dates'}
                                                             </SelectItem>
                                                         );
@@ -687,6 +689,7 @@ export default function BookingForm({
                         start={validPeriod ? selectedStart : null}
                         end={validPeriod ? selectedEnd : null}
                         estimate={estimate}
+                        onQuote={!!vehicle && !vehicle.daily_price}
                         submitting={form.formState.isSubmitting}
                         privacyUrl={urls.privacy}
                     />
@@ -800,6 +803,7 @@ function BookingSummary({
     start,
     end,
     estimate,
+    onQuote,
     submitting,
     privacyUrl,
 }: {
@@ -808,6 +812,7 @@ function BookingSummary({
     start: Date | null;
     end: Date | null;
     estimate: number | null;
+    onQuote?: boolean;
     submitting: boolean;
 }) {
     return (
@@ -843,7 +848,7 @@ function BookingSummary({
                 <SummaryRow label="Durée" value={start && end ? `${rentalDays(start, end)} jour(s)` : '—'} />
                 <div className="mt-2 flex items-baseline justify-between border-t border-border pt-3">
                     <span className="text-muted-foreground">Estimation</span>
-                    <span className="text-xl font-semibold">{estimate !== null ? formatPrice(estimate) : '—'}</span>
+                    <span className="text-xl font-semibold">{estimate !== null ? formatPrice(estimate) : onQuote ? 'Sur devis' : '—'}</span>
                 </div>
             </CardContent>
             <CardFooter className="grid gap-2">
@@ -922,7 +927,7 @@ function BookingConfirmation({
                             )}
                             <SummaryRow
                                 label="Estimation"
-                                value={`${formatPrice(confirmation.estimated_total)} (${confirmation.days} j)`}
+                                value={confirmation.estimated_total ? `${formatPrice(confirmation.estimated_total)} (${confirmation.days} j)` : 'Sur devis'}
                             />
                         </div>
                     </div>
