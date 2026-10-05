@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-/** Devis numerote DEV-AAAA-NNNN, cree a partir d'une demande (reservation). */
+/** Devis numerote DAAAAMM-NN (ex. D202607-04 ; anciens devis : DEV-AAAA-NNNN), cree a partir d'une demande (reservation). */
 class Quote extends Model
 {
     public const STATUS_LABELS = ['draft' => 'Brouillon', 'sent' => 'Envoyé', 'accepted' => 'Accepté', 'refused' => 'Refusé'];

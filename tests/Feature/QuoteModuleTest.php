@@ -77,8 +77,8 @@ class QuoteModuleTest extends TestCase
         $this->post("/admin/reservations/{$reservation->id}/devis")->assertRedirect();
         $this->post("/admin/reservations/{$reservation->id}/devis")->assertRedirect();
 
-        $year = now(config('app.local_timezone'))->year;
-        $this->assertSame(["DEV-{$year}-0001", "DEV-{$year}-0002"], Quote::orderBy('id')->pluck('number')->all());
+        $month = now(config('app.local_timezone'))->format('Ym');
+        $this->assertSame(["D{$month}-01", "D{$month}-02"], Quote::orderBy('id')->pluck('number')->all());
 
         $quote = Quote::first()->load('lines');
         $this->assertSame('Jean Dupont', $quote->customer_name);
@@ -111,7 +111,7 @@ class QuoteModuleTest extends TestCase
         $quote = Quote::firstOrFail();
         $this->assertNull($quote->reservation_id);
         $this->assertSame('draft', $quote->status);
-        $this->assertSame(sprintf('DEV-%d-0001', now(config('app.local_timezone'))->year), $quote->number);
+        $this->assertSame('D'.now(config('app.local_timezone'))->format('Ym').'-01', $quote->number);
         $this->assertSame(295.0, (float) $quote->total_ttc); // 200 HT a 20 % (240) + 50 HT a 10 % (55)
         $this->get("/admin/devis/{$quote->id}")->assertOk()->assertSee('Envoyer le devis');
         $this->get("/admin/devis/{$quote->id}/pdf")->assertOk();
@@ -218,7 +218,9 @@ class QuoteModuleTest extends TestCase
         $id = $this->withoutDefer()->postJson('/api/reservations', $payload)->assertCreated()->json('reservation.id');
 
         $this->assertSame('sent', Quote::where('reservation_id', $id)->value('status'));
-        Mail::assertSent(TemplatedMail::class, fn (TemplatedMail $mail) => $mail->hasTo('client@example.com') && str_contains($mail->mailSubject, 'DEV-'));
+        $number = Quote::where('reservation_id', $id)->value('number');
+        $this->assertMatchesRegularExpression('/^D\d{6}-\d{2}$/', $number);
+        Mail::assertSent(TemplatedMail::class, fn (TemplatedMail $mail) => $mail->hasTo('client@example.com') && str_contains($mail->mailSubject, $number));
     }
 
     public function test_admin_pages_and_settings(): void
@@ -263,10 +265,14 @@ class QuoteModuleTest extends TestCase
         $this->assertSame('250.00', $quote->fresh()->total_ttc);
 
         $this->get("/admin/devis/{$quote->id}")->assertOk()->assertDontSee('Total TTC')->assertSee('TVA non applicable, article 294 du CGI.');
-        $html = view('pdf.quote', ['quote' => $quote->fresh()->load('lines'), 'totals' => QuoteService::compute($this->lines()), 'company' => app(QuoteService::class)->config()['company'], 'vatMention' => 'TVA non applicable, article 294 du CGI.'])->render();
-        $this->assertStringNotContainsString('Total TTC', $html);
-        $this->assertStringNotContainsString('Prix unit. HT', $html);
-        $this->assertStringContainsString('TVA non applicable, article 294 du CGI.', $html);
+        $config = app(QuoteService::class)->config();
+        $html = view('pdf.quote', ['quote' => $quote->fresh()->load('lines'), 'totals' => QuoteService::compute($this->lines()), 'company' => $config['company'], 'vatMention' => 'TVA non applicable, article 294 du CGI.', 'legalMentions' => $config['legal_mentions'], 'logo' => resource_path('pdf/logo.png')])->render();
+        // Modele Class'Affaire : colonnes HT et TOTAL TTC meme sans TVA, « TVA (0 %) » et la mention de TVA dans les mentions legales.
+        $this->assertStringContainsString('TOTAL TTC', $html);
+        $this->assertStringContainsString('TVA (0 %)', $html);
+        $this->assertStringContainsString('TVA non applicable, article 294 du CGI. Pas d’escompte', $html);
+        $this->assertStringContainsString('Bon pour accord', $html);
+        $this->assertStringStartsWith('%PDF', app(QuoteService::class)->pdf($quote->fresh()));
     }
 
     public function test_services_catalog_and_automatic_overtime(): void

@@ -1,0 +1,3 @@
+URW Gothic (URW base35, (c) URW++ / Artifex Software) - GNU AGPL v3 with font exception.
+Converted from /usr/share/fonts/opentype/urw-base35 (CFF -> TrueType outlines) for dompdf.
+The font exception allows embedding these fonts in documents (PDF) without affecting the document license.

@@ -12,7 +12,7 @@
 
     @include('admin.quotes._tabs')
 
-    <form method="POST" action="{{ route('admin.quotes.settings.update') }}" class="settings-grid">
+    <form method="POST" action="{{ route('admin.quotes.settings.update') }}" class="settings-grid" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
@@ -53,6 +53,10 @@
             <label>Conditions par défaut
                 <textarea name="conditions" rows="4" maxlength="5000">{{ old('conditions', $config['conditions']) }}</textarea>
             </label>
+            <label>Mentions légales (PDF, colonne de droite)
+                <textarea name="legal_mentions" rows="3" maxlength="2000" placeholder="{{ \App\Services\QuoteService::DEFAULT_LEGAL_MENTIONS }}">{{ old('legal_mentions', $config['legal_mentions']) }}</textarea>
+                <span class="form-hint">Sur un devis sans TVA, la mention de TVA ci-dessus est ajoutée devant. Dans les lignes du devis, **texte** s’affiche en gras ; une ligne sans prix s’affiche avec des tirets (titre).</span>
+            </label>
 
             <hr class="divider">
 
@@ -79,7 +83,17 @@
                 <label>N° de TVA intracommunautaire<input name="company[vat_number]" value="{{ old('company.vat_number', $config['company']['vat_number']) }}" placeholder="FR12 123456789"></label>
                 <label>Email<input type="email" name="company[email]" value="{{ old('company.email', $config['company']['email']) }}"></label>
                 <label>Téléphone<input name="company[phone]" value="{{ old('company.phone', $config['company']['phone']) }}"></label>
+                <label>Slogan (en-tête)<input name="company[tagline]" maxlength="120" value="{{ old('company.tagline', $config['company']['tagline']) }}" placeholder="{{ \App\Services\QuoteService::DEFAULT_TAGLINE }}"></label>
+                <label>Immatriculation (en-tête)<input name="company[registration]" maxlength="120" value="{{ old('company.registration', $config['company']['registration']) }}" placeholder="SIREN : 902 609 312 RM 973"></label>
+                <label>Site web (pied de page)<input name="company[website]" maxlength="255" value="{{ old('company.website', $config['company']['website']) }}" placeholder="www.classaffaire-exclusive.fr"></label>
             </div>
+            <label>Logo du PDF (PNG ou JPEG, fond noir, 600 px de large conseillé)
+                <input type="file" name="logo" accept="image/png,image/jpeg">
+                <span class="form-hint">Sans logo envoyé, le logo Class’Affaire fourni est utilisé.</span>
+            </label>
+            @if ($customLogo)
+                <div class="checkboxes"><label><input type="checkbox" name="reset_logo" value="1"> Revenir au logo par défaut (un logo personnalisé est actuellement utilisé)</label></div>
+            @endif
             <label>Adresse du siège<textarea name="company[address]" rows="2" maxlength="500">{{ old('company.address', $config['company']['address']) }}</textarea></label>
             <label>IBAN (facultatif, pour le règlement)<input name="company[iban]" value="{{ old('company.iban', $config['company']['iban']) }}"></label>
             <div class="form-actions"><button class="btn" type="submit">Enregistrer les réglages</button></div>

@@ -30,6 +30,13 @@ class QuoteService
 
     public const DEFAULT_VAT_MENTION = 'TVA non applicable, article 294 du CGI.';
 
+    public const DEFAULT_TAGLINE = 'Location de véhicules de prestige avec chauffeur';
+
+    public const DEFAULT_LEGAL_MENTIONS = 'Pas d’escompte pour paiement anticipé. Indemnité forfaitaire pour frais de recouvrement : 40 €. Tout retard de paiement entraînera l’application de pénalités calculées au taux de 20 % exigibles de plein droit sans rappel préalable.';
+
+    /** Logo du PDF televerse dans Admin > Devis > Reglages (disque local, non public). Par defaut : resources/pdf/logo.png. */
+    public const LOGO_PATH = 'branding/quote-logo.png';
+
     public function __construct(
         private readonly Settings $settings,
         private readonly EmailService $emails,
@@ -50,10 +57,12 @@ class QuoteService
             'vat_enabled' => (bool) $this->settings->get('quotes.vat_enabled', false),
             'vat_mention' => (string) ($this->settings->get('quotes.vat_mention') ?? self::DEFAULT_VAT_MENTION),
             'services' => array_values((array) $this->settings->get('quotes.services', [])),
+            'legal_mentions' => (string) ($this->settings->get('quotes.legal_mentions') ?? self::DEFAULT_LEGAL_MENTIONS),
             'company' => array_merge([
                 'name' => '', 'legal_form' => '', 'siret' => '', 'vat_number' => '', 'address' => '',
                 'email' => config('home.contact.email'), 'phone' => config('home.contact.phone'), 'iban' => '',
-            ], (array) $this->settings->get('quotes.company', [])),
+                'tagline' => self::DEFAULT_TAGLINE, 'registration' => '', 'website' => '',
+            ], array_filter((array) $this->settings->get('quotes.company', []), fn ($value, $key) => $value !== null && ! ($key === 'tagline' && $value === ''), ARRAY_FILTER_USE_BOTH)),
         ];
     }
 
@@ -188,7 +197,7 @@ class QuoteService
     }
 
     /**
-     * Cree un devis avec un numero unique DEV-AAAA-NNNN (verrou : pas de doublon si deux devis sont crees en meme temps).
+     * Cree un devis avec un numero unique DAAAAMM-NN (ex. D202607-04) (verrou : pas de doublon si deux devis sont crees en meme temps).
      *
      * @param  array<string, mixed>  $data
      * @param  list<array<string, mixed>>  $lines
@@ -196,13 +205,15 @@ class QuoteService
     public function create(array $data, array $lines): Quote
     {
         return DB::transaction(function () use ($data, $lines) {
-            $year = (int) now(config('app.local_timezone'))->format('Y');
-            $sequence = (int) Quote::query()->where('year', $year)->lockForUpdate()->max('sequence') + 1;
+            $now = now(config('app.local_timezone'));
+            $prefix = 'D'.$now->format('Ym').'-';
+            // Compteur repris a 01 chaque mois (les anciens devis DEV-AAAA-NNNN gardent leur numero).
+            $sequence = (int) Quote::query()->where('number', 'like', $prefix.'%')->lockForUpdate()->max('sequence') + 1;
 
             $quote = Quote::create($data + [
-                'year' => $year,
+                'year' => (int) $now->format('Y'),
                 'sequence' => $sequence,
-                'number' => sprintf('DEV-%d-%04d', $year, $sequence),
+                'number' => sprintf('%s%02d', $prefix, $sequence),
                 'status' => 'draft',
             ]);
 
@@ -296,16 +307,29 @@ class QuoteService
         $quote->loadMissing('lines', 'reservation.vehicle');
         $totals = self::compute($quote->lines->map(fn ($line) => $line->only(['description', 'quantity', 'unit_price_ht', 'vat_rate']))->all(), $quote->discount_type, (float) $quote->discount_value);
 
-        return Pdf::loadView('pdf.quote', [
+        $config = $this->config();
+        $logo = Storage::disk('local')->exists(self::LOGO_PATH) ? Storage::disk('local')->path(self::LOGO_PATH) : resource_path('pdf/logo.png');
+
+        $render = fn (int $pageCount) => Pdf::loadView('pdf.quote', [
             'quote' => $quote,
             'totals' => $totals,
-            'company' => $this->config()['company'],
-            'vatMention' => $quote->vat_exempt ? $this->config()['vat_mention'] : '',
+            'company' => $config['company'],
+            'vatMention' => $quote->vat_exempt ? $config['vat_mention'] : '',
+            'legalMentions' => $config['legal_mentions'],
+            'logo' => $logo,
+            'pageCount' => $pageCount,
         ])->setPaper('a4')->setOption([
             'isRemoteEnabled' => false,       // aucune ressource externe chargee
             'defaultFont' => 'DejaVu Sans',   // accents et symbole euro
             'isFontSubsettingEnabled' => true, // seuls les caracteres utilises sont inclus (PDF leger)
-        ])->output();
+        ]);
+
+        // « Page 1 / N » : dompdf ne connait pas le nombre total de pages en CSS, on le mesure puis on refait le rendu si besoin.
+        $pdf = $render(1);
+        $pdf->render();
+        $pageCount = $pdf->getDomPDF()->getCanvas()->get_page_count();
+
+        return ($pageCount > 1 ? $render($pageCount) : $pdf)->output();
     }
 
     /** PDF enregistre dans storage/app/private/quotes (non accessible depuis le web). */

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Quote;
 use App\Services\QuoteService;
 use App\Services\Settings;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -44,7 +45,11 @@ class QuoteSettingsController extends Controller
 
     public function edit(QuoteService $quotes): View
     {
-        return view('admin.quotes.settings', ['config' => $quotes->config(), 'vatRates' => Quote::VAT_RATES]);
+        return view('admin.quotes.settings', [
+            'config' => $quotes->config(),
+            'vatRates' => Quote::VAT_RATES,
+            'customLogo' => Storage::disk('local')->exists(QuoteService::LOGO_PATH),
+        ]);
     }
 
     public function update(Request $request, Settings $settings): RedirectResponse
@@ -55,6 +60,11 @@ class QuoteSettingsController extends Controller
             'line_template' => ['required', 'string', 'max:500'],
             'conditions' => ['nullable', 'string', 'max:5000'],
             'vat_mention' => ['nullable', 'string', 'max:255'],
+            'legal_mentions' => ['nullable', 'string', 'max:2000'],
+            'logo' => ['nullable', 'image', 'mimes:png,jpg,jpeg', 'max:4096'],
+            'company.tagline' => ['nullable', 'string', 'max:120'],
+            'company.registration' => ['nullable', 'string', 'max:120'],
+            'company.website' => ['nullable', 'string', 'max:255'],
             'company.name' => ['nullable', 'string', 'max:255'],
             'company.legal_form' => ['nullable', 'string', 'max:255'],
             'company.siret' => ['nullable', 'string', 'max:30'],
@@ -73,9 +83,17 @@ class QuoteSettingsController extends Controller
             'quotes.prices_include_vat' => $request->boolean('prices_include_vat'),
             'quotes.vat_enabled' => $request->boolean('vat_enabled'),
             'quotes.vat_mention' => trim((string) ($data['vat_mention'] ?? '')),
+            'quotes.legal_mentions' => trim((string) ($data['legal_mentions'] ?? '')),
             'quotes.auto_send' => $request->boolean('auto_send'),
             'quotes.company' => array_map(fn ($value) => $value ?? '', $data['company'] ?? []),
         ]);
+
+        // Logo du PDF (PNG ou JPEG, type detecte par dompdf) ; « logo par defaut » supprime le fichier televerse.
+        if ($request->hasFile('logo')) {
+            Storage::disk('local')->put(QuoteService::LOGO_PATH, $request->file('logo')->get());
+        } elseif ($request->boolean('reset_logo')) {
+            Storage::disk('local')->delete(QuoteService::LOGO_PATH);
+        }
 
         return redirect()->route('admin.quotes.settings')->with('status', $request->boolean('auto_send')
             ? 'Réglages enregistrés. ATTENTION : l’envoi automatique des devis est ACTIVÉ.'

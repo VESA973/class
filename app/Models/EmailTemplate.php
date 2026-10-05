@@ -32,7 +32,7 @@ class EmailTemplate extends Model
     ];
 
     public const QUOTE_VARIABLES = [
-        'numero_devis' => 'Numéro du devis (ex. DEV-2026-0001)',
+        'numero_devis' => 'Numéro du devis (ex. D202607-04)',
         'montant_devis' => 'Montant TTC du devis',
         'date_validite' => 'Date de validité du devis',
     ];
@@ -60,7 +60,7 @@ class EmailTemplate extends Model
             'message_client' => 'Siège enfant, s’il vous plaît.', 'numero_reservation' => '128', 'vehicule' => 'Rolls Royce Ghost',
             'date_depart' => '12/10/2026 à 09:30', 'date_retour' => '12/10/2026 à 18:00', 'lieu_depart' => 'Gare de Lyon, 75012 Paris',
             'type_prestation' => 'Transfert aéroport', 'destination' => 'Aéroport Cayenne-Félix Éboué, 97351 Matoury', 'passagers' => '3', 'montant_estime' => '1 200 €',
-            'lien_admin' => url('/admin/reservations'), 'numero_devis' => 'DEV-2026-0001', 'montant_devis' => '1 440,00 € TTC',
+            'lien_admin' => url('/admin/reservations'), 'numero_devis' => 'D202607-04', 'montant_devis' => '1 440,00 € TTC',
             'date_validite' => '26/10/2026',
         ];
     }
