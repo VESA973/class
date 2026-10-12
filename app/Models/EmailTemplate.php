@@ -37,6 +37,15 @@ class EmailTemplate extends Model
         'date_validite' => 'Date de validité du devis',
     ];
 
+    public const INVOICE_VARIABLES = [
+        'nom_client' => 'Nom du client',
+        'type_document' => '« facture » ou « avoir »',
+        'numero_facture' => 'Numéro de la facture ou de l’avoir (ex. F202610-03)',
+        'reste_a_payer' => 'Montant restant à régler',
+        'montant_facture' => 'Montant TTC de la facture',
+        'date_echeance' => 'Date limite de paiement',
+    ];
+
     public const SITE_VARIABLES = [
         'site_nom' => 'Nom du site',
         'site_telephone' => 'Téléphone du site',
@@ -47,6 +56,10 @@ class EmailTemplate extends Model
     /** @return array<string, string> */
     public function availableVariables(): array
     {
+        if ($this->key === 'invoice_sent') {
+            return self::INVOICE_VARIABLES + self::SITE_VARIABLES;
+        }
+
         return self::RESERVATION_VARIABLES
             + ($this->key === 'quote_sent' ? self::QUOTE_VARIABLES : [])
             + self::SITE_VARIABLES;
@@ -61,7 +74,7 @@ class EmailTemplate extends Model
             'date_depart' => '12/10/2026 à 09:30', 'date_retour' => '12/10/2026 à 18:00', 'lieu_depart' => 'Gare de Lyon, 75012 Paris',
             'type_prestation' => 'Transfert aéroport', 'destination' => 'Aéroport Cayenne-Félix Éboué, 97351 Matoury', 'passagers' => '3', 'montant_estime' => '1 200 €',
             'lien_admin' => url('/admin/reservations'), 'numero_devis' => 'D202607-04', 'montant_devis' => '1 440,00 € TTC',
-            'date_validite' => '26/10/2026',
+            'date_validite' => '26/10/2026', 'numero_facture' => 'F202610-03', 'montant_facture' => '1 440,00 € TTC', 'date_echeance' => '11/11/2026', 'type_document' => 'facture', 'reste_a_payer' => '1 040,00 €',
         ];
     }
 

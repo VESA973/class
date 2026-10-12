@@ -9,7 +9,10 @@
     $reservation = $quote->reservation;
     $start = $reservation ? ($reservation->start_at ?? $reservation->start_date) : null;
     $end = $reservation ? ($reservation->end_at ?? $reservation->end_date) : null;
-    $validityDays = (int) $quote->issued_at->diffInDays($quote->valid_until);
+    $isInvoice = $quote instanceof \App\Models\Invoice;
+    $docLabel = $isInvoice ? $quote->document_label : 'Devis';
+    $isCreditNote = $isInvoice && $quote->is_credit_note;
+    $validityDays = $isInvoice ? 0 : (int) $quote->issued_at->diffInDays($quote->valid_until);
     $website = preg_replace('#^https?://#', '', rtrim((string) $company['website'], '/'));
     $registration = filled($company['registration']) ? $company['registration'] : (filled($company['siret']) ? 'SIRET : '.$company['siret'] : '');
     $brand = filled($company['name']) ? $company['name'] : 'Class’Affaire';
@@ -19,7 +22,7 @@
 <html lang="fr">
 <head>
     <meta charset="utf-8">
-    <title>Devis {{ $quote->number }}</title>
+    <title>{{ $docLabel }} {{ $quote->number }}</title>
     <style>
         @font-face { font-family: 'Gothic'; font-weight: normal; font-style: normal; src: {!! $font('URWGothic-Book.ttf') !!}; }
         @font-face { font-family: 'Gothic'; font-weight: bold; font-style: normal; src: {!! $font('URWGothic-Demi.ttf') !!}; }
@@ -124,11 +127,18 @@
                 </table>
             </td>
             <td class="light">
-                <div class="doc-title">DEVIS</div>
+                <div class="doc-title">{{ mb_strtoupper($docLabel) }}</div>
                 <div class="doc-meta">
                     N° {{ $quote->number }}<br>
                     Date d’émission : {{ $quote->issued_at->format('d/m/Y') }}<br>
-                    Validité : {{ $validityDays }} jour{{ $validityDays > 1 ? 's' : '' }} — soit jusqu’au {{ $quote->valid_until->format('d/m/Y') }}
+                    @if ($isCreditNote)
+                        Annule la facture n° {{ $quote->creditedInvoice?->number }}
+                    @elseif ($isInvoice)
+                        Échéance : {{ $quote->due_at->format('d/m/Y') }}
+                        @if ($quote->quote)<br>Réf. devis : {{ $quote->quote->number }}@endif
+                    @else
+                        Validité : {{ $validityDays }} jour{{ $validityDays > 1 ? 's' : '' }} — soit jusqu’au {{ $quote->valid_until->format('d/m/Y') }}
+                    @endif
                 </div>
             </td>
         </tr>
@@ -215,6 +225,10 @@
             @endforeach
         @endif
         <tr class="grand"><td>TOTAL TTC</td><td class="num">{{ $money($totals['total_ttc']) }}</td></tr>
+        @if ($isInvoice && ! $isCreditNote && $quote->amount_paid > 0)
+            <tr><td>Déjà réglé</td><td class="num">− {{ $money($quote->amount_paid) }}</td></tr>
+            <tr><td><strong>Reste à payer</strong></td><td class="num"><strong>{{ $money($quote->balance) }}</strong></td></tr>
+        @endif
     </table>
 
     <div class="section-title" style="margin-top:28px;border-bottom-color:#c8c8c8">Conditions &amp; mentions légales</div>
@@ -223,11 +237,21 @@
     <table class="notes">
         <tr>
             <td class="left">
+                @if ($isInvoice)
+                    @if ($isCreditNote)
+                    <div class="notes-title">Avoir</div>
+                    <div>Avoir annulant la facture n° {{ $quote->creditedInvoice?->number }}. Les sommes déjà réglées vous seront remboursées.</div>
+                    @else
+                    <div class="notes-title">Conditions de paiement</div>
+                    <div>Facture à régler au plus tard le {{ $quote->due_at->format('d/m/Y') }}.</div>
+                    @endif
+                @else
                 <div class="notes-title">Conditions générales</div>
                 {{-- Un bloc par paragraphe : la derniere ligne d'un paragraphe justifie ne doit pas etre etiree. --}}
                 @foreach (array_filter(array_map('trim', preg_split('/\R/', (string) $quote->conditions))) as $paragraph)
                     <div>{{ $paragraph }}</div>
                 @endforeach
+                @endif
                 @if (filled($company['iban']))<div>IBAN : {{ $company['iban'] }}</div>@endif
             </td>
             <td>
@@ -237,6 +261,7 @@
         </tr>
     </table>
 
+    @unless ($isInvoice)
     <div class="agreement">
         <div class="agreement-title">Bon pour accord</div>
         <div class="sign-box">
@@ -245,5 +270,6 @@
             Nom &amp; Date : ________________________________
         </div>
     </div>
+    @endunless
 </body>
 </html>

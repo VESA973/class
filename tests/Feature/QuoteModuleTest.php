@@ -233,7 +233,7 @@ class QuoteModuleTest extends TestCase
         }
 
         $this->put('/admin/devis/reglages', [
-            'vat_rate' => '10', 'validity_days' => 30, 'line_template' => 'Transfert {vehicule}', 'conditions' => 'Acompte 30 %',
+            'vat_rate' => '10', 'validity_days' => 30, 'invoice_due_days' => 30, 'line_template' => 'Transfert {vehicule}', 'conditions' => 'Acompte 30 %',
             'company' => ['name' => 'CLASS AFFAIRE SAS', 'siret' => '12345678900012'],
         ])->assertRedirect();
 

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /** Devis numerote DAAAAMM-NN (ex. D202607-04 ; anciens devis : DEV-AAAA-NNNN), cree a partir d'une demande (reservation). */
 class Quote extends Model
@@ -51,6 +52,12 @@ class Quote extends Model
     public function lines(): HasMany
     {
         return $this->hasMany(QuoteLine::class)->orderBy('position');
+    }
+
+    public function invoice(): HasOne
+    {
+        // Derniere facture du devis (une facture annulee par avoir peut etre remplacee).
+        return $this->hasOne(Invoice::class)->where('type', 'invoice')->latestOfMany();
     }
 
     public function getStatusClassAttribute(): string

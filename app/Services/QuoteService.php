@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Invoice;
 use App\Models\Quote;
 use App\Models\QuoteLine;
 use App\Models\Reservation;
@@ -302,7 +303,8 @@ class QuoteService
         ];
     }
 
-    public function pdf(Quote $quote): string
+    /** PDF d'un devis ou d'une facture (meme modele, titre et mentions adaptes). */
+    public function pdf(Quote|Invoice $quote): string
     {
         $quote->loadMissing('lines', 'reservation.vehicle');
         $totals = self::compute($quote->lines->map(fn ($line) => $line->only(['description', 'quantity', 'unit_price_ht', 'vat_rate']))->all(), $quote->discount_type, (float) $quote->discount_value);

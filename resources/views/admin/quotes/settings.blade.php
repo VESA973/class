@@ -42,6 +42,10 @@
                 <label>Durée de validité (jours)
                     <input type="number" name="validity_days" min="1" max="365" value="{{ old('validity_days', $config['validity_days']) }}" required>
                 </label>
+                <label>Délai de paiement des factures (jours)
+                    <input type="number" name="invoice_due_days" min="0" max="60" value="{{ old('invoice_due_days', $invoiceDueDays) }}" required>
+                    <span class="form-hint">0 = paiement à réception. 60 jours maximum (loi).</span>
+                </label>
             </div>
             <label>Ligne par défaut (tarif du véhicule × nombre de jours)
                 <input name="line_template" maxlength="500" value="{{ old('line_template', $config['line_template']) }}" required>

@@ -7,6 +7,7 @@ use App\Models\Quote;
 use App\Services\CustomerDirectory;
 use App\Models\Reservation;
 use App\Models\ReservationEvent;
+use App\Services\InvoiceService;
 use App\Services\QuoteService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -74,10 +75,18 @@ class QuoteController extends Controller
         return redirect()->route('admin.quotes.edit', $quote)->with('status', "Devis {$quote->number} enregistré.");
     }
 
-    /** Formulaire de creation libre (sans demande de reservation), eventuellement pour un client de la base (?client=). */
+    /**
+     * Formulaire de creation libre (sans demande de reservation), eventuellement pour un client de la base (?client=).
+     * Sert aussi a la facture libre (route admin.invoices.create) : meme formulaire, echeance a la place de la validite.
+     */
     public function create(Request $request): View
     {
         $quote = $this->quotes->blank();
+        $invoiceMode = $request->routeIs('admin.invoices.create');
+
+        if ($invoiceMode) {
+            $quote->valid_until = now(config('app.local_timezone'))->addDays(app(InvoiceService::class)->dueDays());
+        }
 
         if ($customer = Customer::find($request->integer('client'))) {
             $quote->fill([
@@ -95,6 +104,7 @@ class QuoteController extends Controller
             'vatRates' => Quote::VAT_RATES,
             'events' => collect(),
             'company' => $this->quotes->config()['company'],
+            'invoiceMode' => $invoiceMode,
         ]);
     }
 
@@ -103,6 +113,15 @@ class QuoteController extends Controller
         [$data, $lines] = $this->validated($request);
         $data['vat_exempt'] = $request->has('vat_exempt') ? $request->boolean('vat_exempt') : ! $this->quotes->config()['vat_enabled'];
         $data['customer_id'] = $this->customerIdFor($request, $data);
+
+        if ($request->routeIs('admin.invoices.store-blank')) {
+            $data['due_at'] = $data['valid_until'];
+            unset($data['valid_until'], $data['conditions'], $data['issued_at']); // facture datee du jour de son emission
+            $invoice = app(InvoiceService::class)->create($data, $lines);
+
+            return redirect()->route('admin.invoices.show', $invoice)->with('status', "Facture {$invoice->number} émise.");
+        }
+
         $quote = $this->quotes->create($data, $lines);
 
         return redirect()->route('admin.quotes.edit', $quote)->with('status', "Devis {$quote->number} créé (brouillon).");
@@ -158,7 +177,7 @@ class QuoteController extends Controller
             'lines.required' => 'Ajoutez au moins une ligne.',
             'lines.*.description.required' => 'Chaque ligne doit avoir une désignation.',
             'lines.*.quantity.gt' => 'La quantité doit être supérieure à 0.',
-            'valid_until.after_or_equal' => 'La date de validité doit suivre la date du devis.',
+            'valid_until.after_or_equal' => 'Cette date doit suivre la date d’émission.',
             'discount_value.max' => 'Remise trop élevée (100 % maximum).',
         ]);
 

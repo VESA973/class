@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Quote;
+use App\Services\InvoiceService;
 use App\Services\QuoteService;
 use App\Services\Settings;
 use Illuminate\Support\Facades\Storage;
@@ -49,6 +50,7 @@ class QuoteSettingsController extends Controller
             'config' => $quotes->config(),
             'vatRates' => Quote::VAT_RATES,
             'customLogo' => Storage::disk('local')->exists(QuoteService::LOGO_PATH),
+            'invoiceDueDays' => app(InvoiceService::class)->dueDays(),
         ]);
     }
 
@@ -57,6 +59,7 @@ class QuoteSettingsController extends Controller
         $data = $request->validate([
             'vat_rate' => ['required', Rule::in(array_keys(Quote::VAT_RATES))],
             'validity_days' => ['required', 'integer', 'between:1,365'],
+            'invoice_due_days' => ['required', 'integer', 'between:0,60'],
             'line_template' => ['required', 'string', 'max:500'],
             'conditions' => ['nullable', 'string', 'max:5000'],
             'vat_mention' => ['nullable', 'string', 'max:255'],
@@ -78,6 +81,7 @@ class QuoteSettingsController extends Controller
         $settings->set([
             'quotes.vat_rate' => $data['vat_rate'],
             'quotes.validity_days' => (int) $data['validity_days'],
+            'invoices.due_days' => (int) $data['invoice_due_days'],
             'quotes.line_template' => $data['line_template'],
             'quotes.conditions' => $data['conditions'] ?? '',
             'quotes.prices_include_vat' => $request->boolean('prices_include_vat'),

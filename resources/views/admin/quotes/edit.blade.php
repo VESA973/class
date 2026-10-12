@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('title', $quote->exists ? 'Devis '.$quote->number : 'Nouveau devis')
+@section('title', $quote->exists ? 'Devis '.$quote->number : (($invoiceMode ?? false) ? 'Nouvelle facture' : 'Nouveau devis'))
 
 @php
     $lines = old('lines', $quote->lines->map(fn ($line) => [
@@ -11,6 +11,8 @@
     ])->all());
     $statusClass = $quote->status_class;
     $isNew = ! $quote->exists;
+    $invoiceMode = $invoiceMode ?? false; // facture libre : meme formulaire (creation seulement)
+    $docLabel = $invoiceMode ? 'Facture' : 'Devis';
     $exempt = (bool) $quote->vat_exempt; // devis sans TVA : pas de colonnes HT / TVA / TTC
     $ht = $exempt ? '' : ' HT';
     // Aide a la saisie : vehicules et services avec leur prix de ligne (HT si la TVA s'applique aux prix TTC).
@@ -33,9 +35,15 @@
 @section('content')
     <div class="page-head">
         <div>
+            @if ($invoiceMode)
+                <p class="eyebrow">Factures</p>
+                <h1>Nouvelle facture</h1>
+                <p class="form-hint">Facture libre, sans devis. Elle est numérotée et datée du jour à l’émission, puis ne peut plus être modifiée (une erreur se corrige par un avoir).</p>
+            @else
             <p class="eyebrow">Devis <span class="tag {{ $statusClass }}">{{ $quote->status_label }}</span></p>
             <h1>{{ $quote->number }}</h1>
-            @if ($isNew)
+            @endif
+            @if ($isNew && ! $invoiceMode)
                 <p class="form-hint">Devis libre, sans demande de réservation. Le numéro est attribué à l’enregistrement.</p>
             @endif
         </div>
@@ -57,7 +65,7 @@
     @endif
 
     <div class="editor-grid quote-grid">
-        <form class="form-card" method="POST" action="{{ $isNew ? route('admin.quotes.store-blank') : route('admin.quotes.update', $quote) }}" data-quote-form>
+        <form class="form-card" method="POST" action="{{ $invoiceMode ? route('admin.invoices.store-blank') : ($isNew ? route('admin.quotes.store-blank') : route('admin.quotes.update', $quote)) }}" data-quote-form @if ($invoiceMode) onsubmit="return confirm('Émettre cette facture ? Elle ne pourra plus être modifiée.')" @endif>
             @csrf
             @unless ($isNew)
                 @method('PUT')
@@ -88,20 +96,24 @@
                 <label>Adresse (facultative)<input name="customer_address" value="{{ old('customer_address', $quote->customer_address) }}" maxlength="500"></label>
             </div>
 
-            <h2>Devis</h2>
+            <h2>{{ $docLabel }}</h2>
             <input type="hidden" name="vat_exempt" value="0">
             <label class="toggle-row">
                 <input type="checkbox" name="vat_exempt" value="1" @checked($exempt) data-vat-exempt>
                 <span>
-                    <strong>Devis sans TVA</strong>
+                    <strong>{{ $docLabel }} sans TVA</strong>
                     <small>Aucune TVA sur l’aperçu et le PDF (prix nets, mention « {{ $quoteConfig['vat_mention'] ?: 'TVA non applicable' }} »).@unless ($isNew) Le devis est enregistré dès que vous cochez ou décochez.@endunless</small>
                 </span>
             </label>
             <div class="form-grid">
                 <label>Objet<input name="subject" value="{{ old('subject', $quote->subject) }}" maxlength="255"></label>
                 <div class="form-grid">
+                    @if ($invoiceMode)
+                        <input type="hidden" name="issued_at" value="{{ $quote->issued_at->format('Y-m-d') }}">
+                    @else
                     <label>Date<input type="date" name="issued_at" value="{{ old('issued_at', $quote->issued_at->format('Y-m-d')) }}" required></label>
-                    <label>Valable jusqu’au<input type="date" name="valid_until" value="{{ old('valid_until', $quote->valid_until->format('Y-m-d')) }}" required></label>
+                    @endif
+                    <label>{{ $invoiceMode ? 'À régler avant le' : 'Valable jusqu’au' }}<input type="date" name="valid_until" value="{{ old('valid_until', $quote->valid_until->format('Y-m-d')) }}" required></label>
                 </div>
             </div>
 
@@ -165,16 +177,18 @@
                 <p class="form-hint">Mention sur le PDF : « {{ $quoteConfig['vat_mention'] }} »</p>
             @endif
 
+            @unless ($invoiceMode)
             <label>Conditions (affichées sur le PDF)<textarea name="conditions" rows="4" maxlength="5000">{{ old('conditions', $quote->conditions) }}</textarea></label>
+            @endunless
             <label>Notes internes (non affichées au client)<textarea name="notes" rows="2" maxlength="5000">{{ old('notes', $quote->notes) }}</textarea></label>
 
             <div class="form-actions">
                 @if ($isNew)
-                    <a class="btn btn-secondary" href="{{ route('admin.quotes.index') }}">Annuler</a>
+                    <a class="btn btn-secondary" href="{{ $invoiceMode ? route('admin.invoices.index') : route('admin.quotes.index') }}">Annuler</a>
                 @elseif ($quote->status === 'draft')
                     <button class="btn btn-danger" type="submit" form="delete-quote">Supprimer le brouillon</button>
                 @endif
-                <button class="btn" type="submit">{{ $isNew ? 'Créer le devis' : 'Enregistrer' }}</button>
+                <button class="btn" type="submit">{{ $invoiceMode ? 'Émettre la facture' : ($isNew ? 'Créer le devis' : 'Enregistrer') }}</button>
             </div>
         </form>
 
@@ -182,7 +196,7 @@
             <div class="grid-stack">
                 <section class="form-card">
                     <h2>Après la création</h2>
-                    <p class="form-hint">Une fois le devis créé, vous pourrez voir l’aperçu PDF, l’envoyer au client par email et noter sa réponse.</p>
+                    <p class="form-hint">{{ $invoiceMode ? 'Une fois la facture émise, vous pourrez voir le PDF, l’envoyer au client et enregistrer ses paiements.' : 'Une fois le devis créé, vous pourrez voir l’aperçu PDF, l’envoyer au client par email et noter sa réponse.' }}</p>
                 </section>
             </div>
         @else
@@ -198,6 +212,21 @@
                 </form>
                 @if ($quote->sent_at)
                     <p class="form-hint">Dernier envoi : {{ $quote->sent_at->timezone(config('app.local_timezone'))->format('d/m/Y à H:i') }}</p>
+                @endif
+            </section>
+
+            <section class="form-card" aria-labelledby="invoice-title">
+                <h2 id="invoice-title">Facturation</h2>
+                @error('invoice')<div class="flash flash-error">{{ $message }}</div>@enderror
+                @if ($quote->invoice && $quote->invoice->status !== 'cancelled')
+                    <p class="form-hint">Facturé : <a href="{{ route('admin.invoices.show', $quote->invoice) }}"><strong>{{ $quote->invoice->number }}</strong></a> ({{ $quote->invoice->status_label }}).</p>
+                @else
+                    @if ($quote->invoice)<p class="form-hint">La facture <a href="{{ route('admin.invoices.show', $quote->invoice) }}">{{ $quote->invoice->number }}</a> a été annulée par un avoir.</p>@endif
+                    <p class="form-hint">Émet la facture avec les lignes et montants enregistrés de ce devis. Une facture ne peut plus être modifiée ni supprimée : enregistrez vos changements avant.</p>
+                    <form method="POST" action="{{ route('admin.invoices.store', $quote) }}" onsubmit="return confirm('Émettre la facture du devis {{ $quote->number }} ? Elle ne pourra plus être modifiée.')">
+                        @csrf
+                        <div class="form-actions" style="justify-content:flex-start"><button class="btn" type="submit">Créer la facture</button></div>
+                    </form>
                 @endif
             </section>
 
