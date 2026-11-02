@@ -76,6 +76,9 @@ class QuoteSettingsController extends Controller
             'company.email' => ['nullable', 'email', 'max:255'],
             'company.phone' => ['nullable', 'string', 'max:40'],
             'company.iban' => ['nullable', 'string', 'max:50'],
+            'company.bank' => ['nullable', 'string', 'max:120'],
+            'company.bic' => ['nullable', 'string', 'max:20'],
+            'company.payment_methods' => ['nullable', 'string', 'max:120'],
         ]);
 
         $settings->set([

@@ -99,7 +99,12 @@
                 <div class="checkboxes"><label><input type="checkbox" name="reset_logo" value="1"> Revenir au logo par défaut (un logo personnalisé est actuellement utilisé)</label></div>
             @endif
             <label>Adresse du siège<textarea name="company[address]" rows="2" maxlength="500">{{ old('company.address', $config['company']['address']) }}</textarea></label>
-            <label>IBAN (facultatif, pour le règlement)<input name="company[iban]" value="{{ old('company.iban', $config['company']['iban']) }}"></label>
+            <div class="form-grid">
+                <label>IBAN (pour le règlement)<input name="company[iban]" value="{{ old('company.iban', $config['company']['iban']) }}"></label>
+                <label>Banque (factures)<input name="company[bank]" maxlength="120" value="{{ old('company.bank', $config['company']['bank']) }}"></label>
+                <label>BIC (factures)<input name="company[bic]" maxlength="20" value="{{ old('company.bic', $config['company']['bic']) }}"></label>
+                <label>Modes de paiement acceptés (factures)<input name="company[payment_methods]" maxlength="120" value="{{ old('company.payment_methods', $config['company']['payment_methods']) }}" placeholder="Virement bancaire / CB"></label>
+            </div>
             <div class="form-actions"><button class="btn" type="submit">Enregistrer les réglages</button></div>
         </section>
     </form>

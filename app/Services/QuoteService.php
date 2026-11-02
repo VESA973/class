@@ -61,7 +61,7 @@ class QuoteService
             'legal_mentions' => (string) ($this->settings->get('quotes.legal_mentions') ?? self::DEFAULT_LEGAL_MENTIONS),
             'company' => array_merge([
                 'name' => '', 'legal_form' => '', 'siret' => '', 'vat_number' => '', 'address' => '',
-                'email' => config('home.contact.email'), 'phone' => config('home.contact.phone'), 'iban' => '',
+                'email' => config('home.contact.email'), 'phone' => config('home.contact.phone'), 'iban' => '', 'bank' => '', 'bic' => '', 'payment_methods' => '',
                 'tagline' => self::DEFAULT_TAGLINE, 'registration' => '', 'website' => '',
             ], array_filter((array) $this->settings->get('quotes.company', []), fn ($value, $key) => $value !== null && ! ($key === 'tagline' && $value === ''), ARRAY_FILTER_USE_BOTH)),
         ];
@@ -312,7 +312,7 @@ class QuoteService
         $config = $this->config();
         $logo = Storage::disk('local')->exists(self::LOGO_PATH) ? Storage::disk('local')->path(self::LOGO_PATH) : resource_path('pdf/logo.png');
 
-        $render = fn (int $pageCount) => Pdf::loadView('pdf.quote', [
+        $render = fn (int $pageCount) => Pdf::loadView($quote instanceof Invoice ? 'pdf.invoice' : 'pdf.quote', [
             'quote' => $quote,
             'totals' => $totals,
             'company' => $config['company'],
