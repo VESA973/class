@@ -29,7 +29,7 @@ class InvoiceController extends Controller
                 ->where('number', 'like', '%'.$request->input('q').'%')
                 ->orWhere('customer_name', 'like', '%'.$request->input('q').'%')))
             ->latest('id')
-            ->paginate(20)
+            ->paginate(10)
             ->withQueryString();
 
         return view('admin.invoices.index', [
